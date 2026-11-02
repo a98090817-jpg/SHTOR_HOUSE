@@ -1,0 +1,60 @@
+{% load static %}
+<div class="curtain-assistant" data-curtain-assistant data-api-endpoint="">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+  <button
+    class="curtain-assistant-toggle"
+    type="button"
+    aria-label="Open curtain advisor"
+    data-i18n-aria-label="chatOpen"
+    aria-expanded="false"
+    aria-controls="curtain-assistant-panel"
+    data-assistant-toggle
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5h-6l-4.8 4v-4H6.5A2.5 2.5 0 0 1 4 13.5z"></path>
+      <path d="M8 8h8M8 11.5h5"></path>
+    </svg>
+    <span class="curtain-assistant-toggle-label" data-i18n="chatOpen">Maslahat</span>
+    <span class="curtain-assistant-unread" aria-hidden="true"></span>
+  </button>
+
+  <section
+    class="curtain-assistant-panel"
+    id="curtain-assistant-panel"
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="curtain-assistant-title"
+    aria-hidden="true"
+    data-assistant-panel
+    hidden
+  >
+    <header class="curtain-assistant-header">
+      <span class="curtain-assistant-avatar" aria-hidden="true">SH</span>
+      <div class="curtain-assistant-heading">
+        <h2 id="curtain-assistant-title" data-i18n="chatTitle">Parda maslahatchisi</h2>
+        <span class="curtain-assistant-online"><span></span><span data-i18n="chatOnline">Sizga yordam berishga tayyor</span></span>
+      </div>
+      <button class="curtain-assistant-close" type="button" aria-label="Chatni yopish" data-i18n-aria-label="chatClose" data-assistant-close>×</button>
+    </header>
+
+    <div class="curtain-assistant-messages" role="log" aria-live="polite" aria-relevant="additions text" data-assistant-messages>
+      <div class="curtain-assistant-message is-assistant" data-i18n="chatWelcome">Assalomu alaykum! Pardalar, matolar, narxlar yoki o‘lcham olish bo‘yicha savolingiz bo‘lsa, yordam beraman.</div>
+    </div>
+
+    <div class="curtain-assistant-suggestions" data-assistant-suggestions>
+      <button type="button" data-assistant-question="chatQuestionMaterials" data-i18n="chatQuestionMaterials">Mato turlari</button>
+      <button type="button" data-assistant-question="chatQuestionMeasure" data-i18n="chatQuestionMeasure">O‘lcham qanday olinadi?</button>
+      <button type="button" data-assistant-question="chatQuestionPrice" data-i18n="chatQuestionPrice">Narxlar haqida</button>
+    </div>
+
+    <form class="curtain-assistant-form" data-assistant-form>
+      <label class="assistant-sr-only" for="curtain-assistant-input" data-i18n="chatInputLabel">Xabaringiz</label>
+      <input id="curtain-assistant-input" type="text" maxlength="1000" autocomplete="off" placeholder="Savolingizni yozing..." data-i18n-placeholder="chatPlaceholder" data-assistant-input />
+      <button type="submit" aria-label="Xabarni yuborish" data-i18n-aria-label="chatSend" data-assistant-send>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-8-7 18-3-7-8-3Zm8 3 4-5"></path></svg>
+      </button>
+    </form>
+    <p class="curtain-assistant-status assistant-sr-only" aria-live="polite" data-assistant-status></p>
+  </section>
+</div>
+<script src="{% static 'app/js/ai_assistant.js' %}?v=5"></script>

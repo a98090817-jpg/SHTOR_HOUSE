@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" role="img" aria-label="SHTOR HOUSE">
+  <g fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M165 92h170M165 108h170M178 112v96c0 22 12 34 28 44v65M205 112v101c0 24 12 35 28 45v65M322 112v96c0 22-12 34-28 44v65M295 112v101c0 24-12 35-28 45v65"/>
+    <path d="M164 112v115c0 23 12 34 29 42M336 112v115c0 23-12 34-29 42"/>
+    <path d="M150 170C108 204 86 245 78 286M350 170c42 34 64 75 72 116M88 330c31 80 105 122 162 122s131-42 162-122"/>
+  </g>
+  <text x="250" y="310" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="74" font-weight="700" letter-spacing="-3">SHTOR</text>
+  <text x="250" y="365" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="48" letter-spacing="2">HOUSE</text>
+</svg>

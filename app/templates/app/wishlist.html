@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-page-title="pageFavorites">My favorites | SHTOR HOUSE</title>
+  <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
+  <meta name="csrf-token" content="{{ csrf_token }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=2" />
+  <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=5" />
+</head>
+
+<body>
+  <div class="page-shell">
+    <main class="content">
+      <header class="topbar">
+        <div class="top-meta">
+          <a class="site-brand" href="{% url 'home' %}" aria-label="SHTOR HOUSE">
+            <img class="site-logo-image" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" />
+          </a>
+          <a class="top-link" href="{% url 'home' %}" data-i18n="back">← Back</a>
+        </div>
+        <div class="top-actions">
+          <label class="language-picker" for="language-select">
+            <span aria-hidden="true">◎</span>
+            <select id="language-select" aria-label="Select language" data-i18n-aria-label="selectLanguage">
+              <option value="en">English</option>
+              <option value="uz">O‘zbek</option>
+              <option value="ru">Русский</option>
+            </select>
+          </label>
+          <button class="theme-toggle btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
+          {% if user.is_authenticated %}
+          <div class="profile-menu">
+            <button class="profile-trigger" type="button" aria-expanded="false" data-profile-toggle>
+              {% if request.session.google_profile_picture %}
+              <img class="profile-avatar profile-photo" src="{{ request.session.google_profile_picture }}"
+                alt="{{ user.username }} profile photo">
+              {% else %}
+              <span class="profile-avatar">{{ user.username|first|upper }}</span>
+              {% endif %}
+              <span>{{ user.username }}</span>
+              <span>⌄</span>
+            </button>
+            <div class="profile-dropdown" data-profile-menu>
+              <strong>{{ user.username }}</strong>
+              {% if user.is_staff %}<a href="{% url 'product_create' %}" data-i18n="addProduct">Add product</a>{% endif %}
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="profile-logout" data-i18n="logout">Log out</button>
+              </form>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </header>
+
+      <section class="gallery-header">
+        <div class="header-row">
+          <h1 data-i18n="favoritesTitle">MY FAVORITES</h1>
+        </div>
+        <div class="meta-row">
+          <span data-i18n="showing">Showing</span> <strong>{{ products|length }}</strong> <span
+            data-i18n="products">products</span>
+        </div>
+      </section>
+
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="message success">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <section class="gallery-grid" id="catalog" aria-label="Favorites gallery" data-i18n-aria-label="favoritesGallery">
+        {% for product in products %}
+        <article class="gallery-card">
+          <a class="card-link" href="{% url 'product_detail' product.slug %}">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" />
+            {% elif product.image_url %}
+            <img src="{{ product.image_url }}" alt="{{ product.name }}" />
+            {% else %}
+            <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80"
+              alt="{{ product.name }}" />
+            {% endif %}
+            <div class="card-overlay">
+              <div>
+                <span class="product-tag product-category" data-category="{{ product.category }}">{{
+                  product.category|title }}</span>
+                <h3>{{ product.name }}</h3>
+              </div>
+              <strong>${{ product.price }}</strong>
+            </div>
+          </a>
+          <div class="image-actions" aria-label="Product actions" data-i18n-aria-label="productActions">
+            <a class="image-action image-preview" href="{% url 'product_detail' product.slug %}"
+              aria-label="View {{ product.name }}" title="View product" data-i18n-title="viewProduct">◉</a>
+            <div class="image-action-row">
+              <button class="image-action favorite-card-action selected" type="button" data-favorite-slug="{{ product.slug }}" aria-label="Remove {{ product.name }} from favorites" title="Remove from favorites" data-i18n-title="removeFavorite">★</button>
+            </div>
+          </div>
+        </article>
+        {% empty %}
+        <div class="empty-state" data-i18n="emptyFavorites">You have no favorite curtains yet.</div>
+        {% endfor %}
+      </section>
+
+      {% include 'app/partials/footer.html' %}
+    </main>
+  </div>
+
+  {% include 'app/partials/ai_assistant.html' %}
+  <script src="{% static 'app/js/main.js' %}?v=4"></script>
+</body>
+
+</html>

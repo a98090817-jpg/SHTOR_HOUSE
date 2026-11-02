@@ -1,0 +1,65 @@
+{% load static %}
+<footer class="site-footer">
+  <div class="footer-brand">
+    <img class="site-logo-image site-footer-logo" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" />
+    <span data-i18n="footerTagline">Curtains made for beautiful spaces</span>
+  </div>
+
+  <section class="footer-location" aria-label="Our location" data-i18n-aria-label="locationLabel">
+    <div class="footer-location-heading">
+      <span class="footer-location-pin" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span>
+      <div>
+        <span data-i18n="locationLabel">Location</span>
+        <strong data-i18n="tashkentUzbekistan">Tashkent, Uzbekistan</strong>
+      </div>
+      <span class="footer-location-pulse" aria-hidden="true"></span>
+    </div>
+    <div class="footer-map-frame">
+      <iframe
+        src="https://maps.google.com/maps?q=41.331773,69.251642&amp;z=15&amp;output=embed"
+        title="SHTOR HOUSE location on Google Maps"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      ></iframe>
+      <a
+        class="footer-map-link"
+        href="https://www.google.com/maps?q=41.331773,69.251642&amp;ll=41.331773,69.251642&amp;z=16"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Open SHTOR HOUSE location in Google Maps"
+        data-i18n-aria-label="openMap"
+      ><span data-i18n="openMap">Open map</span><i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+    </div>
+  </section>
+
+  <!-- Telefon raqami -->
+  <a class="footer-contact" href="tel:+998974244242">
+    <span data-i18n="phoneLabel">Phone</span>
+    <strong>+998 97 424 42 42</strong>
+  </a>
+
+  <div class="footer-socials">
+    <!-- Instagram: Font Awesome ikonkasi bilan -->
+    <a class="social-link" href="https://www.instagram.com/shtor_house?exln=MWRrajd1ejF4Y3JnaA==" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+      <span class="social-icon"><i class="fab fa-instagram"></i></span>
+      <span>Instagram</span>
+    </a>
+
+    <!-- Telegram: Font Awesome ikonkasi bilan -->
+    <a class="social-link" href="https://t.me/Shtor_House_Shop" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+      <span class="social-icon"><i class="fab fa-telegram-plane"></i></span>
+      <span>Telegram</span>
+    </a>
+  </div>
+</footer>
+
+<div class="modal-backdrop" data-maintenance-modal hidden>
+  <div class="contact-modal maintenance-modal" role="alertdialog" aria-modal="true" aria-labelledby="maintenance-title" aria-describedby="maintenance-message">
+    <button class="modal-close" type="button" data-maintenance-close aria-label="Close" data-i18n-aria-label="close">×</button>
+    <p class="eyebrow" data-i18n="maintenanceLabel">Service update</p>
+    <h2 id="maintenance-title" data-i18n="serviceUnavailableTitle">Something went wrong</h2>
+    <p id="maintenance-message" data-i18n="serviceUnavailableMessage">This service is not available right now. We are working to fix it.</p>
+    <button class="btn btn-primary" type="button" data-maintenance-close data-i18n="close">Close</button>
+  </div>
+</div>

@@ -1,0 +1,301 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SHTOR HOUSE</title>
+    <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=10" />
+    <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=5" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <main class="content">
+        <header class="topbar">
+          <div class="top-meta">
+            <a class="site-brand" href="{% url 'home' %}" aria-label="SHTOR HOUSE">
+              <img class="site-logo-image" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" />
+            </a>
+            <a class="top-link" href="#catalog" data-i18n="catalogLink">Catalog</a>
+          </div>
+          <div class="top-actions">
+            <a class="add-product-plus" href="{% url 'product_create' %}" aria-label="Add product" title="Add product" data-i18n-aria-label="addProduct" data-i18n-title="addProduct">+</a>
+            <a class="wishlist-link" href="{% url 'wishlist' %}" aria-label="My favorites" title="My favorites" data-i18n-title="favoritesTitle">
+              <span aria-hidden="true">♥</span>
+              <span class="wishlist-count" data-favorites-count>{{ favorite_ids|length }}</span>
+            </a>
+            <label class="language-picker" for="language-select">
+              <span aria-hidden="true">◎</span>
+              <select id="language-select" aria-label="Select language" data-i18n-aria-label="selectLanguage">
+                <option value="en">English</option>
+                <option value="uz">O‘zbek</option>
+                <option value="ru">Русский</option>
+              </select>
+            </label>
+            <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
+            {% if user.is_authenticated %}
+              <div class="profile-menu">
+                <button class="profile-trigger" type="button" aria-expanded="false" data-profile-toggle>
+                  {% if request.session.google_profile_picture %}
+                    <img class="profile-avatar profile-photo" src="{{ request.session.google_profile_picture }}" alt="{{ user.username }} profile photo">
+                  {% else %}
+                    <span class="profile-avatar">{{ user.username|first|upper }}</span>
+                  {% endif %}
+                  <span>{{ user.username }}</span>
+                  <span>⌄</span>
+                </button>
+                <div class="profile-dropdown" data-profile-menu>
+                  <strong>{{ user.username }}</strong>
+                  {% if user.is_staff %}<a href="{% url 'product_create' %}" data-i18n="addProduct">Add product</a>{% endif %}
+                  <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="profile-logout" data-i18n="logout">Log out</button>
+                  </form>
+                </div>
+              </div>
+            {% else %}
+              <a class="btn btn-light" href="{% url 'login' %}" data-i18n="signIn">Sign in</a>
+              <a class="btn btn-primary" href="{% url 'register' %}" data-i18n="register">Create account</a>
+            {% endif %}
+          </div>
+        </header>
+
+        <section class="home-hero" data-reveal>
+          <div class="home-hero-copy">
+            <span class="home-hero-eyebrow" data-i18n="heroEyebrow">Thoughtful details. A warmer home.</span>
+            <h1 data-i18n="heroTitle">The right curtains can change the whole feeling of a room.</h1>
+            <p data-i18n="heroDescription">Explore curtains and blinds by room, color and material, then find the style that feels like home.</p>
+            <div class="home-hero-actions">
+              <a class="home-hero-primary" href="#catalog"><span data-i18n="heroExplore">Explore the collection</span><i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+              <a class="home-hero-secondary" href="tel:+998974244242"><i class="fas fa-phone" aria-hidden="true"></i><span data-i18n="heroContact">Talk to our team</span></a>
+            </div>
+            <div class="home-hero-note"><span aria-hidden="true">✦</span><span data-i18n="heroNote">A little detail can make a space feel entirely yours.</span></div>
+          </div>
+          <div class="home-hero-visual">
+            <img src="{{ showcase_items.0.image_url }}" alt="{{ showcase_items.0.name }}" fetchpriority="high" />
+            <div class="home-hero-image-shade"></div>
+            <div class="home-hero-image-caption">
+              <span data-i18n="heroImageEyebrow">Your home, your style</span>
+              <strong>{{ showcase_items.0.name }}</strong>
+            </div>
+            <span class="home-hero-image-spark" aria-hidden="true">✦</span>
+          </div>
+          <a class="home-hero-scroll" href="#catalog"><span data-i18n="heroScroll">Discover your style</span><i class="fas fa-arrow-down" aria-hidden="true"></i></a>
+        </section>
+
+        <section class="gallery-header" data-reveal>
+          <div class="header-row">
+            <h2 data-i18n="catalogTitle">CURTAIN CATALOG</h2>
+          </div>
+
+          <form class="search-bar" method="get" action="{% url 'home' %}" role="search">
+            {% if active_category and active_category != 'all' %}
+              <input type="hidden" name="category" value="{{ active_category }}" />
+            {% endif %}
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input
+              type="search"
+              name="q"
+              value="{{ search_query }}"
+              placeholder="Search curtains by name, color, material…"
+              aria-label="Search products"
+              data-i18n-aria-label="searchProducts"
+              data-i18n-placeholder="searchPlaceholder"
+              autocomplete="off"
+            />
+            <button type="submit" class="search-submit" data-i18n="searchBtn">Search</button>
+            {% if search_query %}
+              <a class="search-clear" href="{% if active_category and active_category != 'all' %}{% url 'home' %}?category={{ active_category }}{% else %}{% url 'home' %}{% endif %}" aria-label="Clear search" title="Clear" data-i18n-aria-label="clearSearch" data-i18n-title="clearSearch">×</a>
+            {% endif %}
+          </form>
+
+          <div class="meta-row">
+            {% if search_query %}
+              <span data-i18n="resultsFor">Results for</span> <strong>“{{ search_query }}”</strong> — <strong>{{ products|length }}</strong> <span data-i18n="products">products</span>
+            {% else %}
+              <span data-i18n="showing">Showing</span> <strong>{{ products|length }}</strong> <span data-i18n="products">products</span>
+            {% endif %}
+          </div>
+          {% if not showcase_items %}
+            <div class="community-proof" aria-label="Registered users" data-i18n-aria-label="registeredUsers">
+              <span class="community-proof-icon" aria-hidden="true">✦</span>
+              <strong data-registered-user-count>{{ registered_user_count }}</strong>
+              <span data-i18n="registeredUsers">registered customers</span>
+            </div>
+          {% endif %}
+        </section>
+
+        {% if carousel_products %}
+          <section class="promo-carousel-section" aria-label="Featured curtains" data-i18n-aria-label="featuredCurtains" data-reveal>
+            <div class="promo-carousel-heading">
+              <div>
+                <span class="promo-carousel-eyebrow" data-i18n="featuredCollection">SHTOR HOUSE selection</span>
+                <h2 data-i18n="featuredCurtainsTitle">Curtains made to inspire</h2>
+              </div>
+              <div class="promo-carousel-controls">
+                <span class="promo-carousel-position" data-promo-position aria-live="polite">01 / {{ carousel_products|length|stringformat:"02d" }}</span>
+                <button class="promo-carousel-button" type="button" data-promo-prev aria-label="Previous curtains" data-i18n-aria-label="previousCurtains">←</button>
+                <button class="promo-carousel-button" type="button" data-promo-next aria-label="Next curtains" data-i18n-aria-label="nextCurtains">→</button>
+              </div>
+            </div>
+            <div class="promo-carousel-viewport">
+              <div class="promo-carousel-track" data-promo-track tabindex="0">
+                {% for product in carousel_products %}
+                  <a class="promo-slide" href="{% url 'product_detail' product.slug %}">
+                    {% if product.image %}
+                      <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" />
+                    {% else %}
+                      <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" />
+                    {% endif %}
+                    <span class="promo-slide-shade"></span>
+                    <span class="promo-slide-copy">
+                      <span class="promo-slide-category" data-category="{{ product.category }}">{{ product.category|title }}</span>
+                      <strong>{{ product.name }}</strong>
+                      <span class="promo-slide-price">${{ product.price }}</span>
+                    </span>
+                    <span class="promo-slide-arrow" aria-hidden="true">↗</span>
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          </section>
+        {% endif %}
+
+        {% if showcase_items %}
+          <section class="curtain-showcase" aria-label="Moving curtain and blind collection" data-i18n-aria-label="curtainShowcaseTitle" data-reveal>
+            <div class="curtain-showcase-heading">
+              <span class="promo-carousel-eyebrow" data-i18n="curtainShowcaseEyebrow">A little inspiration for your home</span>
+              <h2 data-i18n="curtainShowcaseTitle">Find your perfect window style</h2>
+              <p data-i18n="curtainShowcaseHint">Curtains, blinds and more — explore the collection.</p>
+            </div>
+            <div class="community-proof curtain-community-proof" aria-label="Registered users" data-i18n-aria-label="registeredUsers">
+              <span class="community-proof-icon" aria-hidden="true">✦</span>
+              <strong data-registered-user-count>{{ registered_user_count }}</strong>
+              <span data-i18n="registeredUsers">registered customers</span>
+            </div>
+            <button class="ticker-toggle" type="button" data-ticker-toggle aria-pressed="false" data-i18n="pauseShowcase">Pause animation</button>
+            <div class="curtain-ticker" data-curtain-ticker>
+              <div class="curtain-ticker-row" data-curtain-ticker-row>
+                <div class="curtain-ticker-track">
+                  <div class="curtain-ticker-set">
+                    {% for item in showcase_items %}
+                      <figure class="curtain-ticker-card">
+                        <img src="{{ item.image_url }}" alt="{{ item.name }}" loading="lazy" />
+                        <figcaption><span data-category="{{ item.category }}">{{ item.category|title }}</span><strong>{{ item.name }}</strong></figcaption>
+                      </figure>
+                    {% endfor %}
+                  </div>
+                  <div class="curtain-ticker-set" aria-hidden="true">
+                    {% for item in showcase_items %}
+                      <figure class="curtain-ticker-card">
+                        <img src="{{ item.image_url }}" alt="" loading="lazy" />
+                        <figcaption><span data-category="{{ item.category }}">{{ item.category|title }}</span><strong>{{ item.name }}</strong></figcaption>
+                      </figure>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        {% endif %}
+
+        <section class="home-benefits" aria-labelledby="home-benefits-title" data-reveal>
+          <div class="home-benefits-heading">
+            <span class="promo-carousel-eyebrow" data-i18n="benefitsEyebrow">Made for the way you live</span>
+            <h2 id="home-benefits-title" data-i18n="benefitsTitle">Finding your style should feel easy.</h2>
+          </div>
+          <div class="home-benefits-grid">
+            <article class="home-benefit-card" data-reveal-item>
+              <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-door-open"></i></span>
+              <h3 data-i18n="benefitRoomTitle">A style for every room</h3>
+              <p data-i18n="benefitRoomText">Browse ideas for living rooms, bedrooms, kitchens and more.</p>
+            </article>
+            <article class="home-benefit-card" data-reveal-item>
+              <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-sliders-h"></i></span>
+              <h3 data-i18n="benefitSearchTitle">Explore at your pace</h3>
+              <p data-i18n="benefitSearchText">Filter by category or search by color, fabric and style.</p>
+            </article>
+            <article class="home-benefit-card" data-reveal-item>
+              <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-heart"></i></span>
+              <h3 data-i18n="benefitFavoriteTitle">Keep your favorites close</h3>
+              <p data-i18n="benefitFavoriteText">Save the curtains you love and come back to them anytime.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="category-bar" aria-label="Category filters" data-i18n-aria-label="categoryFilters" data-reveal>
+          {% for key, label in categories %}
+            <a href="{% url 'home' %}?{% if key != 'all' %}category={{ key }}{% endif %}{% if search_query %}{% if key != 'all' %}&{% endif %}q={{ search_query|urlencode }}{% endif %}" class="category-pill {% if active_category == key %}active{% endif %}">
+              <span data-i18n="category_{{ key }}">{{ label }}</span>
+            </a>
+          {% endfor %}
+        </section>
+
+        <section class="gallery-toolbar" aria-label="Gallery controls" data-reveal>
+          <div class="toolbar-right catalog-controls">
+            <button class="sort-btn" type="button" data-action="sort" aria-label="Sort products by name" data-i18n-aria-label="sortProducts"><span class="sort-icon">↕</span><span class="sort-label" data-i18n="sort">Name</span></button>
+            <div class="view-switcher" aria-label="Catalog view" data-i18n-aria-label="catalogView">
+              <button class="grid-btn active" type="button" data-view="grid" aria-label="Grid view" title="Grid view" data-i18n-aria-label="gridView" data-i18n-title="gridView"><span class="dots"></span></button>
+              <button class="grid-btn" type="button" data-view="list" aria-label="List view" title="List view" data-i18n-aria-label="listView" data-i18n-title="listView"><span class="lines"></span></button>
+            </div>
+          </div>
+        </section>
+
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="message success">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <section class="gallery-grid" id="catalog" aria-label="Collection gallery" data-i18n-aria-label="collectionGallery">
+          {% for product in products %}
+            <article class="gallery-card {% if forloop.counter == 1 or forloop.counter == 3 %}tall{% elif forloop.counter == 4 %}wide{% endif %}" data-reveal-item>
+              <a class="card-link" href="{% url 'product_detail' product.slug %}">
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" alt="{{ product.name }}" />
+                {% elif product.image_url %}
+                  <img src="{{ product.image_url }}" alt="{{ product.name }}" />
+                {% else %}
+                  <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80" alt="{{ product.name }}" />
+                {% endif %}
+                <div class="card-overlay">
+                  <div>
+                    <span class="product-tag product-category" data-category="{{ product.category }}">{{ product.category|title }}</span>
+                    <h3>{{ product.name }}</h3>
+                  </div>
+                  <strong>${{ product.price }}</strong>
+                </div>
+              </a>
+              <div class="image-actions" aria-label="Product actions" data-i18n-aria-label="productActions">
+                <a class="image-action image-preview" href="{% url 'product_detail' product.slug %}" aria-label="View {{ product.name }}" title="View product" data-i18n-title="viewProduct">◉</a>
+                <div class="image-action-row">
+                  <button class="image-action favorite-card-action{% if product.id in favorite_ids %} selected{% endif %}" type="button" data-favorite-slug="{{ product.slug }}" aria-label="Add {{ product.name }} to favorites" title="Add to favorites" data-i18n-title="favorite">☆</button>
+                  {% if product.image %}
+                    <button class="image-action" type="button" data-download-image="{{ product.image.url }}" data-download-name="{{ product.slug }}" aria-label="Download {{ product.name }}" title="Download image" data-i18n-title="addImage">↓</button>
+                  {% elif product.image_url %}
+                    <button class="image-action" type="button" data-download-image="{{ product.image_url }}" data-download-name="{{ product.slug }}" aria-label="Download {{ product.name }}" title="Download image" data-i18n-title="addImage">↓</button>
+                  {% endif %}
+                </div>
+              </div>
+            </article>
+          {% empty %}
+            <div class="empty-state" data-i18n="emptyProducts">No products available yet.</div>
+          {% endfor %}
+        </section>
+
+        {% include 'app/partials/footer.html' %}
+      </main>
+    </div>
+
+    {% include 'app/partials/ai_assistant.html' %}
+    <script src="{% static 'app/js/main.js' %}?v=8"></script>
+  </body>
+</html>
