@@ -1,0 +1,27 @@
+<div class="language-picker" data-language-picker>
+  <span class="language-picker-globe" aria-hidden="true">◎</span>
+  <select class="language-picker-native" id="language-select" aria-label="Select language" data-i18n-aria-label="selectLanguage" tabindex="-1" aria-hidden="true">
+    <option value="en">English</option>
+    <option value="uz">O‘zbek</option>
+    <option value="ru">Русский</option>
+  </select>
+  <button
+    class="language-picker-trigger"
+    type="button"
+    role="combobox"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-controls="language-picker-options"
+    aria-label="Select language"
+    data-i18n-aria-label="selectLanguage"
+    data-language-trigger
+  >
+    <span data-language-current>English</span>
+    <span class="language-picker-chevron" aria-hidden="true"></span>
+  </button>
+  <div class="language-picker-menu" id="language-picker-options" role="listbox" aria-label="Languages" data-language-menu hidden>
+    <button class="language-picker-option" type="button" role="option" aria-selected="true" data-language-option="en">English</button>
+    <button class="language-picker-option" type="button" role="option" aria-selected="false" data-language-option="uz">O‘zbek</button>
+    <button class="language-picker-option" type="button" role="option" aria-selected="false" data-language-option="ru">Русский</button>
+  </div>
+</div>

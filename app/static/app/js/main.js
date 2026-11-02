@@ -329,6 +329,88 @@ document.addEventListener('DOMContentLoaded', function () {
     setLanguage(languageSelect.value);
     languageSelect.addEventListener('change', function () { setLanguage(languageSelect.value); });
   } else setLanguage(localStorage.getItem('parda-language') || 'en');
+  document.querySelectorAll('[data-language-picker]').forEach(function (picker) {
+    const select = picker.querySelector('.language-picker-native');
+    const trigger = picker.querySelector('[data-language-trigger]');
+    const currentLabel = picker.querySelector('[data-language-current]');
+    const menu = picker.querySelector('[data-language-menu]');
+    const options = Array.from(picker.querySelectorAll('[data-language-option]'));
+    if (!select || !trigger || !currentLabel || !menu) return;
+
+    function syncLanguagePicker() {
+      const selectedOption = select.options[select.selectedIndex];
+      if (selectedOption) currentLabel.textContent = selectedOption.textContent;
+      options.forEach(function (option) {
+        option.setAttribute('aria-selected', String(option.dataset.languageOption === select.value));
+      });
+    }
+
+    function closeLanguageMenu(restoreFocus) {
+      menu.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) trigger.focus();
+    }
+
+    function openLanguageMenu(focusSelected) {
+      menu.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+      if (focusSelected) {
+        const selectedOption = options.find(function (option) {
+          return option.dataset.languageOption === select.value;
+        });
+        (selectedOption || options[0])?.focus();
+      }
+    }
+
+    trigger.addEventListener('click', function () {
+      if (menu.hidden) openLanguageMenu(false);
+      else closeLanguageMenu(false);
+    });
+    trigger.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openLanguageMenu(true);
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        openLanguageMenu(true);
+        options[options.length - 1]?.focus();
+      } else if (event.key === 'Escape' && !menu.hidden) {
+        event.preventDefault();
+        closeLanguageMenu(false);
+      }
+    });
+    menu.addEventListener('click', function (event) {
+      const option = event.target.closest('[data-language-option]');
+      if (!option) return;
+      select.value = option.dataset.languageOption;
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      syncLanguagePicker();
+      closeLanguageMenu(true);
+    });
+    menu.addEventListener('keydown', function (event) {
+      const currentIndex = options.indexOf(document.activeElement);
+      let nextIndex = currentIndex;
+      if (event.key === 'ArrowDown') nextIndex = (currentIndex + 1) % options.length;
+      else if (event.key === 'ArrowUp') nextIndex = (currentIndex - 1 + options.length) % options.length;
+      else if (event.key === 'Home') nextIndex = 0;
+      else if (event.key === 'End') nextIndex = options.length - 1;
+      else if (event.key === 'Escape') {
+        event.preventDefault();
+        closeLanguageMenu(true);
+        return;
+      } else if (event.key === 'Tab') {
+        closeLanguageMenu(false);
+        return;
+      } else return;
+      event.preventDefault();
+      options[nextIndex]?.focus();
+    });
+    select.addEventListener('change', syncLanguagePicker);
+    document.addEventListener('pointerdown', function (event) {
+      if (!picker.contains(event.target) && !menu.hidden) closeLanguageMenu(false);
+    });
+    syncLanguagePicker();
+  });
   const ticker = document.querySelector('[data-curtain-ticker]');
   const tickerToggle = document.querySelector('[data-ticker-toggle]');
   if (ticker && tickerToggle) {

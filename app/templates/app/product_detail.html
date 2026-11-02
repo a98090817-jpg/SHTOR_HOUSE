@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=3" />
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=6" />
     <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=5" />
   </head>
   <body class="detail-page">
@@ -21,7 +21,7 @@
           <span data-i18n="back">← Back</span>
         </a>
         <div class="detail-actions">
-          <label class="language-picker" for="language-select"><span>◎</span><select id="language-select" aria-label="Select language" data-i18n-aria-label="selectLanguage"><option value="en">English</option><option value="uz">O‘zbek</option><option value="ru">Русский</option></select></label>
+          {% include 'app/partials/language_picker.html' %}
           <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
           <button class="btn btn-light" type="button" data-share data-i18n="share">Share</button>
         </div>
@@ -84,6 +84,6 @@
       </div>
     </div>
     {% include 'app/partials/ai_assistant.html' %}
-    <script src="{% static 'app/js/main.js' %}?v=4"></script>
+    <script src="{% static 'app/js/main.js' %}?v=6"></script>
   </body>
 </html>

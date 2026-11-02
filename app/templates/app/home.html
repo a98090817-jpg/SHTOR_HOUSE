@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=10" />
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=13" />
     <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=5" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   </head>
@@ -30,14 +30,7 @@
               <span aria-hidden="true">♥</span>
               <span class="wishlist-count" data-favorites-count>{{ favorite_ids|length }}</span>
             </a>
-            <label class="language-picker" for="language-select">
-              <span aria-hidden="true">◎</span>
-              <select id="language-select" aria-label="Select language" data-i18n-aria-label="selectLanguage">
-                <option value="en">English</option>
-                <option value="uz">O‘zbek</option>
-                <option value="ru">Русский</option>
-              </select>
-            </label>
+            {% include 'app/partials/language_picker.html' %}
             <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
             {% if user.is_authenticated %}
               <div class="profile-menu">
@@ -296,6 +289,6 @@
     </div>
 
     {% include 'app/partials/ai_assistant.html' %}
-    <script src="{% static 'app/js/main.js' %}?v=8"></script>
+    <script src="{% static 'app/js/main.js' %}?v=10"></script>
   </body>
 </html>

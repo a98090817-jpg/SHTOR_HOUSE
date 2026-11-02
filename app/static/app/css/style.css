@@ -309,34 +309,120 @@ body.light-mode .profile-trigger { color: #2b2520; background: rgba(255,255,255,
 body.light-mode .profile-dropdown { background: rgba(250,247,243,0.98); }
 
 .language-picker {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    color: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #eee5d9;
+    border: 1px solid rgba(215, 185, 142, 0.22);
     border-radius: 999px;
     padding: 5px 9px 5px 11px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(12px);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 5px 15px rgba(0,0,0,0.12);
+    background: rgba(35, 29, 25, 0.34);
+    backdrop-filter: blur(14px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 5px 15px rgba(0,0,0,0.1);
+    transition: color 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
 }
 
-.language-picker select {
+.language-picker:focus-within,
+.language-picker:hover {
+    border-color: rgba(215, 185, 142, 0.42);
+    background: rgba(49, 40, 32, 0.5);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.09), 0 6px 18px rgba(0,0,0,0.14);
+}
+
+.language-picker-native {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.language-picker-trigger {
+    display: inline-flex;
+    min-width: 82px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 4px 5px 2px;
     border: 0;
-    outline: 0;
     color: inherit;
     background: transparent;
     cursor: pointer;
-    appearance: none;
-    padding: 5px 18px 5px 2px;
-    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
-    background-position: calc(100% - 8px) 50%, calc(100% - 4px) 50%;
-    background-size: 4px 4px, 4px 4px;
-    background-repeat: no-repeat;
+    font: inherit;
+    font-size: 0.82rem;
 }
 
-.language-picker option {
-    color: #201b17;
+.language-picker-trigger:focus-visible {
+    outline: 2px solid rgba(215, 185, 142, 0.72);
+    outline-offset: 3px;
+}
+
+.language-picker-chevron {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 180ms ease;
+}
+
+.language-picker-trigger[aria-expanded="true"] .language-picker-chevron {
+    transform: translateY(2px) rotate(225deg);
+}
+
+.language-picker-menu {
+    position: absolute;
+    top: calc(100% + 9px);
+    right: 0;
+    z-index: 40;
+    display: grid;
+    width: 164px;
+    gap: 4px;
+    padding: 6px;
+    border: 1px solid rgba(215, 185, 142, 0.24);
+    border-radius: 18px;
+    background: rgba(35, 29, 25, 0.88);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255,255,255,0.07);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transform-origin: top right;
+    transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.language-picker-menu[hidden] {
+    display: none;
+}
+
+.language-picker-option {
+    min-height: 38px;
+    padding: 8px 11px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    color: #eee5d9;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.82rem;
+    transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.language-picker-option:hover,
+.language-picker-option:focus-visible {
+    outline: none;
+    border-color: rgba(215, 185, 142, 0.2);
+    background: rgba(215, 185, 142, 0.12);
+}
+
+.language-picker-option[aria-selected="true"] {
+    color: #f2d9b5;
+    background: rgba(215, 185, 142, 0.1);
 }
 
 .btn {
@@ -1878,6 +1964,35 @@ body.light-mode .language-picker,
 body.light-mode .btn-light,
 body.light-mode .sort-btn,
 body.light-mode .grid-btn.active { border-color: rgba(62, 48, 35, 0.18); background-color: rgba(255,255,255,0.58); }
+body.light-mode .language-picker {
+    color: #4a3828;
+    border-color: rgba(133, 90, 53, 0.2);
+    background: rgba(255, 253, 250, 0.46);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.72), 0 5px 15px rgba(91,67,45,0.06);
+}
+body.light-mode .language-picker:focus-within,
+body.light-mode .language-picker:hover {
+    border-color: rgba(133, 90, 53, 0.38);
+    background: rgba(255, 253, 250, 0.72);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 6px 18px rgba(91,67,45,0.1);
+}
+body.light-mode .language-picker-menu {
+    border-color: rgba(133, 90, 53, 0.2);
+    background: rgba(250, 247, 243, 0.88);
+    box-shadow: 0 16px 38px rgba(62, 48, 35, 0.16), inset 0 1px 0 rgba(255,255,255,0.85);
+}
+body.light-mode .language-picker-option {
+    color: #4a3828;
+}
+body.light-mode .language-picker-option:hover,
+body.light-mode .language-picker-option:focus-visible {
+    border-color: rgba(133, 90, 53, 0.16);
+    background: rgba(184, 143, 99, 0.12);
+}
+body.light-mode .language-picker-option[aria-selected="true"] {
+    color: #744b2b;
+    background: rgba(184, 143, 99, 0.16);
+}
 body.light-mode .toolbar-right {
     border-color: rgba(62, 48, 35, 0.24);
     background: rgba(255, 255, 255, 0.86);
@@ -1895,8 +2010,6 @@ body.light-mode .grid-btn.active {
 body.light-mode .grid-btn:hover {
     background: #f0e5d8;
 }
-body.light-mode .language-picker select { color: #2b2520; }
-body.light-mode .language-picker option { color: #2b2520; background: #f7f2ec; }
 body.light-mode .theme-toggle { color: #2b2520; background: rgba(255,255,255,0.82); border-color: rgba(62,48,35,0.22); }
 body.light-mode .top-link span,
 body.light-mode .info-card span,
@@ -2343,7 +2456,7 @@ body.light-mode .modal-contacts a { color: var(--text); }
 @media (max-width: 380px) {
     .top-actions { gap: 6px; }
     .language-picker { padding: 4px 7px 4px 9px; }
-    .language-picker select { padding: 4px 14px 4px 2px; }
+    .language-picker-trigger { min-width: 74px; gap: 8px; }
     .sidebar { padding: 8px 12px; }
     .category-pill { padding: 7px 10px; font-size: 0.84rem; }
     .gallery-card,
