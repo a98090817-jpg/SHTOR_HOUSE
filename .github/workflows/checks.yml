@@ -26,14 +26,17 @@ jobs:
       - name: Check Django configuration
         env:
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DJANGO_ALLOWED_HOSTS: "*"
         run: python manage.py check
 
       - name: Check migration files
         env:
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DJANGO_ALLOWED_HOSTS: "*"
         run: python manage.py makemigrations --check --dry-run
 
       - name: Run tests
         env:
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DJANGO_ALLOWED_HOSTS: "*"
         run: python manage.py test app
