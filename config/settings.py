@@ -112,7 +112,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = 'shtor-house.onrender.com'
 
 
 # Database
