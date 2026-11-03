@@ -53,6 +53,10 @@ the first push. Do not upload `.env`, the database, or the backup ZIP.
    - `DJANGO_ALLOWED_HOSTS=your-username.pythonanywhere.com`
    - `DJANGO_CSRF_TRUSTED_ORIGINS=https://your-username.pythonanywhere.com`
    - `DJANGO_SECURE_SSL_REDIRECT=True`
+   - `DJANGO_MEDIA_ROOT=/home/your-username/parda-proekt/media` — use the
+     absolute path to this project's persistent `media/` directory. This is
+     optional when the project's default `<project directory>/media` path is
+     already the intended location.
    - SMTP variables if the chosen email service can send from this host.
    - Google OAuth variables only if Google login is configured; register the
      production callback URL
@@ -74,8 +78,19 @@ the first push. Do not upload `.env`, the database, or the backup ZIP.
    python manage.py check --deploy
    ```
 
-   In the PythonAnywhere Web tab, map `/static/` to the project's
-   `staticfiles/` directory, then reload the web app.
+   In the PythonAnywhere Web tab, add these static-file mappings:
+
+   | URL | Directory |
+   | --- | --- |
+   | `/static/` | `/home/your-username/parda-proekt/staticfiles` |
+   | `/media/` | `/home/your-username/parda-proekt/media` |
+
+   Replace `your-username` and `parda-proekt` with the actual account and
+   project paths. The media mapping is required for product images in
+   production: Django's `static(settings.MEDIA_URL, ...)` URL helper only
+   serves uploads in development (`DEBUG=True`). Keep uploads in the persistent
+   account directory; do not map `/media/` to `staticfiles/`. After saving the
+   mappings, reload the web app.
 7. Create a production administrator with `python manage.py createsuperuser`.
    Never use the local development password for a public website.
 

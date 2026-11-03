@@ -455,6 +455,43 @@ class ProductCatalogTests(TestCase):
             with Image.open(normalized_image) as image:
                 self.assertEqual(image.size, (1200, 1500))
 
+    def test_uploaded_product_image_url_is_rendered_on_home_page(self):
+        user = get_user_model().objects.create_user(
+            username='media-owner',
+            password='StrongPass123!',
+            is_staff=True,
+        )
+        self.client.force_login(user)
+        image = SimpleUploadedFile(
+            'media-curtain.png',
+            base64.b64decode(
+                'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
+            ),
+            content_type='image/png',
+        )
+
+        response = self.client.post(reverse('product_create'), {
+            'name': 'Media URL Curtain',
+            'category': 'living_room',
+            'color': 'Ivory',
+            'material': 'Linen',
+            'length_meters': '3.00',
+            'origin': 'Turkey',
+            'price': '300',
+            'description': 'Curtain image media URL test.',
+            'image': image,
+            'is_active': 'on',
+        })
+        self.assertRedirects(response, reverse('home'))
+
+        product = Product.objects.get(name='Media URL Curtain')
+        try:
+            self.assertTrue(product.image.storage.exists(product.image.name))
+            home_response = self.client.get(reverse('home'))
+            self.assertContains(home_response, product.image.url)
+        finally:
+            product.image.delete(save=False)
+
     def test_backup_site_includes_database_snapshot_and_media(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)

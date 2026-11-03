@@ -165,7 +165,9 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 LOGIN_REDIRECT_URL = 'home'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = Path(
+    os.environ.get('DJANGO_MEDIA_ROOT', str(BASE_DIR / 'media'))
+).expanduser().resolve()
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticStorage'
 

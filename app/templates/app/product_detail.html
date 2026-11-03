@@ -30,7 +30,7 @@
       <main class="detail-layout">
         <section class="detail-media">
           {% if product.image %}
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" />
+            <img class="product-photo" src="{{ product.image.url }}" alt="{{ product.name }}" />
           {% elif product.image_url %}
             <img src="{{ product.image_url }}" alt="{{ product.name }}" />
           {% else %}
