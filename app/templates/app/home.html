@@ -59,32 +59,30 @@
           </div>
         </header>
 
-        <section class="home-hero" data-reveal>
+        <section class="home-hero" data-reveal style="grid-template-columns: 1fr; gap: 24px;">
           <div class="home-hero-copy">
             <span class="home-hero-eyebrow" data-i18n="heroEyebrow">Thoughtful details. A warmer home.</span>
-            <h1 data-i18n="heroTitle">The right curtains can change the whole feeling of a room.</h1>
-            <p data-i18n="heroDescription">Explore curtains and blinds by room, color and material, then find the style that feels like home.</p>
+            <h1 data-i18n="heroTitle">To'g'ri tanlangan parda xona kayfiyatini o'zgartiradi.</h1>
+            <p data-i18n="heroDescription">Parda va jalyuzilarni xona, rang va mato bo'yicha ko'rib, uyingizga mos uslubni toping.</p>
+
+            <!-- YUORIDAGI RO'YXATDAN O'TGAN MIJOZLAR BLOKI (KO'CHIRILDI VA KATTALASHTIRILDI) -->
+            <div class="community-proof" aria-label="Registered users" data-i18n-aria-label="registeredUsers" style="margin: 18px 0; font-size: 16px; padding: 10px 20px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; width: fit-content; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
+              <span class="community-proof-icon" aria-hidden="true" style="font-size: 18px; color: #e5a93c;">✦</span>
+              <strong data-registered-user-count style="font-size: 18px; font-weight: 700;">{{ registered_user_count }}</strong>
+              <span data-i18n="registeredUsers" style="opacity: 0.9;">ro'yxatdan o'tgan mijozlar</span>
+            </div>
+
             <div class="home-hero-actions">
-              <a class="home-hero-primary" href="#catalog"><span data-i18n="heroExplore">Explore the collection</span><i class="fas fa-arrow-right" aria-hidden="true"></i></a>
-              <a class="home-hero-secondary" href="tel:+998974244242"><i class="fas fa-phone" aria-hidden="true"></i><span data-i18n="heroContact">Talk to our team</span></a>
+              <a class="home-hero-primary" href="#catalog"><span data-i18n="heroExplore">To'plamni ko'rish</span><i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+              <a class="home-hero-secondary" href="tel:+998974244242"><i class="fas fa-phone" aria-hidden="true"></i><span data-i18n="heroContact">Biz bilan bog'lanish</span></a>
             </div>
-            <div class="home-hero-note"><span aria-hidden="true">✦</span><span data-i18n="heroNote">A little detail can make a space feel entirely yours.</span></div>
+            <div class="home-hero-note"><span aria-hidden="true">✦</span><span data-i18n="heroNote">Nozik bir detal ham makonni o'zingiznikidek his qildiradi.</span></div>
           </div>
-          <div class="home-hero-visual">
-            <img src="{{ showcase_items.0.image_url }}" alt="{{ showcase_items.0.name }}" fetchpriority="high" />
-            <div class="home-hero-image-shade"></div>
-            <div class="home-hero-image-caption">
-              <span data-i18n="heroImageEyebrow">Your home, your style</span>
-              <strong>{{ showcase_items.0.name }}</strong>
-            </div>
-            <span class="home-hero-image-spark" aria-hidden="true">✦</span>
-          </div>
-          <a class="home-hero-scroll" href="#catalog"><span data-i18n="heroScroll">Discover your style</span><i class="fas fa-arrow-down" aria-hidden="true"></i></a>
         </section>
 
-        <section class="gallery-header" data-reveal>
+        <section class="gallery-header" data-reveal id="catalog">
           <div class="header-row">
-            <h2 data-i18n="catalogTitle">CURTAIN CATALOG</h2>
+            <h2 data-i18n="catalogTitle">PARDA KATALOGI</h2>
           </div>
 
           <form class="search-bar" method="get" action="{% url 'home' %}" role="search">
@@ -96,13 +94,13 @@
               type="search"
               name="q"
               value="{{ search_query }}"
-              placeholder="Search curtains by name, color, material…"
+              placeholder="Pardani nomi, rangi, matosi bo'yicha qidiring…"
               aria-label="Search products"
               data-i18n-aria-label="searchProducts"
               data-i18n-placeholder="searchPlaceholder"
               autocomplete="off"
             />
-            <button type="submit" class="search-submit" data-i18n="searchBtn">Search</button>
+            <button type="submit" class="search-submit" data-i18n="searchBtn">Qidirish</button>
             {% if search_query %}
               <a class="search-clear" href="{% if active_category and active_category != 'all' %}{% url 'home' %}?category={{ active_category }}{% else %}{% url 'home' %}{% endif %}" aria-label="Clear search" title="Clear" data-i18n-aria-label="clearSearch" data-i18n-title="clearSearch">×</a>
             {% endif %}
@@ -110,114 +108,33 @@
 
           <div class="meta-row">
             {% if search_query %}
-              <span data-i18n="resultsFor">Results for</span> <strong>“{{ search_query }}”</strong> — <strong>{{ products|length }}</strong> <span data-i18n="products">products</span>
+              <span data-i18n="resultsFor">Natijalar</span> <strong>“{{ search_query }}”</strong> — <strong>{{ products|length }}</strong> <span data-i18n="products">mahsulot</span>
             {% else %}
-              <span data-i18n="showing">Showing</span> <strong>{{ products|length }}</strong> <span data-i18n="products">products</span>
+              <span data-i18n="showing">Jami</span> <strong>{{ products|length }}</strong> <span data-i18n="products">mahsulot</span>
             {% endif %}
           </div>
-          {% if not showcase_items %}
-            <div class="community-proof" aria-label="Registered users" data-i18n-aria-label="registeredUsers">
-              <span class="community-proof-icon" aria-hidden="true">✦</span>
-              <strong data-registered-user-count>{{ registered_user_count }}</strong>
-              <span data-i18n="registeredUsers">registered customers</span>
-            </div>
-          {% endif %}
         </section>
-
-        {% if carousel_products %}
-          <section class="promo-carousel-section" aria-label="Featured curtains" data-i18n-aria-label="featuredCurtains" data-reveal>
-            <div class="promo-carousel-heading">
-              <div>
-                <span class="promo-carousel-eyebrow" data-i18n="featuredCollection">SHTOR HOUSE selection</span>
-                <h2 data-i18n="featuredCurtainsTitle">Curtains made to inspire</h2>
-              </div>
-              <div class="promo-carousel-controls">
-                <span class="promo-carousel-position" data-promo-position aria-live="polite">01 / {{ carousel_products|length|stringformat:"02d" }}</span>
-                <button class="promo-carousel-button" type="button" data-promo-prev aria-label="Previous curtains" data-i18n-aria-label="previousCurtains">←</button>
-                <button class="promo-carousel-button" type="button" data-promo-next aria-label="Next curtains" data-i18n-aria-label="nextCurtains">→</button>
-              </div>
-            </div>
-            <div class="promo-carousel-viewport">
-              <div class="promo-carousel-track" data-promo-track tabindex="0">
-                {% for product in carousel_products %}
-                  <a class="promo-slide" href="{% url 'product_detail' product.slug %}">
-                    {% if product.image %}
-                      <img class="product-photo" src="{{ product.image.url }}" alt="{{ product.name }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" />
-                    {% else %}
-                      <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" />
-                    {% endif %}
-                    <span class="promo-slide-shade"></span>
-                    <span class="promo-slide-copy">
-                      <span class="promo-slide-category" data-category="{{ product.category }}">{{ product.category|title }}</span>
-                      <strong>{{ product.name }}</strong>
-                      <span class="promo-slide-price">${{ product.price }}</span>
-                    </span>
-                    <span class="promo-slide-arrow" aria-hidden="true">↗</span>
-                  </a>
-                {% endfor %}
-              </div>
-            </div>
-          </section>
-        {% endif %}
-
-        {% if showcase_items %}
-          <section class="curtain-showcase" aria-label="Moving curtain and blind collection" data-i18n-aria-label="curtainShowcaseTitle" data-reveal>
-            <div class="curtain-showcase-heading">
-              <span class="promo-carousel-eyebrow" data-i18n="curtainShowcaseEyebrow">A little inspiration for your home</span>
-              <h2 data-i18n="curtainShowcaseTitle">Find your perfect window style</h2>
-              <p data-i18n="curtainShowcaseHint">Curtains, blinds and more — explore the collection.</p>
-            </div>
-            <div class="community-proof curtain-community-proof" aria-label="Registered users" data-i18n-aria-label="registeredUsers">
-              <span class="community-proof-icon" aria-hidden="true">✦</span>
-              <strong data-registered-user-count>{{ registered_user_count }}</strong>
-              <span data-i18n="registeredUsers">registered customers</span>
-            </div>
-            <button class="ticker-toggle" type="button" data-ticker-toggle aria-pressed="false" data-i18n="pauseShowcase">Pause animation</button>
-            <div class="curtain-ticker" data-curtain-ticker>
-              <div class="curtain-ticker-row" data-curtain-ticker-row>
-                <div class="curtain-ticker-track">
-                  <div class="curtain-ticker-set">
-                    {% for item in showcase_items %}
-                      <figure class="curtain-ticker-card">
-                        <img src="{{ item.image_url }}" alt="{{ item.name }}" loading="lazy" />
-                        <figcaption><span data-category="{{ item.category }}">{{ item.category|title }}</span><strong>{{ item.name }}</strong></figcaption>
-                      </figure>
-                    {% endfor %}
-                  </div>
-                  <div class="curtain-ticker-set" aria-hidden="true">
-                    {% for item in showcase_items %}
-                      <figure class="curtain-ticker-card">
-                        <img src="{{ item.image_url }}" alt="" loading="lazy" />
-                        <figcaption><span data-category="{{ item.category }}">{{ item.category|title }}</span><strong>{{ item.name }}</strong></figcaption>
-                      </figure>
-                    {% endfor %}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        {% endif %}
 
         <section class="home-benefits" aria-labelledby="home-benefits-title" data-reveal>
           <div class="home-benefits-heading">
-            <span class="promo-carousel-eyebrow" data-i18n="benefitsEyebrow">Made for the way you live</span>
-            <h2 id="home-benefits-title" data-i18n="benefitsTitle">Finding your style should feel easy.</h2>
+            <span class="promo-carousel-eyebrow" data-i18n="benefitsEyebrow">HAYOT TARZINGIZGA MOS</span>
+            <h2 id="home-benefits-title" data-i18n="benefitsTitle">O'zingizga mos uslubni topish oson bo'lsin.</h2>
           </div>
           <div class="home-benefits-grid">
             <article class="home-benefit-card" data-reveal-item>
               <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-door-open"></i></span>
-              <h3 data-i18n="benefitRoomTitle">A style for every room</h3>
-              <p data-i18n="benefitRoomText">Browse ideas for living rooms, bedrooms, kitchens and more.</p>
+              <h3 data-i18n="benefitRoomTitle">Har bir xona uchun uslub</h3>
+              <p data-i18n="benefitRoomText">Mehmonxona, yotoqxona, oshxona va boshqa xonalar uchun g'oyalarni ko'ring.</p>
             </article>
             <article class="home-benefit-card" data-reveal-item>
               <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-sliders-h"></i></span>
-              <h3 data-i18n="benefitSearchTitle">Explore at your pace</h3>
-              <p data-i18n="benefitSearchText">Filter by category or search by color, fabric and style.</p>
+              <h3 data-i18n="benefitSearchTitle">O'zingizga qulay tarzda tanlang</h3>
+              <p data-i18n="benefitSearchText">Kategoriya orqali saralang yoki rang, mato va uslub bo'yicha qidiring.</p>
             </article>
             <article class="home-benefit-card" data-reveal-item>
               <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-heart"></i></span>
-              <h3 data-i18n="benefitFavoriteTitle">Keep your favorites close</h3>
-              <p data-i18n="benefitFavoriteText">Save the curtains you love and come back to them anytime.</p>
+              <h3 data-i18n="benefitFavoriteTitle">Yoqtirganlaringizni saqlang</h3>
+              <p data-i18n="benefitFavoriteText">Yoqtirgan pardalaringizni sevimlilarga qo'shib, istalgan vaqtda qayting.</p>
             </article>
           </div>
         </section>
@@ -232,7 +149,7 @@
 
         <section class="gallery-toolbar" aria-label="Gallery controls" data-reveal>
           <div class="toolbar-right catalog-controls">
-            <button class="sort-btn" type="button" data-action="sort" aria-label="Sort products by name" data-i18n-aria-label="sortProducts"><span class="sort-icon">↕</span><span class="sort-label" data-i18n="sort">Name</span></button>
+            <button class="sort-btn" type="button" data-action="sort" aria-label="Sort products by name" data-i18n-aria-label="sortProducts"><span class="sort-icon">↕</span><span class="sort-label" data-i18n="sort">Nomi</span></button>
             <div class="view-switcher" aria-label="Catalog view" data-i18n-aria-label="catalogView">
               <button class="grid-btn active" type="button" data-view="grid" aria-label="Grid view" title="Grid view" data-i18n-aria-label="gridView" data-i18n-title="gridView"><span class="dots"></span></button>
               <button class="grid-btn" type="button" data-view="list" aria-label="List view" title="List view" data-i18n-aria-label="listView" data-i18n-title="listView"><span class="lines"></span></button>
@@ -248,7 +165,7 @@
           </div>
         {% endif %}
 
-        <section class="gallery-grid" id="catalog" aria-label="Collection gallery" data-i18n-aria-label="collectionGallery">
+        <section class="gallery-grid" aria-label="Collection gallery" data-i18n-aria-label="collectionGallery">
           {% for product in products %}
             <article class="gallery-card {% if forloop.counter == 1 or forloop.counter == 3 %}tall{% elif forloop.counter == 4 %}wide{% endif %}" data-reveal-item>
               <a class="card-link" href="{% url 'product_detail' product.slug %}">
@@ -280,7 +197,7 @@
               </div>
             </article>
           {% empty %}
-            <div class="empty-state" data-i18n="emptyProducts">No products available yet.</div>
+            <div class="empty-state" data-i18n="emptyProducts">Hozircha mahsulot mavjud emas.</div>
           {% endfor %}
         </section>
 
