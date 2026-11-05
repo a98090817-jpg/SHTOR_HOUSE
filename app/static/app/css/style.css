@@ -3046,4 +3046,58 @@ textarea:focus-visible {
     will-change: transform;
     transform: translateZ(0);
     backface-visibility: hidden;
+}/* =========================================================
+   ANDROID VA MOBIL TELEFONLAR UCHUN MAXSUS TUZATISHLAR
+   ========================================================= */
+@media screen and (max-width: 768px) {
+    /* Header (yuqori panel) fonini tim qora qilish va tartibga keltirish */
+    .topbar {
+        background: #000000 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        padding: 10px 15px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    /* Yoriq rejim (Light mode) uchun header fonini oq qilish */
+    body.light-mode .topbar {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    /* Blur (xiralashgan) panellarni telefonlarda aniq fon qilish */
+    .promo-carousel-section,
+    .curtain-showcase,
+    .home-hero,
+    .profile-dropdown,
+    .language-picker-menu {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: #11100f !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    }
+
+    /* Light mode da mobil fonlarni oq rangga o'tkazish */
+    body.light-mode .promo-carousel-section,
+    body.light-mode .curtain-showcase,
+    body.light-mode .home-hero {
+        background: #f9f6f0 !important;
+        border-color: rgba(0, 0, 0, 0.12) !important;
+    }
+
+    /* Telefon ekranida elementlar ustma-ust chiqib qolmasligi uchun */
+    .home-hero-copy h1, 
+    .gallery-header h2 {
+        font-size: 1.8rem !important;
+        line-height: 1.2 !important;
+    }
+
+    .home-hero {
+        margin: 10px 15px !important;
+        padding: 20px 15px !important;
+    }
 }
