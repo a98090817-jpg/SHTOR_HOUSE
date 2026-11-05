@@ -1,3 +1,16 @@
+// ANDROID ANIQLASH — faqat Android qurilmalarga yengil uslublar (blur o'chirish va h.k.)
+// berish uchun. iPhone va boshqa qurilmalar uslubi o'zgarmaydi.
+// Sahifa bo'yalmay qolmasligi uchun DOMContentLoaded'ni kutmasdan darhol qo'shiladi.
+(function () {
+  try {
+    if (/Android/i.test(navigator.userAgent || '')) {
+      document.documentElement.classList.add('is-android');
+    }
+  } catch (error) {
+    /* UA o'qib bo'lmasa — hech narsa qo'shilmaydi, standart uslub qo'llanadi */
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
   const gallery = document.querySelector('.gallery-grid');
   const languageSelect = document.getElementById('language-select');

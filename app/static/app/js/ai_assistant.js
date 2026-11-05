@@ -46,7 +46,7 @@
       chatClassic: 'Klassik pardalar odatda tyul va zich yon pardadan tuziladi. Ularni parda lentasi bilan burmali, lyuvers (halqa) bilan, yashirin ilgakli yoki zamonaviy wave uslubida tikish mumkin. Burma ko‘rinishi uchun karniz eniga nisbatan mato koeffitsiyenti tanlanadi; karniz va mato og‘irligi bir-biriga mos bo‘lsin.',
       chatCleaning: 'Parvarish mato yorlig‘idagi ko‘rsatmaga bog‘liq: yuvishdan oldin ilgak va furniturani yeching, ranglarni ajrating, nozik rejim va past haroratdan foydalaning. Baxmal, ipak, qoplamali blackout va ayrim jalyuzilarni uyda yuvish matoni buzishi mumkin — quruq tozalash yoki ishlab chiqaruvchi ko‘rsatmasini tanlang. Changni muntazam yumshoq cho‘tka yoki changyutgichning past quvvatida oling.',
       chatChoose: 'Tanlashda 4 narsani hisobga oling: xona (yotoqxona/mehmonxona/oshxona), kerakli yorug‘lik va maxfiylik, deraza o‘lchami/o‘rnatish joyi, parvarish va budjet. Yotoqxonaga blackout yoki zich astarli parda, mehmonxonaga tyul va dekorativ yon parda, oshxonaga yengil yuviladigan rolikli yoki qisqa model mos kelishi mumkin. Derazangiz turi, xona va yorug‘lik istagingizni yozsangiz, mos variantlarni solishtirib beraman.',
-      chatOffTopic: 'Kechirasiz, bu mavzu bo‘yicha ilmim yetmaydi. Men faqat parda, tyul, jalyuzi, mato tanlash, o‘lcham, o‘rnatish, parvarish va narx bo‘yicha yordam bera olaman. Shu mavzulardan birini so‘rang.',
+      chatOffTopic: 'Bu savolga aniq javob bera olmayman — men parda va jalyuzi bo‘yicha maslahatchiman. Lekin foydali bir maslahat: to‘g‘ri tanlangan parda xona kayfiyagini butunlay o‘zgartiradi. Parda turlari, mato, o‘lchash, o‘rnatish, parvarish yoki narx bo‘yicha savolingizni yozing — to‘liq javob beraman.',
       chatOrder: 'Buyurtma yoki individual maslahat uchun telefon qiling: +998 97 424 42 42. Mato turi va deraza o‘lchamlarini aytsangiz, mos variantni topishga yordam beramiz.',
       chatFallback: 'Savolingizni tushunmadim. Parda turi, mato, yorug‘likni to‘sish, jalyuzi, o‘lchash, o‘rnatish, parvarish yoki narxni aniqroq yozing.',
       chatError: 'Hozir javob olishda muammo yuz berdi. Birozdan so‘ng qayta urinib ko‘ring yoki +998 97 424 42 42 raqamiga qo‘ng‘iroq qiling.',
@@ -82,7 +82,7 @@
       chatClassic: 'Classic curtains often combine sheer curtains with heavier side panels. Finishes include tape-pleated, eyelet, hidden-hook and modern wave styles. Choose fullness based on rail width and make sure the rail can support the fabric weight.',
       chatCleaning: 'Follow the fabric care label: remove hooks and hardware, separate colors and use a gentle cycle and low temperature only when allowed. Velvet, silk, coated blackout fabrics and some blinds may need professional cleaning. Dust regularly with a soft brush or low-suction vacuum.',
       chatChoose: 'Consider four things: the room, desired light/privacy, window and mounting type, and care/budget. Blackout or lined curtains can suit bedrooms; sheers with side panels can suit living rooms; washable roller shades or shorter styles may be practical in kitchens. Tell me the room, window type and light preference and I can compare options.',
-      chatOffTopic: 'Sorry, I do not have enough knowledge about that topic. I can only help with curtains, sheers, blinds, fabrics, measuring, installation, care and pricing. Please ask about one of those.',
+      chatOffTopic: "I cannot answer that one in depth — I am the curtain and blinds advisor for SHTOR HOUSE. Quick tip: the right curtain can completely change the mood of a room. Ask me about curtain types, fabrics, measuring, installation, care or prices and you will get a full answer.",
       chatOrder: 'For an order or personal advice, call +998 97 424 42 42. Tell us the fabric you like and your window measurements, and we will help find a good option.',
       chatFallback: 'I did not understand the question. Please ask specifically about curtain styles, fabric, light control, blinds, measuring, installation, care or pricing.',
       chatError: 'Sorry, I could not get a reply just now. Please try again or call +998 97 424 42 42.',
@@ -118,7 +118,7 @@
       chatClassic: 'Классические шторы часто сочетают тюль и плотные боковые портьеры. Варианты пошива: шторная лента со складками, люверсы, скрытые крючки и современный wave. Коэффициент сборки выбирают по ширине карниза, а карниз должен выдерживать вес ткани.',
       chatCleaning: 'Следуйте ярлыку ухода: снимите крючки и фурнитуру, разделите цвета; деликатная стирка и низкая температура допустимы только если это разрешено. Бархат, шелк, ткани blackout с покрытием и некоторые жалюзи могут требовать профессиональной чистки. Пыль регулярно удаляйте мягкой щеткой или пылесосом на малой мощности.',
       chatChoose: 'Учитывайте четыре вещи: комнату, нужное освещение/приватность, тип окна и монтажа, уход и бюджет. Для спальни часто выбирают blackout или подкладку, для гостиной — тюль с боковыми портьерами, для кухни — простые в уходе рулонные модели. Напишите комнату, тип окна и желаемый свет — сравню подходящие варианты.',
-      chatOffTopic: 'Извините, мне не хватает знаний по этой теме. Я могу отвечать только о шторах, тюле, жалюзи, тканях, замерах, установке, уходе и ценах. Пожалуйста, задайте вопрос по одной из этих тем.',
+      chatOffTopic: 'Подробно на этот вопрос не отвечу — я консультант по шторам SHTOR HOUSE. Совет: правильные шторы полностью меняют настроение комнаты. Спросите про виды штор, ткани, замер, установку, уход или цены — дам полный ответ.',
       chatOrder: 'Для заказа или консультации позвоните: +998 97 424 42 42. Расскажите о ткани и размерах окна — поможем подобрать вариант.',
       chatFallback: 'Не поняла вопрос. Уточните, пожалуйста: вид штор, ткань, затемнение, жалюзи, замер, установка, уход или цена.',
       chatError: 'Не удалось получить ответ. Попробуйте позже или позвоните по номеру +998 97 424 42 42.',
@@ -233,9 +233,13 @@
       body: JSON.stringify({
         message: question,
         language: getLanguage(),
-        history: conversation.slice(-9, -1)
+        history: conversation.slice(-10)
       })
     });
+    if (response.status === 503) {
+      // Serverda AI kalit sozlanmagan — offline smart-bot javob beradi.
+      return localReply(question);
+    }
     if (!response.ok) throw new Error('Assistant API returned HTTP ' + response.status + '.');
 
     const result = await response.json();

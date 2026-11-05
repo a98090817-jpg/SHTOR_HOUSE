@@ -20,4 +20,5 @@ urlpatterns = [
     path('quote/', views.quote_request, name='quote_request'),
     path('wishlist/', views.wishlist_page, name='wishlist'),
     path('favorite/<slug:slug>/', views.toggle_favorite, name='toggle_favorite'),
+    path('assistant/api/', views.assistant_api, name='assistant_api'),
 ]

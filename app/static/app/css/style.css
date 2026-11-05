@@ -3101,3 +3101,198 @@ textarea:focus-visible {
         padding: 20px 15px !important;
     }
 }
+/* =========================================================
+   RESPONSIVE POLISH — Android / iOS / laptop uchun ideal joylashuv
+   ========================================================= */
+
+/* Har qanday rasm konteynerdan chiqib ketmasin */
+.gallery-card img,
+.product-photo,
+.detail-media img {
+    max-width: 100%;
+}
+
+/* Matnli inputlar iOS'da zoom qilib qolmasin (font-size >= 16px) */
+@media (max-width: 760px) {
+    .search-bar input[type="search"],
+    .curtain-assistant-form input,
+    .form-grid input,
+    .form-grid textarea {
+        font-size: 16px !important;
+    }
+
+    /* Topbar: qatorni saqlab, ichkariga sig'may qolsa faqat ochiq qismlari surenadi */
+    .topbar {
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .topbar::-webkit-scrollbar {
+        display: none;
+    }
+    .top-actions {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        min-width: max-content;
+    }
+
+    /* Kategoriya tugmalari — ichma-ichma sig'im uchun gorizontal suyriladigan qilinadi */
+    .category-bar {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+    }
+    .category-bar::-webkit-scrollbar {
+        display: none;
+    }
+    .category-pill {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        white-space: nowrap;
+    }
+
+    /* Qidirish paneli telefonlarda to'liq kenglikda */
+    .search-bar {
+        width: 100%;
+    }
+    .meta-row {
+        gap: 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Footer xaritasi va kontaktlar telefonlarga to'g'ri keladi */
+    .footer-map-frame iframe {
+        height: 210px;
+    }
+    .footer-location-heading,
+    .footer-location-heading div {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+    .footer-socials {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    /* Muqim AI tugma footer matnini bostirib qo'ymasligi uchun */
+    .site-footer {
+        padding-bottom: 84px;
+    }
+
+    /* Hero tugmalari to'liq kenglik, hundlagan tekstlar kesilmasin */
+    .home-hero-note {
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+    .community-proof.site-visits-badge {
+        font-size: 14px;
+        padding: 8px 14px;
+        gap: 8px;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 380px) {
+    .top-meta {
+        gap: 8px;
+    }
+    .site-brand .site-logo-image {
+        width: 40px;
+        height: 44px;
+    }
+    .catalog-controls {
+        gap: 8px;
+    }
+}
+
+/* Laptoplar (1366 x 768 va Yuqorida) — hero o'rtada yaxshi turadi */
+@media (min-width: 1200px) and (max-height: 820px) {
+    .home-hero {
+        min-height: auto;
+        padding: 44px 40px;
+    }
+}
+
+/* =========================================================
+   FAQAT ANDROID TELEFONLAR — yengil render rejimi
+   (html.is-android klassini main.js qo'shadi; iPhone/PC uslubiga tegmaydi)
+   ========================================================= */
+@media (max-width: 768px) {
+    /* 1) Android'da BARCHA blur effektlari o'chiriladi — GPU yuki eng kattasi */
+    html.is-android * ,
+    html.is-android *::before,
+    html.is-android *::after {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    /* 2) QORA REJIM: panellarga aniq to'q fon va yengil soya */
+    html.is-android body:not(.light-mode) .topbar,
+    html.is-android body:not(.light-mode) .home-hero,
+    html.is-android body:not(.light-mode) .promo-carousel-section,
+    html.is-android body:not(.light-mode) .curtain-showcase,
+    html.is-android body:not(.light-mode) .profile-dropdown,
+    html.is-android body:not(.light-mode) .language-picker-menu,
+    html.is-android body:not(.light-mode) .curtain-assistant-panel,
+    html.is-android body:not(.light-mode) .search-bar,
+    html.is-android body:not(.light-mode) .modal-backdrop .contact-modal,
+    html.is-android body:not(.light-mode) .maintenance-modal {
+        background: #11100f !important;
+    }
+
+    html.is-android body:not(.light-mode) .search-bar input,
+    html.is-android body:not(.light-mode) .curtain-assistant-form input {
+        background: #1d1b19;
+    }
+
+    /* 3) YORUG' REJIM: hamma narsa oq/och rangda — to'q panellari yo'qbo'ladi */
+    html.is-android body.light-mode .topbar {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    html.is-android body.light-mode .home-hero,
+    html.is-android body.light-mode .promo-carousel-section,
+    html.is-android body.light-mode .curtain-showcase,
+    html.is-android body.light-mode .profile-dropdown,
+    html.is-android body.light-mode .language-picker-menu,
+    html.is-android body.light-mode .curtain-assistant-panel,
+    html.is-android body.light-mode .search-bar,
+    html.is-android body.light-mode .maintenance-modal {
+        background: #f9f6f0 !important;
+    }
+
+    html.is-android body.light-mode .search-bar input,
+    html.is-android body.light-mode .curtain-assistant-form input,
+    html.is-android body.light-mode .curtain-assistant-form {
+        background: #ffffff !important;
+        color: #2b2520 !important;
+    }
+
+    html.is-android body.light-mode .profile-menu,
+    html.is-android body.light-mode .profile-dropdown strong {
+        color: #2b2520;
+    }
+
+    /* 4) GPU qatlamlar zaxirasini bo'shatish — RAM yengillashadi */
+    html.is-android .home-benefit-card,
+    html.is-android .gallery-card,
+    html.is-android .topbar,
+    html.is-android .home-hero {
+        will-change: auto;
+        transform: none;
+        backface-visibility: visible;
+    }
+
+    /* 5) Og'ir soyalar Androidda yengillashtiriladi */
+    html.is-android .home-hero,
+    html.is-android .gallery-card,
+    html.is-android .curtain-assistant-panel {
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22) !important;
+    }
+}

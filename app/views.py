@@ -5,6 +5,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+import requests
+
 from django.conf import settings
 from django.core.cache import cache
 from django.core.files.storage import default_storage
@@ -415,7 +417,7 @@ def toggle_favorite(request, slug):
     if not request.user.is_authenticated:
         return JsonResponse(
             {'ok': False, 'login_required': True,
-             'message': 'Sevimlilarga qo\u2018shish uchun tizimga kiring.'},
+             'message': 'Sevimlilarga qo‘shish uchun tizimga kiring.'},
             status=401,
         )
 
@@ -429,3 +431,147 @@ def toggle_favorite(request, slug):
         is_favorite = True
     count = Favorite.objects.filter(user=request.user).count()
     return JsonResponse({'ok': True, 'is_favorite': is_favorite, 'count': count})
+
+
+ASSISTANT_MAX_MESSAGE_LENGTH = 1000
+ASSISTANT_MAX_HISTORY = 8
+
+ASSISTANT_SYSTEM_PROMPTS = {
+    'uz': (
+        "Siz SHTOR HOUSE do‘konining parda maslahatchisisiz. Faqat o‘zbek tilida, ehtiyotkorlik bilan, do‘stona javob bering.\n"
+        "Mutaxassisligingiz: klassik pardalar, tyul, blackout/dimout, rolikli va zebra (kun-tun) pardalar, rim pardalari, "
+        "gorizontal va vertikal jalyuzilar, panel/yapon pardalari, mato tanlash, o‘lchash, o‘rnatish, parvarish va narx.\n"
+        "Qoidalar:\n"
+        "1. Parda mavzusidagi savollarga amaliy va aniq javob bering; qisqa bo‘ling (150 so‘zdan oshirmang), zarur bo‘lsa 2-3 punktda yozing.\n"
+        "2. Agar savol pardalar bilan mutlaqo bog‘liq bo‘lmasa, avval shu savolga bitta gap bilan qisqa javob bering, "
+        "so‘ng do‘stona tarzda suhbatni pardalar mavzusiga qaytaring. Parda mavzusidan tashqariga chiqmang.\n"
+        "3. Narx haqida gapirsangiz, aniqlashtiring eslatib: aniq narx o‘lcham va mato turiga bog‘liq, "
+        "+998 97 424 42 42 raqamiga qo‘ng‘iroq qilib buyurtma berish mumkin.\n"
+        "4. Do‘kon haqidagi asosiy ma'lumot: SHTOR HOUSE, Toshkent, telefon +998 97 424 42 42. Do‘kon haqida savol bo‘lsa shu ma'lumot bilan javob bering."
+    ),
+    'en': (
+        "You are the curtain advisor for SHTOR HOUSE. Always reply in English, friendly and concise.\n"
+        "Your expertise: classic curtains, sheers, blackout/dimout, roller and zebra (day-night) shades, Roman shades, "
+        "horizontal and vertical blinds, panel/Japanese curtains, fabric selection, measuring, installation, care and pricing.\n"
+        "Rules:\n"
+        "1. Answer curtain-related questions practically and concretely; keep replies short (max 150 words), use 2-3 bullet points when helpful.\n"
+        "2. If the question is clearly unrelated to curtains, first answer it briefly in one sentence, then politely steer the conversation back to curtains. Do not go beyond that.\n"
+        "3. When asked about price, remind them the exact quote depends on size and fabric, and they can call +998 97 424 42 42 to order."
+    ),
+    'ru': (
+        "Вы консультант по шторам компании SHTOR HOUSE. Отвечайте только на русском языке, дружелюбно и лаконично.\n"
+        "Ваша специализация: классические шторы, тюль, blackout/dimout, рулонные и зебра-шторы, римские шторы, "
+        "горизонтальные и вертикальные жалюзи, панельные шторы, выбор ткани, замеры, установка, уход и цены.\n"
+        "Правила:\n"
+        "1. Отвечайте на вопросы о шторах практично и конкретно; ответы короткие (до 150 слов), при необходимости 2-3 пункта.\n"
+        "2. Если вопрос явно не связан со шторами, сначала коротко ответьте одним предложением, затем вежливо верните разговор к шторам. Тематически не отходите дальше.\n"
+        "3. Вопрос о цене: напомните, что точная стоимость зависит от размера и ткани, для заказа можно позвонить +998 97 424 42 42."
+    ),
+}
+
+
+def _assistant_history_from_payload(raw_history):
+    """Foydalanuvchi tarixini xavfsiz shaklga siqib oladi."""
+    normalized = []
+    for entry in raw_history:
+        if not isinstance(entry, dict):
+            continue
+        role = entry.get('role')
+        content = entry.get('content')
+        if role not in ('user', 'assistant') or not isinstance(content, str):
+            continue
+        content = content.strip()[:ASSISTANT_MAX_MESSAGE_LENGTH]
+        if content:
+            normalized.append({'role': role, 'content': content})
+        if len(normalized) >= ASSISTANT_MAX_HISTORY:
+            break
+    return normalized
+
+
+def _gemini_reply(message, history, system_prompt):
+    contents = [
+        {'role': 'model' if entry['role'] == 'assistant' else 'user', 'parts': [{'text': entry['content']}]}
+        for entry in history
+    ]
+    contents.append({'role': 'user', 'parts': [{'text': message}]})
+    response = requests.post(
+        f'https://generativelanguage.googleapis.com/v1beta/models/{settings.GOOGLE_AI_MODEL}:generateContent',
+        headers={'x-goog-api-key': settings.GOOGLE_AI_API_KEY},
+        json={
+            'system_instruction': {'parts': [{'text': system_prompt}]},
+            'contents': contents,
+            'generationConfig': {'temperature': 0.6, 'maxOutputTokens': 700},
+        },
+        timeout=25,
+    )
+    response.raise_for_status()
+    data = response.json()
+    candidates = data.get('candidates') or []
+    parts = (candidates[0].get('content') or {}).get('parts') or []
+    reply = ' '.join(part.get('text', '').strip() for part in parts).strip()
+    if not reply:
+        raise ValueError('Gemini returned an empty reply.')
+    return reply
+
+
+def _openai_reply(message, history, system_prompt):
+    messages = [{'role': 'system', 'content': system_prompt}]
+    messages.extend(history)
+    messages.append({'role': 'user', 'content': message})
+    response = requests.post(
+        f'{settings.OPENAI_BASE_URL.rstrip("/")}/chat/completions',
+        headers={'Authorization': f'Bearer {settings.OPENAI_API_KEY}'},
+        json={
+            'model': settings.OPENAI_MODEL,
+            'messages': messages,
+            'temperature': 0.6,
+            'max_tokens': 700,
+        },
+        timeout=25,
+    )
+    response.raise_for_status()
+    data = response.json()
+    reply = (data.get('choices') or [])[0].get('message', {}).get('content', '').strip()
+    if not reply:
+        raise ValueError('OpenAI returned an empty reply.')
+    return reply
+
+
+@require_POST
+def assistant_api(request):
+    """Chat maslahatchisi uchun server endpoint (LLM mavjud bo‘lsa)."""
+    provider = settings.AI_PROVIDER
+    if provider == 'auto':
+        if settings.GOOGLE_AI_API_KEY:
+            provider = 'gemini'
+        elif settings.OPENAI_API_KEY:
+            provider = 'openai'
+        else:
+            provider = None
+
+    if not provider:
+        # Key yo‘q — chat frontend offline smart-botiga qaytadi.
+        return JsonResponse({'ok': False, 'error': 'not_configured'}, status=503)
+
+    try:
+        payload = json.loads(request.body.decode('utf-8'))
+        message = (payload.get('message') or '').strip()[:ASSISTANT_MAX_MESSAGE_LENGTH]
+        language = payload.get('language') if payload.get('language') in ASSISTANT_SYSTEM_PROMPTS else 'en'
+        history = _assistant_history_from_payload(payload.get('history') or [])
+    except (json.JSONDecodeError, UnicodeDecodeError, AttributeError, TypeError) as error:
+        return JsonResponse({'ok': False, 'error': 'bad_request'}, status=400)
+
+    if not message:
+        return JsonResponse({'ok': False, 'error': 'bad_request'}, status=400)
+
+    system_prompt = ASSISTANT_SYSTEM_PROMPTS[language]
+    try:
+        if provider == 'gemini':
+            reply = _gemini_reply(message, history, system_prompt)
+        else:
+            reply = _openai_reply(message, history, system_prompt)
+    except (requests.RequestException, ValueError, KeyError, IndexError) as error:
+        # Provayder xatosi — frontend offline javobga tushadi.
+        return JsonResponse({'ok': False, 'error': 'upstream'}, status=502)
+
+    return JsonResponse({'ok': True, 'reply': reply})

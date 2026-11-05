@@ -169,7 +169,12 @@ MEDIA_ROOT = Path(
     os.environ.get('DJANGO_MEDIA_ROOT', str(BASE_DIR / 'media'))
 ).expanduser().resolve()
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticStorage'
+# Whitenoise siqish storage: fayllar nomi O'ZGARMAYDI (manifest yo'q — havolalar buzilmaydi),
+# lekin .gz/.br siqilgan nusxalar oldindan tayyorlanadi, server gzip'da uzatadi.
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -195,6 +200,15 @@ else:
         )
     if EMAIL_USE_TLS and EMAIL_USE_SSL:
         raise ImproperlyConfigured('EMAIL_USE_TLS and EMAIL_USE_SSL cannot both be enabled.')
+
+# AI chat maslahatchisi (Gemini yoki OpenAI-mos provayder). Key qo'yilmagan bo'lsa
+# chat offline smart-bot rejimida ishlaydi.
+AI_PROVIDER = os.environ.get('AI_PROVIDER', 'auto')  # 'gemini' | 'openai' | 'auto'
+GOOGLE_AI_API_KEY = os.environ.get('GOOGLE_AI_API_KEY', '')
+GOOGLE_AI_MODEL = os.environ.get('GOOGLE_AI_MODEL', 'gemini-2.0-flash')
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
+OPENAI_BASE_URL = os.environ.get('OPENAI_BASE_URL', 'https://api.openai.com/v1')
+OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-4o-mini')
 
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')

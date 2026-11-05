@@ -6,10 +6,17 @@
     width: min(370px, calc(100vw - 48px));
     flex-direction: column;
     align-items: flex-end;
-    z-index: 80;
+    z-index: 120;
     color: #f4f1ec;
     font-family: 'Inter', sans-serif;
     animation: assistant-float-in 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Skrollldan qat'i nazar — hamma qurilmalarda doimgi joyida, yuqoriga pastga surishdan qat'i nazar ko'rinadi */
+@supports (-webkit-touch-callout: none) {
+    .curtain-assistant {
+        bottom: calc(max(18px, env(safe-area-inset-bottom)) + 4px);
+    }
 }
 
 @keyframes assistant-float-in {
@@ -328,8 +335,32 @@
         padding: 0 16px;
     }
 
+    /* Telefonlarda panel ekran bo'ylab ochiladi va yuqori tegini jamlaydi */
     .curtain-assistant-panel {
-        max-height: min(560px, calc(100dvh - 94px));
+        position: fixed;
+        right: 12px;
+        left: 12px;
+        bottom: max(14px, env(safe-area-inset-bottom));
+        width: auto;
+        max-width: min(420px, calc(100vw - 24px));
+        max-height: min(590px, calc(100dvh - 64px));
+    }
+
+    .curtain-assistant-messages {
+        min-height: 150px;
+    }
+}
+
+@media (max-width: 380px) {
+    .curtain-assistant-toggle {
+        min-height: 48px;
+        padding: 0 13px;
+        gap: 8px;
+    }
+
+    .curtain-assistant-toggle label,
+    .curtain-assistant-toggle-label {
+        font-size: 0.78rem;
     }
 }
 
