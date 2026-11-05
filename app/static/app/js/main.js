@@ -11,6 +11,53 @@
   }
 })();
 
+// TASHRIF HISOBLAGICHI — har sahifa ochilganda 0 dan haqiqiy songacha animatsiya
+(function () {
+  function formatCount(value) {
+    try {
+      return value.toLocaleString('ru-RU');
+    } catch (error) {
+      return String(value);
+    }
+  }
+
+  function animateVisitCounter(element) {
+    const target = Number.parseInt(element.dataset.visitCounter, 10);
+    if (!Number.isFinite(target) || target < 0) return;
+
+    const prefersReducedMotion = window.matchMedia
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion || target === 0) {
+      element.textContent = formatCount(target);
+      return;
+    }
+
+    const duration = 1200;
+    const startTime = performance.now();
+
+    function step(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      element.textContent = formatCount(Math.round(target * eased));
+      if (progress < 1) window.requestAnimationFrame(step);
+    }
+
+    element.textContent = '0';
+    window.requestAnimationFrame(step);
+  }
+
+  function initVisitCounters() {
+    document.querySelectorAll('[data-visit-counter]').forEach(animateVisitCounter);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVisitCounters);
+  } else {
+    initVisitCounters();
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
   const gallery = document.querySelector('.gallery-grid');
   const languageSelect = document.getElementById('language-select');
@@ -680,7 +727,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const messages = { send: copy.modalSend, request: copy.modalRequest, design: copy.modalDesign, albums: copy.modalAlbums, help: copy.modalHelpTitle };
     const modalBox = document.createElement('div');
     modalBox.className = 'modal-backdrop';
-    modalBox.innerHTML = '<div class="contact-modal" role="dialog"><button class="modal-close" type="button" aria-label="' + copy.selectLanguage + '">×</button><p class="eyebrow">SHTOR HOUSE</p><h2>' + messages[action] + '</h2><p>' + copy.modalHelp + '</p><a class="btn btn-primary" href="#quote-form">' + copy.continue + '</a></div>';
+    modalBox.innerHTML = '<div class="contact-modal" role="dialog"><button class="modal-close" type="button" aria-label="' + copy.selectLanguage + '">×</button><p class="eyebrow">SHTOR HOUSE</p><h2>' + messages[action] + '</h2><p>' + copy.modalHelp + '</p><a class="btn btn-primary" href="tel:+998974244242">' + copy.continue + '</a></div>';
     document.body.appendChild(modalBox);
     modalBox.querySelector('.modal-close').addEventListener('click', function () { modalBox.remove(); });
   }

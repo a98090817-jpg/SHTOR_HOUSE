@@ -12,7 +12,7 @@ from PIL import Image
 from contextlib import closing
 from zipfile import ZipFile
 
-from .models import ConcurrentLoginSlot, Product, QuoteRequest
+from .models import ConcurrentLoginSlot, Product, QuoteRequest, SiteVisitCounter
 
 
 class ProductCatalogTests(TestCase):
@@ -38,7 +38,7 @@ class ProductCatalogTests(TestCase):
         self.assertContains(response, 'data-i18n="heroTitle"')
         self.assertContains(response, 'data-i18n="benefitsTitle"')
         self.assertContains(response, 'class="gallery-card tall" data-reveal-item')
-        self.assertContains(response, '<strong data-registered-user-count>0</strong>')
+        self.assertContains(response, 'data-visit-counter="1"')
         self.assertContains(response, 'https://www.instagram.com/shtor_house?exln=MWRrajd1ejF4Y3JnaA==')
         self.assertContains(response, 'https://t.me/Shtor_House_Shop')
         self.assertContains(response, 'https://maps.google.com/maps?q=41.331773,69.251642&amp;z=15&amp;output=embed')
@@ -48,30 +48,16 @@ class ProductCatalogTests(TestCase):
         self.assertContains(response, 'app/css/ai_assistant.css')
         self.assertContains(response, 'app/js/ai_assistant.js')
 
-    def test_registered_customer_count_excludes_staff_and_inactive_accounts(self):
-        user_model = get_user_model()
-        user_model.objects.create_user(username='registered-customer', password='StrongPass123!')
-        user_model.objects.create_user(
-            username='inactive-customer',
-            password='StrongPass123!',
-            is_active=False,
-        )
-        user_model.objects.create_user(
-            username='staff-account',
-            password='StrongPass123!',
-            is_staff=True,
-        )
-        user_model.objects.create_user(
-            username='superuser-account',
-            password='StrongPass123!',
-            is_superuser=True,
-        )
+    def test_visit_counter_increments_on_every_home_visit(self):
+        first_response = self.client.get(reverse('home'))
+        self.assertContains(first_response, 'data-visit-counter="1"')
+        self.assertEqual(SiteVisitCounter.objects.get(pk=1).count, 1)
 
-        response = self.client.get(reverse('home'))
+        second_response = self.client.get(reverse('home'))
+        self.assertContains(second_response, 'data-visit-counter="2"')
+        self.assertEqual(SiteVisitCounter.objects.get(pk=1).count, 2)
 
-        self.assertContains(response, '<strong data-registered-user-count>1</strong>')
-
-    def test_promo_carousel_uses_uploaded_product_images(self):
+    def test_home_page_renders_uploaded_product_image(self):
         image = SimpleUploadedFile(
             'promo-curtain.png',
             base64.b64decode(
@@ -82,26 +68,24 @@ class ProductCatalogTests(TestCase):
         with tempfile.TemporaryDirectory() as media_directory:
             with override_settings(MEDIA_ROOT=media_directory):
                 product = Product.objects.create(
-                    name='Carousel Curtain',
+                    name='Uploaded Curtain',
                     category='bedroom',
                     color='Ivory',
                     material='Linen',
                     price=250,
-                    description='Curtain for the home-page carousel.',
+                    description='Curtain with an uploaded photo.',
                     image=image,
                 )
 
                 response = self.client.get(reverse('home'))
 
                 self.assertEqual(response.status_code, 200)
-                self.assertContains(response, 'data-promo-track')
-                self.assertContains(response, 'data-promo-next')
-                self.assertContains(response, 'Carousel Curtain')
+                self.assertContains(response, 'Uploaded Curtain')
                 self.assertContains(response, product.image.url)
-                self.assertEqual(response.content.count(b'data-curtain-ticker-row'), 1)
-                self.assertContains(response, 'data-ticker-toggle')
 
-    def test_home_page_uses_local_curtain_images_without_catalog_products(self):
+    def test_home_page_shows_empty_state_without_catalog_products(self):
+        Product.objects.all().delete()
+
         with tempfile.TemporaryDirectory() as media_directory:
             products_directory = Path(media_directory) / 'products'
             products_directory.mkdir()
@@ -111,11 +95,9 @@ class ProductCatalogTests(TestCase):
                 response = self.client.get(reverse('home'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'data-curtain-ticker')
-        self.assertContains(response, '/media/products/jalyuzi.jpg')
-        self.assertContains(response, 'Curtain style 02')
-        self.assertEqual(response.content.count(b'data-curtain-ticker-row'), 1)
-        self.assertEqual(response.content.count(b'data-registered-user-count'), 1)
+        self.assertContains(response, 'class="empty-state"')
+        self.assertContains(response, 'data-visit-counter="1"')
+        self.assertEqual(response.content.count(b'data-visit-counter'), 1)
 
     def test_product_detail_instagram_link_uses_shtor_house_account(self):
         response = self.client.get(reverse('product_detail', args=[self.product.slug]))
@@ -594,6 +576,6 @@ class ProductCatalogTests(TestCase):
 
         response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'CURTAIN CATALOG')
+        self.assertContains(response, 'PARDA KATALOGI')
         self.assertContains(response, 'Featured Classic')
         self.assertNotContains(response, 'wa.me')

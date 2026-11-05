@@ -10,8 +10,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=16" />
-    <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=6" />
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=18" />
+    <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=7" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   </head>
   <body>
@@ -67,7 +67,7 @@
 
             <div class="community-proof site-visits-badge" style="margin: 22px auto; font-size: 16px; padding: 10px 22px; border-radius: 30px; display: inline-flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
               <span class="community-proof-icon" aria-hidden="true" style="font-size: 18px; color: #e5a93c;">👁️‍🗨️</span>
-              <strong style="font-size: 18px; font-weight: 700; color: #fff;">{{ site_visit_count }}</strong>
+              <strong style="font-size: 18px; font-weight: 700; color: #fff;" data-visit-counter="{{ site_visit_count }}">0</strong>
               <span style="opacity: 0.9;">saytga tashrif buyurganlar</span>
             </div>
 
@@ -205,6 +205,6 @@
     </div>
 
     {% include 'app/partials/ai_assistant.html' %}
-    <script src="{% static 'app/js/main.js' %}?v=10"></script>
+    <script src="{% static 'app/js/main.js' %}?v=11"></script>
   </body>
 </html>

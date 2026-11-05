@@ -1,6 +1,20 @@
 from django.db import models
 from django.utils.text import slugify
+import uuid
 
+
+def generate_unique_slug(model_class, name, slug_field='slug'):
+    """Unikal slug yaratish: kirillcha uchun fallback va takrorlanmaslik kafolati."""
+    base = slugify(name)
+    if not base:
+        # Kirillcha yoki boshqa slugify emas bo'lgan belgilar uchun UUID qisqartma
+        base = 'product'
+    slug = base
+    counter = 1
+    while model_class.objects.filter(**{slug_field: slug}).exists():
+        counter += 1
+        slug = f'{base}-{counter}'
+    return slug
 
 
 class Product(models.Model):
@@ -30,7 +44,7 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            self.slug = generate_unique_slug(Product, self.name)
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -41,12 +55,32 @@ class QuoteRequest(models.Model):
     full_name = models.CharField(max_length=200)
     phone = models.CharField(max_length=50)
     email = models.EmailField(blank=True, null=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='quote_requests')
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='quote_requests',
+    )
     message = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.full_name} - {self.product.name}"
+        product_name = self.product.name if self.product else '—'
+        return f"{self.full_name} - {product_name}"
+
+
+class SiteVisitCounter(models.Model):
+    """Saytga tashriflar sonini doimiy saqlaydigan yagona yozuv (pk=1)."""
+    count = models.PositiveBigIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Site visit counter'
+        verbose_name_plural = 'Site visit counter'
+
+    def __str__(self):
+        return f'{self.count} visits'
 
 class Favorite(models.Model):
     # Foydalanuvchining sevimli mahsulotlari, bazada saqlanadi.

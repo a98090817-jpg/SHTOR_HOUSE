@@ -8,20 +8,18 @@ from urllib.request import Request, urlopen
 import requests
 
 from django.conf import settings
-from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
 from django.db import IntegrityError, transaction
-from django.db.models import Q
+from django.db.models import F, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.text import slugify
 from django.views.decorators.http import require_POST
-from .forms import EmailOrUsernameLoginForm, ProductForm, QuoteRequestForm
-from .models import Favorite, Product
+from .forms import EmailOrUsernameLoginForm, ProductForm, QuoteRequestForm, CustomUserCreationForm
+from .models import Favorite, Product, SiteVisitCounter
 
 CURTAIN_INSPIRATION_ITEMS = [
     {
@@ -68,7 +66,6 @@ CURTAIN_INSPIRATION_ITEMS = [
 
 
 def home(request):
-    user_model = get_user_model()
     category = request.GET.get('category')
     query = (request.GET.get('q') or '').strip()
     products = Product.objects.filter(is_active=True).order_by('-is_featured', '-created_at')
@@ -119,19 +116,18 @@ def home(request):
             CURTAIN_INSPIRATION_ITEMS[:max(0, 8 - len(showcase_items))]
         )
 
-    # Saytga tashrif buyurganlar soni (Kesh orqali ishlaydi)
-    visits_count = cache.get('total_site_visits')
-    if visits_count is None:
-        visits_count = 15480
-        cache.set('total_site_visits', visits_count, None)
-    
-    if not request.session.get('visited_home'):
-        request.session['visited_home'] = True
-        try:
-            visits_count = cache.incr('total_site_visits')
-        except Exception:
-            visits_count += 1
-            cache.set('total_site_visits', visits_count, None)
+    # Saytga tashrif buyurganlar soni — har bir kirishda bazada +1.
+    try:
+        SiteVisitCounter.objects.get_or_create(pk=1)
+    except IntegrityError:
+        pass
+    SiteVisitCounter.objects.filter(pk=1).update(count=F('count') + 1)
+    visits_count = (
+        SiteVisitCounter.objects.filter(pk=1)
+        .values_list('count', flat=True)
+        .first()
+        or 0
+    )
 
     if category:
         products = products.filter(category=category)
@@ -226,14 +222,14 @@ def product_delete(request, slug):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             messages.success(request, 'Account created successfully.')
             return redirect('home')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
 
     return render(request, 'app/register.html', {'form': form})
 
@@ -357,6 +353,9 @@ def google_callback(request):
         return redirect('login')
 
     login(request, user)
+    # OAuth state uchun qo'yilgan 10 daqiqalik muddatni bekor qilamiz:
+    # aks holda Google bilan kirgan foydalanuvchi 10 daqiqada chiqib ketadi.
+    request.session.set_expiry(None)
     profile_picture = google_user.get('picture')
     if isinstance(profile_picture, str) and profile_picture:
         request.session['google_profile_picture'] = profile_picture
@@ -438,34 +437,43 @@ ASSISTANT_MAX_HISTORY = 8
 
 ASSISTANT_SYSTEM_PROMPTS = {
     'uz': (
-        "Siz SHTOR HOUSE do‘konining parda maslahatchisisiz. Faqat o‘zbek tilida, ehtiyotkorlik bilan, do‘stona javob bering.\n"
-        "Mutaxassisligingiz: klassik pardalar, tyul, blackout/dimout, rolikli va zebra (kun-tun) pardalar, rim pardalari, "
-        "gorizontal va vertikal jalyuzilar, panel/yapon pardalari, mato tanlash, o‘lchash, o‘rnatish, parvarish va narx.\n"
+        "Siz SHTOR HOUSE parda do'konining aqlli va do'stona maslahatchisisiz.\n"
+        "Asosiy vazifa: foydalanuvchi qaysi mavzuda yozsa ham, avval o'sha savolga 1-2 gapda qisqa, aniq va foydali javob bering; so'ng tabiiy tarzda pardalar, deraza bezash yoki interyer mavzusiga bog'lab, qisqa maslahat bering.\n"
+        "Mutaxassisligingiz: klassik pardalar, tyul, blackout/dimout, rolikli va zebra (kun-tun) pardalar, rim pardalari, gorizontal va vertikal jalyuzilar, panel/yapon pardalari, mato tanlash, o'lchash, o'rnatish, parvarish va narx.\n"
         "Qoidalar:\n"
-        "1. Parda mavzusidagi savollarga amaliy va aniq javob bering; qisqa bo‘ling (150 so‘zdan oshirmang), zarur bo‘lsa 2-3 punktda yozing.\n"
-        "2. Agar savol pardalar bilan mutlaqo bog‘liq bo‘lmasa, avval shu savolga bitta gap bilan qisqa javob bering, "
-        "so‘ng do‘stona tarzda suhbatni pardalar mavzusiga qaytaring. Parda mavzusidan tashqariga chiqmang.\n"
-        "3. Narx haqida gapirsangiz, aniqlashtiring eslatib: aniq narx o‘lcham va mato turiga bog‘liq, "
-        "+998 97 424 42 42 raqamiga qo‘ng‘iroq qilib buyurtma berish mumkin.\n"
-        "4. Do‘kon haqidagi asosiy ma'lumot: SHTOR HOUSE, Toshkent, telefon +998 97 424 42 42. Do‘kon haqida savol bo‘lsa shu ma'lumot bilan javob bering."
+        "1. Har doim foydalanuvchi yozgan tilda javob bering (o'zbek, rus yoki ingliz).\n"
+        "2. Javob qisqa bo'lsin — 80 so'zdan oshmasin; kerak bo'lsa 2-3 punktda yozing.\n"
+        "3. Pardaga oid savollarda aniq, amaliy va xatosiz maslahat bering.\n"
+        "4. Boshqa mavzudagi savolni rad etmang yoki chetga surib qo'ymang: 1-2 gapda qisqa javob bering, keyin \"Aytgancha, derazangiz uchun...\" kabi tabiiy o'tish bilan pardaga ulang.\n"
+        "5. Narx haqida gapirsangiz, aniq narx o'lcham va mato turiga bog'liqligini ayting; buyurtma uchun +998 97 424 42 42 raqamini bering.\n"
+        "6. Do'kon haqida: SHTOR HOUSE, Toshkent, telefon +998 97 424 42 42.\n"
+        "7. Hech qachon \"men AI man\", \"javob bera olmayman\" yoki \"bu mavzu menga tegishli emas\" demang."
     ),
     'en': (
-        "You are the curtain advisor for SHTOR HOUSE. Always reply in English, friendly and concise.\n"
-        "Your expertise: classic curtains, sheers, blackout/dimout, roller and zebra (day-night) shades, Roman shades, "
-        "horizontal and vertical blinds, panel/Japanese curtains, fabric selection, measuring, installation, care and pricing.\n"
+        "You are the smart, friendly curtain advisor for SHTOR HOUSE.\n"
+        "Main job: whatever topic the user asks about, first give a short, accurate and useful answer in 1-2 sentences, then naturally connect it to curtains, window styling or interior advice.\n"
+        "Your expertise: classic curtains, sheers, blackout/dimout, roller and zebra (day-night) shades, Roman shades, horizontal and vertical blinds, panel/Japanese curtains, fabric selection, measuring, installation, care and pricing.\n"
         "Rules:\n"
-        "1. Answer curtain-related questions practically and concretely; keep replies short (max 150 words), use 2-3 bullet points when helpful.\n"
-        "2. If the question is clearly unrelated to curtains, first answer it briefly in one sentence, then politely steer the conversation back to curtains. Do not go beyond that.\n"
-        "3. When asked about price, remind them the exact quote depends on size and fabric, and they can call +998 97 424 42 42 to order."
+        "1. Always reply in the language the user writes in (Uzbek, Russian or English).\n"
+        "2. Keep replies short — max 80 words; use 2-3 bullet points when helpful.\n"
+        "3. For curtain-related questions, be practical, specific and accurate.\n"
+        "4. Never reject or dismiss an unrelated question: answer it briefly in 1-2 sentences, then bridge naturally with a phrase like \"By the way, for your window...\".\n"
+        "5. When asked about price, say the exact quote depends on size and fabric, and give +998 97 424 42 42 for orders.\n"
+        "6. Store info: SHTOR HOUSE, Tashkent, phone +998 97 424 42 42.\n"
+        "7. Never say \"I am an AI\", \"I cannot answer\" or \"that topic is not mine\"."
     ),
     'ru': (
-        "Вы консультант по шторам компании SHTOR HOUSE. Отвечайте только на русском языке, дружелюбно и лаконично.\n"
-        "Ваша специализация: классические шторы, тюль, blackout/dimout, рулонные и зебра-шторы, римские шторы, "
-        "горизонтальные и вертикальные жалюзи, панельные шторы, выбор ткани, замеры, установка, уход и цены.\n"
+        "Вы умный и дружелюбный консультант по шторам компании SHTOR HOUSE.\n"
+        "Главная задача: на какой бы вопрос пользователь ни написал, сначала дайте короткий, точный и полезный ответ в 1-2 предложениях, затем естественно свяжите его со шторами, оформлением окон или интерьером.\n"
+        "Ваша специализация: классические шторы, тюль, blackout/dimout, рулонные и зебра-шторы, римские шторы, горизонтальные и вертикальные жалюзи, панельные шторы, выбор ткани, замеры, установка, уход и цены.\n"
         "Правила:\n"
-        "1. Отвечайте на вопросы о шторах практично и конкретно; ответы короткие (до 150 слов), при необходимости 2-3 пункта.\n"
-        "2. Если вопрос явно не связан со шторами, сначала коротко ответьте одним предложением, затем вежливо верните разговор к шторам. Тематически не отходите дальше.\n"
-        "3. Вопрос о цене: напомните, что точная стоимость зависит от размера и ткани, для заказа можно позвонить +998 97 424 42 42."
+        "1. Всегда отвечайте на языке пользователя (узбекском, русском или английском).\n"
+        "2. Ответ короткий — не более 80 слов; при необходимости 2-3 пункта.\n"
+        "3. На вопросы о шторах отвечайте практично, конкретно и точно.\n"
+        "4. Не отклоняйте вопрос не по теме: коротко ответьте в 1-2 предложениях, затем естественно перейдите к шторам фразой вроде \"Кстати, для вашего окна...\".\n"
+        "5. Вопрос о цене: точная стоимость зависит от размера и ткани; для заказа дайте номер +998 97 424 42 42.\n"
+        "6. О магазине: SHTOR HOUSE, Ташкент, телефон +998 97 424 42 42.\n"
+        "7. Никогда не говорите \"я ИИ\", \"не могу ответить\" или \"эта тема не моя\"."
     ),
 }
 

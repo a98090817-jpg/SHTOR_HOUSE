@@ -68,8 +68,18 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
-# Let the upload handlers stream large files to disk without imposing a body-size cap.
-DATA_UPLOAD_MAX_MEMORY_SIZE = None
+# Render/nginx kabi proxy ortida HTTPS ni to'g'ri aniqlash uchun
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
+# Formalarni haddan tashqari katta POST body bilan to'ldirib yuborishning oldini olish.
+# Katta fayllar FILE_UPLOAD_MAX_MEMORY_SIZE orqali diskka oqib tushadi.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5 MB
 
 
 # Application definition
