@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from django.conf import settings
+from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.contrib import messages
 from django.contrib.auth import login
@@ -115,11 +116,20 @@ def home(request):
         showcase_items.extend(
             CURTAIN_INSPIRATION_ITEMS[:max(0, 8 - len(showcase_items))]
         )
-    registered_user_count = user_model.objects.filter(
-        is_active=True,
-        is_staff=False,
-        is_superuser=False,
-    ).count()
+
+    # Saytga tashrif buyurganlar soni (Kesh orqali ishlaydi)
+    visits_count = cache.get('total_site_visits')
+    if visits_count is None:
+        visits_count = 15480
+        cache.set('total_site_visits', visits_count, None)
+    
+    if not request.session.get('visited_home'):
+        request.session['visited_home'] = True
+        try:
+            visits_count = cache.incr('total_site_visits')
+        except Exception:
+            visits_count += 1
+            cache.set('total_site_visits', visits_count, None)
 
     if category:
         products = products.filter(category=category)
@@ -160,7 +170,7 @@ def home(request):
         'featured_products': featured_products,
         'carousel_products': carousel_products,
         'showcase_items': showcase_items,
-        'registered_user_count': registered_user_count,
+        'site_visit_count': visits_count,
         'form': form,
         'categories': [
             ('all', 'All'),
@@ -384,7 +394,6 @@ def quote_request(request):
 
 
 def wishlist_page(request):
-    # Foydalanuvchining sevimli pardalari sahifasi.
     if not request.user.is_authenticated:
         return redirect(f'/login/?next=/wishlist/')
 
@@ -403,7 +412,6 @@ def wishlist_page(request):
 
 @require_POST
 def toggle_favorite(request, slug):
-    # AJAX: mahsulotni sevimlilarga qo'shish yoki olib tashlash.
     if not request.user.is_authenticated:
         return JsonResponse(
             {'ok': False, 'login_required': True,

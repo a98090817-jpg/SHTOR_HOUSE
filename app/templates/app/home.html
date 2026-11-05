@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=13" />
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=15" />
     <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=5" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   </head>
@@ -59,24 +59,23 @@
           </div>
         </header>
 
-        <section class="home-hero" data-reveal style="grid-template-columns: 1fr; gap: 24px;">
-          <div class="home-hero-copy">
-            <span class="home-hero-eyebrow" data-i18n="heroEyebrow">Thoughtful details. A warmer home.</span>
+        <section class="home-hero optimized-hero" data-reveal>
+          <div class="home-hero-copy" style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <span class="home-hero-eyebrow" data-i18n="heroEyebrow" style="justify-content: center;">Thoughtful details. A warmer home.</span>
             <h1 data-i18n="heroTitle">To'g'ri tanlangan parda xona kayfiyatini o'zgartiradi.</h1>
-            <p data-i18n="heroDescription">Parda va jalyuzilarni xona, rang va mato bo'yicha ko'rib, uyingizga mos uslubni toping.</p>
+            <p data-i18n="heroDescription" style="margin-left: auto; margin-right: auto;">Parda va jalyuzilarni xona, rang va mato bo'yicha ko'rib, uyingizga mos uslubni toping.</p>
 
-            <!-- YUORIDAGI RO'YXATDAN O'TGAN MIJOZLAR BLOKI (KO'CHIRILDI VA KATTALASHTIRILDI) -->
-            <div class="community-proof" aria-label="Registered users" data-i18n-aria-label="registeredUsers" style="margin: 18px 0; font-size: 16px; padding: 10px 20px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; width: fit-content; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
-              <span class="community-proof-icon" aria-hidden="true" style="font-size: 18px; color: #e5a93c;">✦</span>
-              <strong data-registered-user-count style="font-size: 18px; font-weight: 700;">{{ registered_user_count }}</strong>
-              <span data-i18n="registeredUsers" style="opacity: 0.9;">ro'yxatdan o'tgan mijozlar</span>
+            <div class="community-proof site-visits-badge" style="margin: 22px auto; font-size: 16px; padding: 10px 22px; border-radius: 30px; display: inline-flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
+              <span class="community-proof-icon" aria-hidden="true" style="font-size: 18px; color: #e5a93c;">👁️‍🗨️</span>
+              <strong style="font-size: 18px; font-weight: 700; color: #fff;">{{ site_visit_count }}</strong>
+              <span style="opacity: 0.9;">saytga tashrif buyurganlar</span>
             </div>
 
-            <div class="home-hero-actions">
+            <div class="home-hero-actions" style="justify-content: center;">
               <a class="home-hero-primary" href="#catalog"><span data-i18n="heroExplore">To'plamni ko'rish</span><i class="fas fa-arrow-right" aria-hidden="true"></i></a>
               <a class="home-hero-secondary" href="tel:+998974244242"><i class="fas fa-phone" aria-hidden="true"></i><span data-i18n="heroContact">Biz bilan bog'lanish</span></a>
             </div>
-            <div class="home-hero-note"><span aria-hidden="true">✦</span><span data-i18n="heroNote">Nozik bir detal ham makonni o'zingiznikidek his qildiradi.</span></div>
+            <div class="home-hero-note" style="justify-content: center;"><span aria-hidden="true">✦</span><span data-i18n="heroNote">Nozik bir detal ham makonni o'zingiznikidek his qildiradi.</span></div>
           </div>
         </section>
 
@@ -170,11 +169,11 @@
             <article class="gallery-card {% if forloop.counter == 1 or forloop.counter == 3 %}tall{% elif forloop.counter == 4 %}wide{% endif %}" data-reveal-item>
               <a class="card-link" href="{% url 'product_detail' product.slug %}">
                 {% if product.image %}
-                  <img class="product-photo" src="{{ product.image.url }}" alt="{{ product.name }}" />
+                  <img class="product-photo" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
                 {% elif product.image_url %}
-                  <img src="{{ product.image_url }}" alt="{{ product.name }}" />
+                  <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" />
                 {% else %}
-                  <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80" alt="{{ product.name }}" />
+                  <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80" alt="{{ product.name }}" loading="lazy" />
                 {% endif %}
                 <div class="card-overlay">
                   <div>
