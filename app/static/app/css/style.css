@@ -214,6 +214,17 @@ img {
     position: sticky;
     top: 0;
     z-index: 10;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .topbar {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+    .topbar > * {
+        flex: 1 1 100%;
+    }
 }
 
 .top-meta {
@@ -2714,6 +2725,17 @@ textarea:focus-visible {
     position: sticky;
     top: 0;
     z-index: 10;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .topbar {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+    .topbar > * {
+        flex: 1 1 100%;
+    }
 }
 
 .top-meta {
