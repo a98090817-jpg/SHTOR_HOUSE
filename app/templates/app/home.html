@@ -64,7 +64,7 @@
 
             {% include 'app/partials/language_picker.html' %}
 
-            <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">вј</button>
+            <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme"><i class="fas fa-moon" aria-hidden="true"></i></button>
 
             {% if user.is_authenticated %}
 
@@ -84,7 +84,7 @@
 
                   <span>{{ user.username }}</span>
 
-                  <span>вЊ„</span>
+                  <i class="fas fa-chevron-down" aria-hidden="true"></i>
 
                 </button>
 
