@@ -219,12 +219,15 @@ img {
 
 @media (max-width: 768px) {
     .topbar {
-        flex-wrap: nowrap;
-        justify-content: flex-start;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
     }
     .topbar > * {
         flex: 0 0 auto;
-        width: 100%;
+        width: auto;
+        min-width: 0;
     }
 }
 
@@ -2524,12 +2527,15 @@ textarea:focus-visible {
 
 @media (max-width: 768px) {
     .topbar {
-        flex-wrap: nowrap;
-        justify-content: flex-start;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
     }
     .topbar > * {
         flex: 0 0 auto;
-        width: 100%;
+        width: auto;
+        min-width: 0;
     }
 }
 
@@ -3526,5 +3532,81 @@ textarea:focus-visible {
     html.is-android .top-actions {
         position: relative !important;
         z-index: 15 !important;
+    }
+}
+
+/* =========================================================
+   ANDROID — header tugmalari bir-biriga emas, bir marta bosilishi;
+   qidiruv maydonida matn o'chirmasin; til tanlovi ortidan chiqmasin
+   ========================================================= */
+@media (max-width: 768px) {
+    html.is-android .topbar {
+        flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 10px 12px !important;
+    }
+
+    html.is-android .topbar > * {
+        width: auto !important;
+        min-width: 0 !important;
+        flex: 0 0 auto !important;
+    }
+
+    /* Barcha header interaktiv elementlari Androidda bir marta bosilishi */
+    html.is-android .topbar button,
+    html.is-android .topbar a,
+    html.is-android .top-actions button,
+    html.is-android .top-actions a,
+    html.is-android .add-product-plus,
+    html.is-android .wishlist-link,
+    html.is-android .theme-toggle,
+    html.is-android .profile-trigger,
+    html.is-android .language-picker,
+    html.is-android .language-picker-trigger,
+    html.is-android .top-link {
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(215, 185, 142, 0.2);
+        position: relative !important;
+        z-index: 30 !important;
+    }
+
+    /* Til tanlovchi, tema-toggle, profil menyusi va menyu oldinda */
+    html.is-android .language-picker,
+    html.is-android .language-picker-menu,
+    html.is-android .theme-toggle,
+    html.is-android .profile-dropdown,
+    html.is-android .profile-menu {
+        z-index: 9999 !important;
+        pointer-events: auto !important;
+    }
+
+    /* Qidiruv maydoni — Androidda yozilgan so'zlar o'chirilmasin, focus qoladi */
+    html.is-android .search-bar {
+        pointer-events: auto !important;
+        touch-action: auto !important;
+    }
+    html.is-android .search-bar input[type="search"] {
+        user-select: text !important;
+        -webkit-user-select: text !important;
+        touch-action: auto !important;
+        pointer-events: auto !important;
+        caret-color: var(--text) !important;
+    }
+
+    /* Login (kirish) sahifasi — auth-toolbar elementlari oldinda, bir marta bosiladi */
+    html.is-android .auth-toolbar,
+    html.is-android .auth-toolbar button,
+    html.is-android .auth-toolbar a,
+    html.is-android .social-login,
+    html.is-android .quote-submit.auth-submit,
+    html.is-android .forgot-link,
+    html.is-android .auth-divider {
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        position: relative !important;
+        z-index: 30 !important;
     }
 }
