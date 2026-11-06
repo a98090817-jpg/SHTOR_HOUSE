@@ -3610,3 +3610,55 @@ textarea:focus-visible {
         z-index: 30 !important;
     }
 }
+
+/* =========================================================
+   GALERIYA RASMLAR VA IKONKALAR TUZATILDI
+   Rasm ko'rinmay qolgan, yurakcha va kategoriya belgilar
+   pastga tushgan muammoni hal qiladi
+   ========================================================= */
+.gallery-card img,
+.product-photo {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    width: 100% !important;
+    height: auto !important;
+    object-fit: cover !important;
+    z-index: 1 !important;
+}
+
+.card-overlay {
+    position: absolute !important;
+    inset: 0 !important;
+    background: linear-gradient(to top, rgba(0,0,0,0.75), transparent 60%) !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+}
+
+.product-category,
+.product-tag {
+    z-index: 3 !important;
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.image-actions {
+    z-index: 3 !important;
+    position: relative !important;
+}
+
+.image-action,
+.favorite-card-action,
+.wishlist-link,
+.add-product-plus {
+    z-index: 3 !important;
+    position: relative !important;
+    pointer-events: auto !important;
+}
+
+.wishlist-link i.fas.fa-heart,
+.favorite-btn i.fas.fa-heart {
+    font-size: 1.15rem !important;
+    line-height: 1 !important;
+}
