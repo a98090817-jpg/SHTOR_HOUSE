@@ -42,6 +42,9 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+REM Administrator hisobini har safar tiklash
+"%PY%" manage.py ensure_admin
+
 REM Static fayllarni to'plash (agar kerak bo'lsa)
 "%PY%" manage.py collectstatic --noinput 2>nul
 

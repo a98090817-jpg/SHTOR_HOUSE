@@ -13,13 +13,14 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
-from django.db.models import F, Q
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.text import slugify
 from django.views.decorators.http import require_POST
 from .forms import EmailOrUsernameLoginForm, ProductForm, QuoteRequestForm, CustomUserCreationForm
-from .models import Favorite, Product, SiteVisitCounter
+from .models import Favorite, Product
+from .visit_counter import increment_visit_count
 
 CURTAIN_INSPIRATION_ITEMS = [
     {
@@ -116,18 +117,9 @@ def home(request):
             CURTAIN_INSPIRATION_ITEMS[:max(0, 8 - len(showcase_items))]
         )
 
-    # Saytga tashrif buyurganlar soni — har bir kirishda bazada +1.
-    try:
-        SiteVisitCounter.objects.get_or_create(pk=1)
-    except IntegrityError:
-        pass
-    SiteVisitCounter.objects.filter(pk=1).update(count=F('count') + 1)
-    visits_count = (
-        SiteVisitCounter.objects.filter(pk=1)
-        .values_list('count', flat=True)
-        .first()
-        or 0
-    )
+    # Saytga tashrif buyurganlar soni — baza + lokal fayl + tashqi zaxira.
+    # Qiymat hech qachon kamaymaydi va 0 ga tushmaydi.
+    visits_count = increment_visit_count()
 
     if category:
         products = products.filter(category=category)

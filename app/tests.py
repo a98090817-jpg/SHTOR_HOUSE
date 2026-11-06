@@ -57,6 +57,83 @@ class ProductCatalogTests(TestCase):
         self.assertContains(second_response, 'data-visit-counter="2"')
         self.assertEqual(SiteVisitCounter.objects.get(pk=1).count, 2)
 
+    def test_visit_counter_restores_from_local_floor_after_database_reset(self):
+        with tempfile.TemporaryDirectory() as directory:
+            floor_file = Path(directory) / 'visits.txt'
+            floor_file.write_text('50', encoding='utf-8')
+            with override_settings(
+                VISIT_COUNTER_FLOOR_ENABLED=True,
+                VISIT_COUNTER_FLOOR_FILE=floor_file,
+                VISIT_COUNTER_REMOTE_ENABLED=False,
+            ):
+                SiteVisitCounter.objects.update(count=0)
+
+                response = self.client.get(reverse('home'))
+
+                self.assertContains(response, 'data-visit-counter="51"')
+                self.assertEqual(SiteVisitCounter.objects.get(pk=1).count, 51)
+                self.assertEqual(floor_file.read_text(encoding='utf-8'), '51')
+
+    def test_visit_counter_restores_from_remote_after_database_reset(self):
+        with patch('app.visit_counter._sync_remote', return_value=75):
+            with override_settings(
+                VISIT_COUNTER_REMOTE_ENABLED=True,
+                VISIT_COUNTER_FLOOR_ENABLED=False,
+            ):
+                SiteVisitCounter.objects.update(count=0)
+
+                response = self.client.get(reverse('home'))
+
+                self.assertContains(response, 'data-visit-counter="75"')
+                self.assertEqual(SiteVisitCounter.objects.get(pk=1).count, 75)
+
+    def test_visit_counter_never_drops_below_baseline(self):
+        with override_settings(
+            VISIT_COUNTER_REMOTE_ENABLED=False,
+            VISIT_COUNTER_FLOOR_ENABLED=False,
+            VISIT_COUNTER_BASELINE=14,
+        ):
+            SiteVisitCounter.objects.update(count=0)
+
+            response = self.client.get(reverse('home'))
+
+            self.assertContains(response, 'data-visit-counter="14"')
+
+    def test_default_admin_account_can_open_admin(self):
+        user = get_user_model().objects.get(username='Pardashop77')
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.check_password('Pardashop77777'))
+
+        self.assertTrue(
+            self.client.login(
+                username='Pardashop77',
+                password='Pardashop77777',
+            )
+        )
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_can_open_site_when_all_ten_slots_are_taken(self):
+        for index in range(10):
+            user = get_user_model().objects.create_user(
+                username=f'blocking-user-{index}',
+                password='StrongPass123!',
+            )
+            client = Client()
+            client.force_login(user)
+            self.assertEqual(client.get(reverse('home')).status_code, 200)
+
+        self.assertTrue(
+            self.client.login(
+                username='Pardashop77',
+                password='Pardashop77777',
+            )
+        )
+        self.assertEqual(self.client.get(reverse('home')).status_code, 200)
+        self.assertEqual(self.client.get('/admin/').status_code, 200)
+
     def test_home_page_renders_uploaded_product_image(self):
         image = SimpleUploadedFile(
             'promo-curtain.png',

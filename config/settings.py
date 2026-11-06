@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
@@ -34,6 +35,8 @@ def env_list(name, default=()):
         if item.strip()
     ]
 
+
+TESTING = 'test' in sys.argv
 
 DEBUG = env_bool('DJANGO_DEBUG', False)
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
@@ -219,6 +222,40 @@ GOOGLE_AI_MODEL = os.environ.get('GOOGLE_AI_MODEL', 'gemini-2.0-flash')
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
 OPENAI_BASE_URL = os.environ.get('OPENAI_BASE_URL', 'https://api.openai.com/v1')
 OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-4o-mini')
+
+# Tashrif hisoblagichi: baza + lokal fayl + Abacus tashqi zaxirasi.
+# Testlarda tashqi tarmoq va fayl ishlatilmaydi.
+VISIT_COUNTER_REMOTE_ENABLED = env_bool('VISIT_COUNTER_REMOTE_ENABLED', not TESTING)
+VISIT_COUNTER_API_URL = os.environ.get(
+    'VISIT_COUNTER_API_URL', 'https://abacus.jasoncameron.dev'
+)
+VISIT_COUNTER_NAMESPACE = os.environ.get(
+    'VISIT_COUNTER_NAMESPACE', 'shtor-house.onrender.com'
+)
+VISIT_COUNTER_KEY = os.environ.get('VISIT_COUNTER_KEY', 'visits')
+# Ma'lum bo'lgan eng past qiymat: baza va tashqi zaxira birga ishlamasa ham
+# hisoblagich 0 ga tushmaydi. Productionda 14, lokal/testda 0.
+VISIT_COUNTER_BASELINE = int(
+    os.environ.get(
+        'VISIT_COUNTER_BASELINE',
+        '0' if TESTING or DEBUG else '14',
+    )
+)
+VISIT_COUNTER_TIMEOUT = float(os.environ.get('VISIT_COUNTER_TIMEOUT', '2'))
+VISIT_COUNTER_RETRY_SECONDS = int(
+    os.environ.get('VISIT_COUNTER_RETRY_SECONDS', '60')
+)
+VISIT_COUNTER_SYNC_THRESHOLD = int(
+    os.environ.get('VISIT_COUNTER_SYNC_THRESHOLD', '3')
+)
+VISIT_COUNTER_FLOOR_ENABLED = env_bool(
+    'VISIT_COUNTER_FLOOR_ENABLED', not TESTING
+)
+VISIT_COUNTER_FLOOR_FILE = Path(
+    os.environ.get(
+        'VISIT_COUNTER_FLOOR_FILE', str(BASE_DIR / '.visit-counter-floor')
+    )
+).expanduser().resolve()
 
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')

@@ -45,6 +45,9 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
+# Administrator hisobini har safar tiklash (baza yangilansa ham yo'qolmaydi)
+& $py manage.py ensure_admin
+
 # Static fayllarni to'plash
 & $py manage.py collectstatic --noinput 2>$null
 

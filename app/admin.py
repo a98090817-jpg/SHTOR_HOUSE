@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import Favorite, Product, QuoteRequest
+from .models import (
+    ConcurrentLoginSlot,
+    Favorite,
+    Product,
+    QuoteRequest,
+    SiteVisitCounter,
+)
 
 
 @admin.register(Product)
@@ -21,3 +27,34 @@ class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', 'product', 'created_at')
     list_filter = ('created_at',)
     search_fields = ('user__username', 'product__name')
+
+
+@admin.register(SiteVisitCounter)
+class SiteVisitCounterAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'count', 'updated_at')
+    readonly_fields = ('count', 'updated_at')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        # Hisoblagichni o'chirib 0 ga tushirishning oldini olamiz.
+        return False
+
+
+@admin.register(ConcurrentLoginSlot)
+class ConcurrentLoginSlotAdmin(admin.ModelAdmin):
+    list_display = ('slot_number', 'user', 'session_key', 'expires_at')
+    readonly_fields = ('slot_number', 'user', 'session_key', 'expires_at')
+    actions = ('release_slots',)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    @admin.action(description='Band login slotlarini bo\'shatish')
+    def release_slots(self, request, queryset):
+        queryset.update(user=None, session_key=None, expires_at=None)
+        self.message_user(request, 'Login slotlari bo\'shatildi.')

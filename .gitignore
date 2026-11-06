@@ -13,6 +13,8 @@ db.sqlite3
 /backups/
 /staticfiles/
 /static-root/
+.visit-counter-floor
+.visit-counter-floor.*
 
 .venv/
 venv/

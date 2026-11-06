@@ -12,7 +12,13 @@ class ConcurrentLoginLimitMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.user.is_authenticated and not self._claim_slot(request):
+        # Administrator va xodimlar 10 ta slot tugaganda ham kira olishi kerak.
+        if (
+            request.user.is_authenticated
+            and not request.user.is_staff
+            and not request.user.is_superuser
+            and not self._claim_slot(request)
+        ):
             logout(request)
             messages.error(
                 request,
