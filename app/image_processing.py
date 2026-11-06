@@ -4,6 +4,13 @@ from pathlib import Path
 from django.core.files.base import ContentFile
 from PIL import Image, ImageEnhance, ImageFilter, ImageOps
 
+try:
+    from pillow_heif import register_heif_opener
+except ImportError:  # HEIC qo'llab-quvvatlash paketi o'rnatilmagan bo'lsa ham sayt ishlaydi
+    register_heif_opener = None
+else:
+    register_heif_opener()
+
 
 PRODUCT_IMAGE_SIZE = (1200, 1500)
 

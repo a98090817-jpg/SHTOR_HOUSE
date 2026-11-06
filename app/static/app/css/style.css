@@ -1390,10 +1390,18 @@ body.light-mode .image-action.selected { color: #744b2b; background: rgba(255,25
     position: relative;
 }
 
+/* Barcha mahsulot kartochkalari bir xil 4:5 o'lchamda ko'rinadi
+   (yuklangan rasm 1200x1500 nisbatida qayta ishlanadi). */
+.gallery-card,
+.gallery-card.tall,
+.gallery-card.wide {
+    min-height: 0;
+}
+
 .gallery-card::before {
     content: "";
     display: block;
-    padding-top: 133%; /* 3:4 aspect ratio (matches 1200x1500 processed images) */
+    padding-top: 125%; /* 4:5 aspect ratio (matches 1200x1500 processed images) */
 }
 
 .gallery-card > a.card-link {
@@ -1428,10 +1436,10 @@ body.light-mode .image-action.selected { color: #744b2b; background: rgba(255,25
     transform: none;
 }
 
-/* Tall/Wide variantlarda ham doimiy 3:4 aspekt ratio saqlanadi */
+/* Tall/Wide variantlarda ham doimiy 4:5 aspekt ratio saqlanadi */
 .gallery-card.tall::before,
 .gallery-card.wide::before {
-    padding-top: 133%;
+    padding-top: 125%;
 }
 
 .card-overlay {
@@ -1612,7 +1620,7 @@ body.light-mode .message.error { color: #8f2525; background: rgba(235, 120, 120,
 .detail-media::before {
     content: "";
     display: block;
-    padding-top: 133%; /* 3:4 aspect ratio */
+    padding-top: 125%; /* 4:5 aspect ratio */
 }
 
 .detail-media img {
@@ -2234,7 +2242,7 @@ body.light-mode .modal-contacts a { color: var(--text); }
     }
 
     .detail-media { border-radius: 16px; }
-    .detail-media::before { padding-top: 133%; }
+    .detail-media::before { padding-top: 125%; }
 }
 
 /* ---------- Planshet gorizontal ---------- */
@@ -2257,7 +2265,7 @@ body.light-mode .modal-contacts a { color: var(--text); }
 
     .detail-shell { padding: 22px 18px 40px; }
     .detail-media { border-radius: 16px; }
-    .detail-media::before { padding-top: 133%; }
+    .detail-media::before { padding-top: 125%; }
 
     .site-footer {
         grid-template-columns: 1fr 1fr;
@@ -3063,13 +3071,13 @@ textarea:focus-visible {
         gap: 14px;
     }
 
-    /* "tall" va "wide" kartalar mobil'da oddiy balandlikda - aspect ratio bilan */
+    /* Mobil'da ham barcha kartalar bir xil 4:5 nisbatda */
     .gallery-card,
     .gallery-card.tall,
     .gallery-card.wide {
-        min-height: 300px;
-        height: 62vh;
-        max-height: 460px;
+        min-height: 0;
+        height: auto;
+        max-height: none;
     }
 
     .gallery-card img {
@@ -3125,7 +3133,7 @@ textarea:focus-visible {
     .detail-shell { padding: 20px 16px 36px; }
     .detail-info { padding: 22px; }
     .detail-media { border-radius: 16px; }
-    .detail-media::before { padding-top: 133%; }
+    .detail-media::before { padding-top: 125%; }
     .detail-purchase-actions {
         flex-direction: column;
         align-items: stretch;
@@ -3207,7 +3215,7 @@ textarea:focus-visible {
     .detail-info { padding: 18px; }
     .detail-layout { gap: 20px; }
     .detail-media { border-radius: 16px; }
-    .detail-media::before { padding-top: 133%; }
+    .detail-media::before { padding-top: 125%; }
     .price-row { flex-direction: column; align-items: flex-start; gap: 8px; }
     .spec-list { gap: 10px; }
     .spec-list li { font-size: 0.9rem; }

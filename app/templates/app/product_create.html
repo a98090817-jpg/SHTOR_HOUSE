@@ -1,51 +1,53 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-page-title="pageAddProduct">Add Product | SHTOR HOUSE</title>
-    <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
-    <meta name="csrf-token" content="{{ csrf_token }}" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=19" />
-    <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=7" />
-  </head>
-  <body class="auth-page">
-    <div class="auth-toolbar">
-      {% include 'app/partials/language_picker.html' %}
-      <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
-    </div>
-    <div class="auth-shell wide">
-      <div class="auth-card full-width catalog-form-card">
-        <div class="auth-brand"><img class="site-logo-image auth-brand-logo" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" /></div>
-        <div class="auth-header">
-          <div class="form-index">01</div>
-          <div>
-            <p class="eyebrow" data-i18n="catalog">Catalog</p>
-            <h1 data-i18n="addProduct">Add curtain</h1>
-          </div>
-        </div>
-
-        <form method="post" enctype="multipart/form-data" class="auth-form product-form">
-          {% csrf_token %}
-          <div class="field-group"><label for="{{ form.name.id_for_label }}" data-i18n="curtainName">Curtain name</label>{{ form.name }}{% if form.name.errors %}<div class="field-errors">{{ form.name.errors }}</div>{% endif %}</div>
-          <div class="field-group"><label for="{{ form.material.id_for_label }}" data-i18n="fabric">Fabric / material</label>{{ form.material }}{% if form.material.errors %}<div class="field-errors">{{ form.material.errors }}</div>{% endif %}</div>
-          <div class="field-group"><label for="{{ form.length_meters.id_for_label }}" data-i18n="standardLength">Standard length (m)</label>{{ form.length_meters }}{% if form.length_meters.errors %}<div class="field-errors">{{ form.length_meters.errors }}</div>{% endif %}</div>
-          <div class="field-group"><label for="{{ form.price.id_for_label }}" data-i18n="price">Price ($)</label>{{ form.price }}{% if form.price.errors %}<div class="field-errors">{{ form.price.errors }}</div>{% endif %}</div>
-          <div class="field-group"><label for="{{ form.color.id_for_label }}" data-i18n="colorField">Color</label>{{ form.color }}{% if form.color.errors %}<div class="field-errors">{{ form.color.errors }}</div>{% endif %}</div>
-          <div class="field-group"><label for="{{ form.origin.id_for_label }}" data-i18n="originCountry">Origin country</label>{{ form.origin }}{% if form.origin.errors %}<div class="field-errors">{{ form.origin.errors }}</div>{% endif %}</div>
-          <div class="field-group"><label for="{{ form.category.id_for_label }}" data-i18n="roomCategory">Room / category</label>{{ form.category }}{% if form.category.errors %}<div class="field-errors">{{ form.category.errors }}</div>{% endif %}</div>
-          <div class="field-group image-field"><label for="{{ form.image.id_for_label }}" data-i18n="imageFile">Curtain image file</label>{{ form.image }}{% if form.image.errors %}<div class="field-errors">{{ form.image.errors }}</div>{% endif %}<small data-i18n="imageHint">JPG, PNG or WEBP image</small></div>
-          <div class="field-group field-wide"><label for="{{ form.description.id_for_label }}" data-i18n="description">Description</label>{{ form.description }}{% if form.description.errors %}<div class="field-errors">{{ form.description.errors }}</div>{% endif %}</div>
-          <div class="catalog-options field-wide">{{ form.is_featured }} <label for="{{ form.is_featured.id_for_label }}" data-i18n="highlightProduct">Show in catalog highlights</label>{{ form.is_active }} <label for="{{ form.is_active.id_for_label }}" data-i18n="activeProduct">Active product</label></div>
-          <div class="form-actions field-wide"><a class="cancel-link" href="{% url 'home' %}" data-i18n="cancel">Cancel</a><button type="submit" class="quote-submit"><span data-i18n="saveProduct">Add to catalog</span> <span aria-hidden="true">↗</span></button></div>
-        </form>
-      </div>
-    </div>
-    {% include 'app/partials/ai_assistant.html' %}
-    <script src="{% static 'app/js/main.js' %}?v=12"></script>
-  </body>
-</html>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-page-title="pageAddProduct">Add Product | SHTOR HOUSE</title>
+    <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=20" />
+    <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=7" />
+    <meta name="turbo-cache-control" content="no-cache" />
+    <script src="{% static 'app/js/turbo.es2017-umd.js' %}"></script>
+  </head>
+  <body class="auth-page">
+    <div class="auth-toolbar">
+      {% include 'app/partials/language_picker.html' %}
+      <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
+    </div>
+    <div class="auth-shell wide">
+      <div class="auth-card full-width catalog-form-card">
+        <div class="auth-brand"><img class="site-logo-image auth-brand-logo" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" /></div>
+        <div class="auth-header">
+          <div class="form-index">01</div>
+          <div>
+            <p class="eyebrow" data-i18n="catalog">Catalog</p>
+            <h1 data-i18n="addProduct">Add curtain</h1>
+          </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="auth-form product-form">
+          {% csrf_token %}
+          <div class="field-group"><label for="{{ form.name.id_for_label }}" data-i18n="curtainName">Curtain name</label>{{ form.name }}{% if form.name.errors %}<div class="field-errors">{{ form.name.errors }}</div>{% endif %}</div>
+          <div class="field-group"><label for="{{ form.material.id_for_label }}" data-i18n="fabric">Fabric / material</label>{{ form.material }}{% if form.material.errors %}<div class="field-errors">{{ form.material.errors }}</div>{% endif %}</div>
+          <div class="field-group"><label for="{{ form.length_meters.id_for_label }}" data-i18n="standardLength">Standard length (m)</label>{{ form.length_meters }}{% if form.length_meters.errors %}<div class="field-errors">{{ form.length_meters.errors }}</div>{% endif %}</div>
+          <div class="field-group"><label for="{{ form.price.id_for_label }}" data-i18n="price">Price ($)</label>{{ form.price }}{% if form.price.errors %}<div class="field-errors">{{ form.price.errors }}</div>{% endif %}</div>
+          <div class="field-group"><label for="{{ form.color.id_for_label }}" data-i18n="colorField">Color</label>{{ form.color }}{% if form.color.errors %}<div class="field-errors">{{ form.color.errors }}</div>{% endif %}</div>
+          <div class="field-group"><label for="{{ form.origin.id_for_label }}" data-i18n="originCountry">Origin country</label>{{ form.origin }}{% if form.origin.errors %}<div class="field-errors">{{ form.origin.errors }}</div>{% endif %}</div>
+          <div class="field-group"><label for="{{ form.category.id_for_label }}" data-i18n="roomCategory">Room / category</label>{{ form.category }}{% if form.category.errors %}<div class="field-errors">{{ form.category.errors }}</div>{% endif %}</div>
+          <div class="field-group image-field"><label for="{{ form.image.id_for_label }}" data-i18n="imageFile">Curtain image file</label>{{ form.image }}{% if form.image.errors %}<div class="field-errors">{{ form.image.errors }}</div>{% endif %}<small data-i18n="imageHint">JPG, PNG, WEBP or HEIC image</small></div>
+          <div class="field-group field-wide"><label for="{{ form.description.id_for_label }}" data-i18n="description">Description</label>{{ form.description }}{% if form.description.errors %}<div class="field-errors">{{ form.description.errors }}</div>{% endif %}</div>
+          <div class="catalog-options field-wide">{{ form.is_featured }} <label for="{{ form.is_featured.id_for_label }}" data-i18n="highlightProduct">Show in catalog highlights</label>{{ form.is_active }} <label for="{{ form.is_active.id_for_label }}" data-i18n="activeProduct">Active product</label></div>
+          <div class="form-actions field-wide"><a class="cancel-link" href="{% url 'home' %}" data-i18n="cancel">Cancel</a><button type="submit" class="quote-submit"><span data-i18n="saveProduct">Add to catalog</span> <span aria-hidden="true">↗</span></button></div>
+        </form>
+      </div>
+    </div>
+    {% include 'app/partials/ai_assistant.html' %}
+    <script src="{% static 'app/js/main.js' %}?v=13"></script>
+  </body>
+</html>

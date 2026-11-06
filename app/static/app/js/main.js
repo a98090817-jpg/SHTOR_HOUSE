@@ -48,7 +48,11 @@
   }
 
   function initVisitCounters() {
-    document.querySelectorAll('[data-visit-counter]').forEach(animateVisitCounter);
+    document.querySelectorAll('[data-visit-counter]').forEach(function (element) {
+      if (element.dataset.visitCounted === '1') return;
+      element.dataset.visitCounted = '1';
+      animateVisitCounter(element);
+    });
   }
 
   if (document.readyState === 'loading') {
@@ -56,17 +60,25 @@
   } else {
     initVisitCounters();
   }
+  document.addEventListener('turbo:load', initVisitCounters);
 })();
 
-document.addEventListener('DOMContentLoaded', function () {
+let pageAbortController = null;
+
+function initSitePage() {
+  // Turbo bilan sahifa almashganda eski document/window tinglovchilarini tozalaymiz
+  if (pageAbortController) pageAbortController.abort();
+  pageAbortController = new AbortController();
+  const pageSignal = pageAbortController.signal;
+
   const gallery = document.querySelector('.gallery-grid');
   const languageSelect = document.getElementById('language-select');
   const profileToggle = document.querySelector('[data-profile-toggle]');
   const profileMenu = document.querySelector('[data-profile-menu]');
   const translations = {
-    en: { catalogLink: 'Catalog', catalogTitle: 'CURTAIN CATALOG', download: 'Download catalog', showing: 'Showing', products: 'products', sort: 'Name', emptyProducts: 'No products available yet.', searchPlaceholder: 'Search curtains by name, color, material…', searchBtn: 'Search', resultsFor: 'Results for', favoritesTitle: 'My favorites', emptyFavorites: 'You have no favorite curtains yet.', loginForFavorites: 'Please sign in to save favorites.', back: '← Back', signIn: 'Sign in', register: 'Create account', logout: 'Log out', addProduct: 'Add product', deleteProduct: 'Delete product', origin: 'Origin:', curtainName: 'Curtain name', fabric: 'Fabric / material', standardLength: 'Standard length (m)', price: 'Price ($)', colorField: 'Color', originCountry: 'Origin country', roomCategory: 'Room / category', imageFile: 'Curtain image file', imageHint: 'JPG, PNG or WEBP image', description: 'Description', highlightProduct: 'Show in catalog highlights', activeProduct: 'Active product', cancel: 'Cancel', saveProduct: 'Add to catalog', welcomeBack: 'Welcome back', signInTitle: 'Sign in', signInSubtitle: 'Continue to your SHTOR HOUSE account.', emailUsername: 'Email or username', password: 'Password', continue: 'Continue', forgot: 'Forgot password?', or: 'or', google: 'Continue with Google', noAccount: 'Don\'t have an account?', signUp: 'Sign up', googleNotConfigured: 'Google sign-in is not configured yet.', googleSessionExpired: 'Google sign-in session expired. Please try again.', googleCancelled: 'Google sign-in was cancelled.', googleFailed: 'Google sign-in could not be completed.', googleEmailFailed: 'Google did not provide a verified email address.', category_all: 'All', category_living_room: 'Living room', category_bedroom: 'Bedroom', category_kitchen: 'Kitchen', category_office: 'Office', category_custom: 'Custom' },
-    uz: { catalogLink: 'Katalog', catalogTitle: 'PARDA KATALOGI', download: 'Katalogni yuklash', showing: 'Jami', products: 'mahsulot', sort: 'Nomi', emptyProducts: 'Hozircha mahsulot mavjud emas.', searchPlaceholder: 'Pardani nomi, rangi, matosi bo‘yicha qidiring…', searchBtn: 'Qidirish', resultsFor: 'Natijalar:', favoritesTitle: 'Sevimlilarim', emptyFavorites: 'Hozircha sevimli pardangiz yo‘q.', loginForFavorites: 'Sevimlilarni saqlash uchun tizimga kiring.', back: '← Orqaga', signIn: 'Kirish', register: 'Akkaunt yaratish', logout: 'Chiqish', addProduct: 'Mahsulot qo‘shish', deleteProduct: 'Mahsulotni o‘chirish', origin: 'Kelib chiqishi:', curtainName: 'Parda nomi', fabric: 'Mato turi', standardLength: 'Standart uzunlik (m)', price: 'Narxi ($)', colorField: 'Rang', originCountry: 'Kelib chiqqan mamlakat', roomCategory: 'Xona / kategoriya', imageFile: 'Parda rasmi', imageHint: 'JPG, PNG yoki WEBP rasm', description: 'Tavsif', highlightProduct: 'Katalogda ajratib ko‘rsatish', activeProduct: 'Faol mahsulot', cancel: 'Bekor qilish', saveProduct: 'Katalogga qo‘shish', welcomeBack: 'Xush kelibsiz', signInTitle: 'Kirish', signInSubtitle: 'SHTOR HOUSE akkauntingizga kiring.', emailUsername: 'Email yoki foydalanuvchi nomi', password: 'Parol', continue: 'Davom etish', forgot: 'Parolni unutdingizmi?', or: 'yoki', google: 'Google orqali kirish', noAccount: 'Akkauntingiz yo‘qmi?', signUp: 'Ro‘yxatdan o‘tish', googleNotConfigured: 'Google orqali kirish hali sozlanmagan.', googleSessionExpired: 'Google sessiyasi tugadi. Qayta urinib ko‘ring.', googleCancelled: 'Google orqali kirish bekor qilindi.', googleFailed: 'Google orqali kirish yakunlanmadi.', googleEmailFailed: 'Google tasdiqlangan email bermadi.', category_all: 'Barchasi', category_living_room: 'Mehmonxona', category_bedroom: 'Yotoqxona', category_kitchen: 'Oshxona', category_office: 'Ofis', category_custom: 'Maxsus' },
-    ru: { catalogLink: 'Каталог', catalogTitle: 'КАТАЛОГ ШТОР', download: 'Скачать каталог', showing: 'Показано', products: 'товаров', sort: 'Название', emptyProducts: 'Товаров пока нет.', searchPlaceholder: 'Поиск штор по названию, цвету, ткани…', searchBtn: 'Поиск', resultsFor: 'Результаты:', favoritesTitle: 'Мои избранные', emptyFavorites: 'У вас пока нет избранных штор.', loginForFavorites: 'Войдите, чтобы сохранять избранное.', back: '← Назад', signIn: 'Войти', register: 'Создать аккаунт', logout: 'Выйти', addProduct: 'Добавить товар', deleteProduct: 'Удалить товар', origin: 'Происхождение:', curtainName: 'Название шторы', fabric: 'Ткань / материал', standardLength: 'Стандартная длина (м)', price: 'Цена ($)', colorField: 'Цвет', originCountry: 'Страна происхождения', roomCategory: 'Комната / категория', imageFile: 'Файл изображения', imageHint: 'Изображение JPG, PNG или WEBP', description: 'Описание', highlightProduct: 'Показывать в подборке', activeProduct: 'Активный товар', cancel: 'Отмена', saveProduct: 'Добавить в каталог', welcomeBack: 'С возвращением', signInTitle: 'Войти', signInSubtitle: 'Войдите в аккаунт SHTOR HOUSE.', emailUsername: 'Email или имя пользователя', password: 'Пароль', continue: 'Продолжить', forgot: 'Забыли пароль?', or: 'или', google: 'Войти через Google', noAccount: 'Нет аккаунта?', signUp: 'Регистрация', googleNotConfigured: 'Вход через Google пока не настроен.', googleSessionExpired: 'Сессия Google истекла. Попробуйте снова.', googleCancelled: 'Вход через Google отменен.', googleFailed: 'Не удалось завершить вход через Google.', googleEmailFailed: 'Google не предоставил подтвержденный email.', category_all: 'Все', category_living_room: 'Гостиная', category_bedroom: 'Спальня', category_kitchen: 'Кухня', category_office: 'Офис', category_custom: 'На заказ' }
+    en: { catalogLink: 'Catalog', catalogTitle: 'CURTAIN CATALOG', download: 'Download catalog', showing: 'Showing', products: 'products', sort: 'Name', emptyProducts: 'No products available yet.', searchPlaceholder: 'Search curtains by name, color, material…', searchBtn: 'Search', resultsFor: 'Results for', favoritesTitle: 'My favorites', emptyFavorites: 'You have no favorite curtains yet.', loginForFavorites: 'Please sign in to save favorites.', back: '← Back', signIn: 'Sign in', register: 'Create account', logout: 'Log out', addProduct: 'Add product', deleteProduct: 'Delete product', origin: 'Origin:', curtainName: 'Curtain name', fabric: 'Fabric / material', standardLength: 'Standard length (m)', price: 'Price ($)', colorField: 'Color', originCountry: 'Origin country', roomCategory: 'Room / category', imageFile: 'Curtain image file', imageHint: 'JPG, PNG, WEBP or HEIC image', description: 'Description', highlightProduct: 'Show in catalog highlights', activeProduct: 'Active product', cancel: 'Cancel', saveProduct: 'Add to catalog', welcomeBack: 'Welcome back', signInTitle: 'Sign in', signInSubtitle: 'Continue to your SHTOR HOUSE account.', emailUsername: 'Email or username', password: 'Password', continue: 'Continue', forgot: 'Forgot password?', or: 'or', google: 'Continue with Google', noAccount: 'Don\'t have an account?', signUp: 'Sign up', googleNotConfigured: 'Google sign-in is not configured yet.', googleSessionExpired: 'Google sign-in session expired. Please try again.', googleCancelled: 'Google sign-in was cancelled.', googleFailed: 'Google sign-in could not be completed.', googleEmailFailed: 'Google did not provide a verified email address.', category_all: 'All', category_living_room: 'Living room', category_bedroom: 'Bedroom', category_kitchen: 'Kitchen', category_office: 'Office', category_custom: 'Custom' },
+    uz: { catalogLink: 'Katalog', catalogTitle: 'PARDA KATALOGI', download: 'Katalogni yuklash', showing: 'Jami', products: 'mahsulot', sort: 'Nomi', emptyProducts: 'Hozircha mahsulot mavjud emas.', searchPlaceholder: 'Pardani nomi, rangi, matosi bo‘yicha qidiring…', searchBtn: 'Qidirish', resultsFor: 'Natijalar:', favoritesTitle: 'Sevimlilarim', emptyFavorites: 'Hozircha sevimli pardangiz yo‘q.', loginForFavorites: 'Sevimlilarni saqlash uchun tizimga kiring.', back: '← Orqaga', signIn: 'Kirish', register: 'Akkaunt yaratish', logout: 'Chiqish', addProduct: 'Mahsulot qo‘shish', deleteProduct: 'Mahsulotni o‘chirish', origin: 'Kelib chiqishi:', curtainName: 'Parda nomi', fabric: 'Mato turi', standardLength: 'Standart uzunlik (m)', price: 'Narxi ($)', colorField: 'Rang', originCountry: 'Kelib chiqqan mamlakat', roomCategory: 'Xona / kategoriya', imageFile: 'Parda rasmi', imageHint: 'JPG, PNG, WEBP yoki HEIC rasm', description: 'Tavsif', highlightProduct: 'Katalogda ajratib ko‘rsatish', activeProduct: 'Faol mahsulot', cancel: 'Bekor qilish', saveProduct: 'Katalogga qo‘shish', welcomeBack: 'Xush kelibsiz', signInTitle: 'Kirish', signInSubtitle: 'SHTOR HOUSE akkauntingizga kiring.', emailUsername: 'Email yoki foydalanuvchi nomi', password: 'Parol', continue: 'Davom etish', forgot: 'Parolni unutdingizmi?', or: 'yoki', google: 'Google orqali kirish', noAccount: 'Akkauntingiz yo‘qmi?', signUp: 'Ro‘yxatdan o‘tish', googleNotConfigured: 'Google orqali kirish hali sozlanmagan.', googleSessionExpired: 'Google sessiyasi tugadi. Qayta urinib ko‘ring.', googleCancelled: 'Google orqali kirish bekor qilindi.', googleFailed: 'Google orqali kirish yakunlanmadi.', googleEmailFailed: 'Google tasdiqlangan email bermadi.', category_all: 'Barchasi', category_living_room: 'Mehmonxona', category_bedroom: 'Yotoqxona', category_kitchen: 'Oshxona', category_office: 'Ofis', category_custom: 'Maxsus' },
+    ru: { catalogLink: 'Каталог', catalogTitle: 'КАТАЛОГ ШТОР', download: 'Скачать каталог', showing: 'Показано', products: 'товаров', sort: 'Название', emptyProducts: 'Товаров пока нет.', searchPlaceholder: 'Поиск штор по названию, цвету, ткани…', searchBtn: 'Поиск', resultsFor: 'Результаты:', favoritesTitle: 'Мои избранные', emptyFavorites: 'У вас пока нет избранных штор.', loginForFavorites: 'Войдите, чтобы сохранять избранное.', back: '← Назад', signIn: 'Войти', register: 'Создать аккаунт', logout: 'Выйти', addProduct: 'Добавить товар', deleteProduct: 'Удалить товар', origin: 'Происхождение:', curtainName: 'Название шторы', fabric: 'Ткань / материал', standardLength: 'Стандартная длина (м)', price: 'Цена ($)', colorField: 'Цвет', originCountry: 'Страна происхождения', roomCategory: 'Комната / категория', imageFile: 'Файл изображения', imageHint: 'Изображение JPG, PNG, WEBP или HEIC', description: 'Описание', highlightProduct: 'Показывать в подборке', activeProduct: 'Активный товар', cancel: 'Отмена', saveProduct: 'Добавить в каталог', welcomeBack: 'С возвращением', signInTitle: 'Войти', signInSubtitle: 'Войдите в аккаунт SHTOR HOUSE.', emailUsername: 'Email или имя пользователя', password: 'Пароль', continue: 'Продолжить', forgot: 'Забыли пароль?', or: 'или', google: 'Войти через Google', noAccount: 'Нет аккаунта?', signUp: 'Регистрация', googleNotConfigured: 'Вход через Google пока не настроен.', googleSessionExpired: 'Сессия Google истекла. Попробуйте снова.', googleCancelled: 'Вход через Google отменен.', googleFailed: 'Не удалось завершить вход через Google.', googleEmailFailed: 'Google не предоставил подтвержденный email.', category_all: 'Все', category_living_room: 'Гостиная', category_bedroom: 'Спальня', category_kitchen: 'Кухня', category_office: 'Офис', category_custom: 'На заказ' }
   };
   const extraTranslations = {
     en: {
@@ -292,8 +304,8 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     'Upload a valid JPG, PNG, or WEBP image.': {
       en: 'Upload a valid JPG, PNG, or WEBP image.',
-      uz: 'JPG, PNG yoki WEBP formatidagi to‘g‘ri rasmni yuklang.',
-      ru: 'Загрузите корректное изображение в формате JPG, PNG или WEBP.'
+      uz: 'JPG, PNG, WEBP yoki HEIC formatidagi to‘g‘ri rasmni yuklang.',
+      ru: 'Загрузите корректное изображение в формате JPG, PNG, WEBP или HEIC.'
     }
   };
 
@@ -468,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function () {
     select.addEventListener('change', syncLanguagePicker);
     document.addEventListener('pointerdown', function (event) {
       if (!picker.contains(event.target) && !menu.hidden) closeLanguageMenu(false);
-    });
+    }, { signal: pageSignal });
     syncLanguagePicker();
   });
   const ticker = document.querySelector('[data-curtain-ticker]');
@@ -480,8 +492,8 @@ document.addEventListener('DOMContentLoaded', function () {
     ticker.addEventListener('pointerdown', function (event) {
       if (event.pointerType === 'mouse') pointerPause();
     });
-    window.addEventListener('pointerup', pointerResume);
-    window.addEventListener('pointercancel', pointerResume);
+    window.addEventListener('pointerup', pointerResume, { signal: pageSignal });
+    window.addEventListener('pointercancel', pointerResume, { signal: pageSignal });
     tickerToggle.addEventListener('click', function () {
       const paused = ticker.classList.toggle('is-paused');
       tickerToggle.setAttribute('aria-pressed', String(paused));
@@ -572,9 +584,9 @@ document.addEventListener('DOMContentLoaded', function () {
     promoTrack.addEventListener('focusout', function (event) {
       if (!promoTrack.contains(event.relatedTarget)) startPromoAutoplay();
     });
-    document.addEventListener('visibilitychange', startPromoAutoplay);
+    document.addEventListener('visibilitychange', startPromoAutoplay, { signal: pageSignal });
     reducedMotion.addEventListener('change', startPromoAutoplay);
-    window.addEventListener('resize', updatePromoPosition);
+    window.addEventListener('resize', updatePromoPosition, { signal: pageSignal });
     updatePromoPosition();
     startPromoAutoplay();
   }
@@ -608,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     document.addEventListener('click', function (event) {
       if (!profileToggle.contains(event.target) && !profileMenu.contains(event.target)) profileMenu.classList.remove('open');
-    });
+    }, { signal: pageSignal });
   }
 
   const quoteSection = document.getElementById('quote-form');
@@ -718,7 +730,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape') closeMaintenanceModal();
-    });
+    }, { signal: pageSignal });
   }
   document.querySelectorAll('[data-share]').forEach(function (button) { button.addEventListener('click', function () { if (navigator.share) navigator.share({ title: document.title, url: window.location.href }); else navigator.clipboard.writeText(window.location.href); }); });
 
@@ -746,19 +758,19 @@ document.addEventListener('DOMContentLoaded', function () {
   // 1) Matn belgilashni (selection) bloklash
   document.addEventListener('selectstart', function (event) {
     if (!isEditable(event.target)) event.preventDefault();
-  });
+  }, { signal: pageSignal });
 
   // 2) Nusxalash, kesish va qo'yishni bloklash
   ['copy', 'cut'].forEach(function (type) {
     document.addEventListener(type, function (event) {
       if (!isEditable(event.target)) event.preventDefault();
-    });
+    }, { signal: pageSignal });
   });
 
   // 3) O'ng tugma menyusini bloklash
   document.addEventListener('contextmenu', function (event) {
     if (!isEditable(event.target)) event.preventDefault();
-  });
+  }, { signal: pageSignal });
 
   // 4) Ctrl/Cmd + C, X, A, S, U, P klavishalarini bloklash
   document.addEventListener('keydown', function (event) {
@@ -766,320 +778,22 @@ document.addEventListener('DOMContentLoaded', function () {
     if (isEditable(event.target)) return;
     const blocked = ['c', 'C', 'x', 'X', 'a', 'A', 's', 'S', 'u', 'U', 'p', 'P'];
     if (blocked.includes(event.key)) event.preventDefault();
-  });
+  }, { signal: pageSignal });
 
   // 5) Rasmni sudrab (drag) olishni bloklash
   document.addEventListener('dragstart', function (event) {
     if (event.target && event.target.tagName === 'IMG') event.preventDefault();
-  });
-});
+  }, { signal: pageSignal });
+}
 
-/* =========================================================
-   PJAX-LIKE NAVIGATION — sahifalar o'rtasida to'liq yangilashsiz o'tish
-   Faqat ichki havolalar uchun ishlaydi; tashqi havolalar oddiy tarzda ishlaydi.
-   ========================================================= */
-(function () {
-  const CACHE = new Map();
-  const MAIN_SELECTOR = 'main.content, .auth-shell, .detail-shell, .page-shell > main';
-  const SCROLL_SELECTORS = ['.gallery-grid', '.category-bar', '.promo-carousel-section', '.curtain-showcase', '.home-benefits', '.home-hero', '.gallery-header'];
-
-  function isInternalLink(href) {
-    try {
-      const url = new URL(href, window.location.origin);
-      return url.origin === window.location.origin && !url.pathname.startsWith('/admin') && !url.pathname.startsWith('/static/') && !url.pathname.startsWith('/media/');
-    } catch (error) {
-      return false;
-    }
+function bootSiteInteractions() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSitePage);
+  } else {
+    initSitePage();
   }
+  // Turbo sahifani yangilaganda barcha interaktivlik qayta bog'lanadi.
+  document.addEventListener('turbo:load', initSitePage);
+}
 
-  function shouldIntercept(event) {
-    if (event.defaultPrevented) return false;
-    if (event.button !== 0) return false;
-    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return false;
-    const link = event.target.closest('a[href]');
-    if (!link) return false;
-    if (link.target === '_blank') return false;
-    if (link.hasAttribute('download')) return false;
-    if (link.getAttribute('href').startsWith('#')) return false;
-    if (link.closest('.language-picker, .profile-menu, .promo-carousel-controls, .promo-carousel-button, .ticker-toggle')) return false;
-    return isInternalLink(link.href);
-  }
-
-  async function fetchPage(url) {
-    if (CACHE.has(url)) return CACHE.get(url);
-    const response = await fetch(url, {
-      headers: { 'X-PJAX': 'true', 'Accept': 'text/html' },
-      credentials: 'same-origin',
-    });
-    if (!response.ok) throw new Error('Network response was not ok');
-    const html = await response.text();
-    CACHE.set(url, html);
-    return html;
-  }
-
-  function swapContent(html, url) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-
-    // Yangi sahifa sarlavhasi
-    const newTitle = doc.querySelector('title');
-    if (newTitle) document.title = newTitle.textContent;
-
-    // CSRF tokenni yangilash
-    const newCsrf = doc.querySelector('meta[name="csrf-token"]');
-    const oldCsrf = document.querySelector('meta[name="csrf-token"]');
-    if (newCsrf && oldCsrf) oldCsrf.setAttribute('content', newCsrf.getAttribute('content'));
-
-    // Asosiy kontentni almashtirish
-    const newMain = doc.querySelector(MAIN_SELECTOR);
-    const oldMain = document.querySelector(MAIN_SELECTOR);
-    if (newMain && oldMain) {
-      oldMain.innerHTML = newMain.innerHTML;
-    }
-
-    // AI assistant panelini saqlash (uni o'chirmaymiz)
-    const aiPanel = document.querySelector('[data-curtain-assistant]');
-    if (aiPanel && aiPanel.parentElement) {
-      // AI panel DOMda qoladi, faqat kontent o'zgardi
-    }
-
-    // Scroll pozitsiyasini 0 ga qaytarish
-    window.scrollTo(0, 0);
-
-    // Yangi sahifa uchun kerakli scriptlarni ishga tushirish
-    reinitializePageScripts(doc, url);
-
-    // Til sozlamasini qo'llash
-    applyCurrentLanguage();
-  }
-
-  function reinitializePageScripts(doc, url) {
-    // Hisoblagich animatsiyasi
-    document.querySelectorAll('[data-visit-counter]').forEach(function (element) {
-      const target = Number.parseInt(element.dataset.visitCounter, 10);
-      if (Number.isFinite(target) && target >= 0) {
-        element.textContent = '0';
-        animateVisitCounter(element);
-      }
-    });
-
-    // Til tanlovchi
-    const langPicker = document.querySelector('[data-language-picker]');
-    if (langPicker) initLanguagePicker(langPicker);
-
-    // Profil menyusi
-    const profileToggle = document.querySelector('[data-profile-toggle]');
-    const profileMenu = document.querySelector('[data-profile-menu]');
-    if (profileToggle && profileMenu) {
-      profileToggle.addEventListener('click', function () {
-        const isOpen = profileMenu.classList.toggle('open');
-        profileToggle.setAttribute('aria-expanded', String(isOpen));
-      });
-      document.addEventListener('click', function (event) {
-        if (!profileToggle.contains(event.target) && !profileMenu.contains(event.target)) profileMenu.classList.remove('open');
-      });
-    }
-
-    // Theme toggle
-    const themeToggle = document.querySelector('.theme-toggle, [data-theme-toggle]');
-    if (themeToggle) {
-      themeToggle.addEventListener('click', function () {
-        document.body.classList.toggle('light-mode');
-        const isLight = document.body.classList.contains('light-mode');
-        localStorage.setItem('parda-theme', isLight ? 'light' : 'dark');
-      });
-    }
-
-    // Parol ko'rsatish/yashirish
-    document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
-      button.addEventListener('click', function () {
-        const input = button.closest('.password-input-wrap')?.querySelector('input');
-        if (input) {
-          const show = input.type === 'password';
-          input.type = show ? 'text' : 'password';
-          button.setAttribute('aria-pressed', String(show));
-        }
-      });
-    });
-
-    // Sevimlilar sanog'ichi
-    updateFavoritesCount();
-
-    // Qidiruv va katalog boshqaruvi
-    initCatalogControls();
-
-    // Modal va boshqa interaktiv elementlar
-    initModals();
-
-    // AI assistant
-    if (window.initCurtainAssistant) window.initCurtainAssistant();
-  }
-
-  function animateVisitCounter(element) {
-    const target = Number.parseInt(element.dataset.visitCounter, 10);
-    if (!Number.isFinite(target) || target < 0) return;
-    const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion || target === 0) {
-      element.textContent = target.toLocaleString('ru-RU');
-      return;
-    }
-    const duration = 1200;
-    const startTime = performance.now();
-    function step(now) {
-      const progress = Math.min((now - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      element.textContent = Math.round(target * eased).toLocaleString('ru-RU');
-      if (progress < 1) window.requestAnimationFrame(step);
-    }
-    window.requestAnimationFrame(step);
-  }
-
-  function initLanguagePicker(root) {
-    const trigger = root.querySelector('[data-language-trigger]');
-    const menu = root.querySelector('[data-language-menu]');
-    const nativeSelect = root.querySelector('select.language-picker-native');
-    const current = root.querySelector('[data-language-current]');
-    if (!trigger || !menu) return;
-
-    function close() {
-      menu.hidden = true;
-      trigger.setAttribute('aria-expanded', 'false');
-    }
-
-    trigger.addEventListener('click', function (event) {
-      event.stopPropagation();
-      const isOpen = !menu.hidden;
-      menu.hidden = isOpen;
-      trigger.setAttribute('aria-expanded', String(!isOpen));
-    });
-
-    root.querySelectorAll('[data-language-option]').forEach(function (option) {
-      option.addEventListener('click', function () {
-        const lang = option.dataset.languageOption;
-        if (nativeSelect) nativeSelect.value = lang;
-        if (current) current.textContent = option.textContent;
-        root.querySelectorAll('[data-language-option]').forEach(function (opt) {
-          opt.setAttribute('aria-selected', opt === option ? 'true' : 'false');
-        });
-        close();
-        setLanguage(lang);
-      });
-    });
-
-    document.addEventListener('click', function (event) {
-      if (!root.contains(event.target)) close();
-    });
-
-    trigger.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') close();
-    });
-  }
-
-  function setLanguage(lang) {
-    localStorage.setItem('parda-language', lang);
-    applyCurrentLanguage();
-  }
-
-  function applyCurrentLanguage() {
-    const lang = localStorage.getItem('parda-language') || 'en';
-    const translations = window.translations || {};
-    const dict = translations[lang] || translations.en;
-    if (!dict) return;
-    document.querySelectorAll('[data-i18n]').forEach(function (element) {
-      const key = element.dataset.i18n;
-      if (dict[key]) element.textContent = dict[key];
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (element) {
-      const key = element.dataset.i18nPlaceholder;
-      if (dict[key]) element.placeholder = dict[key];
-    });
-    document.querySelectorAll('[data-i18n-aria-label]').forEach(function (element) {
-      const key = element.dataset.i18nAriaLabel;
-      if (dict[key]) element.setAttribute('aria-label', dict[key]);
-    });
-    document.documentElement.lang = lang;
-  }
-
-  function updateFavoritesCount() {
-    const countEl = document.querySelector('[data-favorites-count]');
-    if (countEl && window.favoriteIds) {
-      countEl.textContent = window.favoriteIds.length || 0;
-    }
-  }
-
-  function initCatalogControls() {
-    // Sorting, filtering, etc. - existing logic from DOMContentLoaded
-    // This is a simplified version; full logic is in the main DOMContentLoaded block
-  }
-
-  function initModals() {
-    const modal = document.querySelector('[data-modal]');
-    document.querySelectorAll('[data-buy]').forEach(function (button) {
-      button.addEventListener('click', function () { if (modal) modal.hidden = false; });
-    });
-    document.querySelectorAll('[data-modal-close]').forEach(function (button) {
-      button.addEventListener('click', function () { if (modal) modal.hidden = true; });
-    });
-    if (modal) modal.addEventListener('click', function (event) { if (event.target === modal) modal.hidden = true; });
-
-    const maintenanceModal = document.querySelector('[data-maintenance-modal]');
-    let maintenanceTrigger = null;
-    document.querySelectorAll('[data-maintenance-trigger]').forEach(function (trigger) {
-      trigger.addEventListener('click', function (event) {
-        event.preventDefault();
-        maintenanceTrigger = trigger;
-        if (!maintenanceModal) return;
-        maintenanceModal.hidden = false;
-        maintenanceModal.querySelector('[data-maintenance-close]').focus();
-      });
-    });
-    function closeMaintenanceModal() {
-      if (!maintenanceModal || maintenanceModal.hidden) return;
-      maintenanceModal.hidden = true;
-      if (maintenanceTrigger) maintenanceTrigger.focus();
-    }
-    document.querySelectorAll('[data-maintenance-close]').forEach(function (button) {
-      button.addEventListener('click', closeMaintenanceModal);
-    });
-    if (maintenanceModal) {
-      maintenanceModal.addEventListener('click', function (event) { if (event.target === maintenanceModal) closeMaintenanceModal(); });
-      document.addEventListener('keydown', function (event) { if (event.key === 'Escape') closeMaintenanceModal(); });
-    }
-  }
-
-  // Asosiy click handler
-  document.addEventListener('click', async function (event) {
-    if (!shouldIntercept(event)) return;
-    const link = event.target.closest('a[href]');
-    if (!link) return;
-
-    event.preventDefault();
-    const url = link.href;
-
-    try {
-      const html = await fetchPage(url);
-      swapContent(html, url);
-      history.pushState({ url }, '', url);
-    } catch (error) {
-      console.warn('PJAX navigation failed, falling back to full reload:', error);
-      window.location.href = url;
-    }
-  });
-
-  // Browser back/forward tugmalari
-  window.addEventListener('popstate', async function (event) {
-    if (event.state && event.state.url) {
-      try {
-        const html = await fetchPage(event.state.url);
-        swapContent(html, event.state.url);
-      } catch (error) {
-        window.location.reload();
-      }
-    } else {
-      window.location.reload();
-    }
-  });
-
-  // Boshlang'ich holatni saqlash
-  history.replaceState({ url: window.location.href }, '', window.location.href);
-})();
+bootSiteInteractions();

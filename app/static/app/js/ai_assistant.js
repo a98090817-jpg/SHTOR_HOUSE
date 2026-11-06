@@ -1,6 +1,8 @@
-(function () {
+function initCurtainAssistant() {
   const root = document.querySelector('[data-curtain-assistant]');
   if (!root) return;
+  if (root.dataset.assistantInitialized === 'true') return;
+  root.dataset.assistantInitialized = 'true';
 
   const toggle = root.querySelector('[data-assistant-toggle]');
   const panel = root.querySelector('[data-assistant-panel]');
@@ -329,4 +331,12 @@
       window.setTimeout(updateLanguage, 0);
     }, { once: true });
   }
-})();
+}
+
+window.initCurtainAssistant = initCurtainAssistant;
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initCurtainAssistant);
+} else {
+  initCurtainAssistant();
+}
+document.addEventListener('turbo:load', initCurtainAssistant);

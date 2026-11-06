@@ -1,210 +1,212 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SHTOR HOUSE</title>
-    <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
-    <meta name="csrf-token" content="{{ csrf_token }}" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=19" />
-    <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=7" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  </head>
-  <body>
-    <div class="page-shell">
-      <main class="content">
-        <header class="topbar">
-          <div class="top-meta">
-            <a class="site-brand" href="{% url 'home' %}" aria-label="SHTOR HOUSE">
-              <img class="site-logo-image" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" />
-            </a>
-            <a class="top-link" href="#catalog" data-i18n="catalogLink">Catalog</a>
-          </div>
-          <div class="top-actions">
-            <a class="add-product-plus" href="{% url 'product_create' %}" aria-label="Add product" title="Add product" data-i18n-aria-label="addProduct" data-i18n-title="addProduct">+</a>
-            <a class="wishlist-link" href="{% url 'wishlist' %}" aria-label="My favorites" title="My favorites" data-i18n-title="favoritesTitle">
-              <span aria-hidden="true">♥</span>
-              <span class="wishlist-count" data-favorites-count>{{ favorite_ids|length }}</span>
-            </a>
-            {% include 'app/partials/language_picker.html' %}
-            <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
-            {% if user.is_authenticated %}
-              <div class="profile-menu">
-                <button class="profile-trigger" type="button" aria-expanded="false" data-profile-toggle>
-                  {% if request.session.google_profile_picture %}
-                    <img class="profile-avatar profile-photo" src="{{ request.session.google_profile_picture }}" alt="{{ user.username }} profile photo">
-                  {% else %}
-                    <span class="profile-avatar">{{ user.username|first|upper }}</span>
-                  {% endif %}
-                  <span>{{ user.username }}</span>
-                  <span>⌄</span>
-                </button>
-                <div class="profile-dropdown" data-profile-menu>
-                  <strong>{{ user.username }}</strong>
-                  {% if user.is_staff %}<a href="{% url 'product_create' %}" data-i18n="addProduct">Add product</a>{% endif %}
-                  <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="profile-logout" data-i18n="logout">Log out</button>
-                  </form>
-                </div>
-              </div>
-            {% else %}
-              <a class="btn btn-light" href="{% url 'login' %}" data-i18n="signIn">Sign in</a>
-              <a class="btn btn-primary" href="{% url 'register' %}" data-i18n="register">Create account</a>
-            {% endif %}
-          </div>
-        </header>
-
-        <section class="home-hero optimized-hero" data-reveal>
-          <div class="home-hero-copy" style="max-width: 800px; margin: 0 auto; text-align: center;">
-            <span class="home-hero-eyebrow" data-i18n="heroEyebrow" style="justify-content: center;">Thoughtful details. A warmer home.</span>
-            <h1 data-i18n="heroTitle">To'g'ri tanlangan parda xona kayfiyatini o'zgartiradi.</h1>
-            <p data-i18n="heroDescription" style="margin-left: auto; margin-right: auto;">Parda va jalyuzilarni xona, rang va mato bo'yicha ko'rib, uyingizga mos uslubni toping.</p>
-
-            <div class="community-proof site-visits-badge" style="margin: 22px auto; font-size: 16px; padding: 10px 22px; border-radius: 30px; display: inline-flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
-              <span class="community-proof-icon" aria-hidden="true" style="font-size: 18px; color: #e5a93c;">👁️‍🗨️</span>
-              <strong style="font-size: 18px; font-weight: 700; color: #fff;" data-visit-counter="{{ site_visit_count }}">0</strong>
-              <span style="opacity: 0.9;">saytga tashrif buyurganlar</span>
-            </div>
-
-            <div class="home-hero-actions" style="justify-content: center;">
-              <a class="home-hero-primary" href="#catalog"><span data-i18n="heroExplore">To'plamni ko'rish</span><i class="fas fa-arrow-right" aria-hidden="true"></i></a>
-              <a class="home-hero-secondary" href="tel:+998974244242"><i class="fas fa-phone" aria-hidden="true"></i><span data-i18n="heroContact">Biz bilan bog'lanish</span></a>
-            </div>
-            <div class="home-hero-note" style="justify-content: center;"><span aria-hidden="true">✦</span><span data-i18n="heroNote">Nozik bir detal ham makonni o'zingiznikidek his qildiradi.</span></div>
-          </div>
-        </section>
-
-        <section class="gallery-header" data-reveal id="catalog">
-          <div class="header-row">
-            <h2 data-i18n="catalogTitle">PARDA KATALOGI</h2>
-          </div>
-
-          <form class="search-bar" method="get" action="{% url 'home' %}" role="search">
-            {% if active_category and active_category != 'all' %}
-              <input type="hidden" name="category" value="{{ active_category }}" />
-            {% endif %}
-            <span class="search-icon" aria-hidden="true">⌕</span>
-            <input
-              type="search"
-              name="q"
-              value="{{ search_query }}"
-              placeholder="Pardani nomi, rangi, matosi bo'yicha qidiring…"
-              aria-label="Search products"
-              data-i18n-aria-label="searchProducts"
-              data-i18n-placeholder="searchPlaceholder"
-              autocomplete="off"
-            />
-            <button type="submit" class="search-submit" data-i18n="searchBtn">Qidirish</button>
-            {% if search_query %}
-              <a class="search-clear" href="{% if active_category and active_category != 'all' %}{% url 'home' %}?category={{ active_category }}{% else %}{% url 'home' %}{% endif %}" aria-label="Clear search" title="Clear" data-i18n-aria-label="clearSearch" data-i18n-title="clearSearch">×</a>
-            {% endif %}
-          </form>
-
-          <div class="meta-row">
-            {% if search_query %}
-              <span data-i18n="resultsFor">Natijalar</span> <strong>“{{ search_query }}”</strong> — <strong>{{ products|length }}</strong> <span data-i18n="products">mahsulot</span>
-            {% else %}
-              <span data-i18n="showing">Jami</span> <strong>{{ products|length }}</strong> <span data-i18n="products">mahsulot</span>
-            {% endif %}
-          </div>
-        </section>
-
-        <section class="home-benefits" aria-labelledby="home-benefits-title" data-reveal>
-          <div class="home-benefits-heading">
-            <span class="promo-carousel-eyebrow" data-i18n="benefitsEyebrow">HAYOT TARZINGIZGA MOS</span>
-            <h2 id="home-benefits-title" data-i18n="benefitsTitle">O'zingizga mos uslubni topish oson bo'lsin.</h2>
-          </div>
-          <div class="home-benefits-grid">
-            <article class="home-benefit-card" data-reveal-item>
-              <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-door-open"></i></span>
-              <h3 data-i18n="benefitRoomTitle">Har bir xona uchun uslub</h3>
-              <p data-i18n="benefitRoomText">Mehmonxona, yotoqxona, oshxona va boshqa xonalar uchun g'oyalarni ko'ring.</p>
-            </article>
-            <article class="home-benefit-card" data-reveal-item>
-              <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-sliders-h"></i></span>
-              <h3 data-i18n="benefitSearchTitle">O'zingizga qulay tarzda tanlang</h3>
-              <p data-i18n="benefitSearchText">Kategoriya orqali saralang yoki rang, mato va uslub bo'yicha qidiring.</p>
-            </article>
-            <article class="home-benefit-card" data-reveal-item>
-              <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-heart"></i></span>
-              <h3 data-i18n="benefitFavoriteTitle">Yoqtirganlaringizni saqlang</h3>
-              <p data-i18n="benefitFavoriteText">Yoqtirgan pardalaringizni sevimlilarga qo'shib, istalgan vaqtda qayting.</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="category-bar" aria-label="Category filters" data-i18n-aria-label="categoryFilters" data-reveal>
-          {% for key, label in categories %}
-            <a href="{% url 'home' %}?{% if key != 'all' %}category={{ key }}{% endif %}{% if search_query %}{% if key != 'all' %}&{% endif %}q={{ search_query|urlencode }}{% endif %}" class="category-pill {% if active_category == key %}active{% endif %}">
-              <span data-i18n="category_{{ key }}">{{ label }}</span>
-            </a>
-          {% endfor %}
-        </section>
-
-        <section class="gallery-toolbar" aria-label="Gallery controls" data-reveal>
-          <div class="toolbar-right catalog-controls">
-            <button class="sort-btn" type="button" data-action="sort" aria-label="Sort products by name" data-i18n-aria-label="sortProducts"><span class="sort-icon">↕</span><span class="sort-label" data-i18n="sort">Nomi</span></button>
-            <div class="view-switcher" aria-label="Catalog view" data-i18n-aria-label="catalogView">
-              <button class="grid-btn active" type="button" data-view="grid" aria-label="Grid view" title="Grid view" data-i18n-aria-label="gridView" data-i18n-title="gridView"><span class="dots"></span></button>
-              <button class="grid-btn" type="button" data-view="list" aria-label="List view" title="List view" data-i18n-aria-label="listView" data-i18n-title="listView"><span class="lines"></span></button>
-            </div>
-          </div>
-        </section>
-
-        {% if messages %}
-          <div class="messages">
-            {% for message in messages %}
-              <div class="message success">{{ message }}</div>
-            {% endfor %}
-          </div>
-        {% endif %}
-
-        <section class="gallery-grid" aria-label="Collection gallery" data-i18n-aria-label="collectionGallery">
-          {% for product in products %}
-            <article class="gallery-card {% if forloop.counter == 1 or forloop.counter == 3 %}tall{% elif forloop.counter == 4 %}wide{% endif %}" data-reveal-item>
-              <a class="card-link" href="{% url 'product_detail' product.slug %}">
-                {% if product.image %}
-                  <img class="product-photo" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
-                {% elif product.image_url %}
-                  <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" />
-                {% else %}
-                  <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80" alt="{{ product.name }}" loading="lazy" />
-                {% endif %}
-                <div class="card-overlay">
-                  <div>
-                    <span class="product-tag product-category" data-category="{{ product.category }}">{{ product.category|title }}</span>
-                    <h3>{{ product.name }}</h3>
-                  </div>
-                  <strong>${{ product.price }}</strong>
-                </div>
-              </a>
-              <div class="image-actions" aria-label="Product actions" data-i18n-aria-label="productActions">
-                <a class="image-action image-preview" href="{% url 'product_detail' product.slug %}" aria-label="View {{ product.name }}" title="View product" data-i18n-title="viewProduct">◉</a>
-                <div class="image-action-row">
-                  <button class="image-action favorite-card-action{% if product.id in favorite_ids %} selected{% endif %}" type="button" data-favorite-slug="{{ product.slug }}" aria-label="Add {{ product.name }} to favorites" title="Add to favorites" data-i18n-title="favorite">☆</button>
-                  {% if product.image %}
-                    <button class="image-action" type="button" data-download-image="{{ product.image.url }}" data-download-name="{{ product.slug }}" aria-label="Download {{ product.name }}" title="Download image" data-i18n-title="addImage">↓</button>
-                  {% elif product.image_url %}
-                    <button class="image-action" type="button" data-download-image="{{ product.image_url }}" data-download-name="{{ product.slug }}" aria-label="Download {{ product.name }}" title="Download image" data-i18n-title="addImage">↓</button>
-                  {% endif %}
-                </div>
-              </div>
-            </article>
-          {% empty %}
-            <div class="empty-state" data-i18n="emptyProducts">Hozircha mahsulot mavjud emas.</div>
-          {% endfor %}
-        </section>
-
-        {% include 'app/partials/footer.html' %}
-      </main>
-    </div>
-
-    {% include 'app/partials/ai_assistant.html' %}
-    <script src="{% static 'app/js/main.js' %}?v=12"></script>
-  </body>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SHTOR HOUSE</title>
+    <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=20" />
+    <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=7" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <meta name="turbo-cache-control" content="no-cache" />
+    <script src="{% static 'app/js/turbo.es2017-umd.js' %}"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <main class="content">
+        <header class="topbar">
+          <div class="top-meta">
+            <a class="site-brand" href="{% url 'home' %}" aria-label="SHTOR HOUSE">
+              <img class="site-logo-image" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" />
+            </a>
+            <a class="top-link" href="#catalog" data-i18n="catalogLink">Catalog</a>
+          </div>
+          <div class="top-actions">
+            <a class="add-product-plus" href="{% url 'product_create' %}" aria-label="Add product" title="Add product" data-i18n-aria-label="addProduct" data-i18n-title="addProduct">+</a>
+            <a class="wishlist-link" href="{% url 'wishlist' %}" aria-label="My favorites" title="My favorites" data-i18n-title="favoritesTitle">
+              <span aria-hidden="true">♥</span>
+              <span class="wishlist-count" data-favorites-count>{{ favorite_ids|length }}</span>
+            </a>
+            {% include 'app/partials/language_picker.html' %}
+            <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
+            {% if user.is_authenticated %}
+              <div class="profile-menu">
+                <button class="profile-trigger" type="button" aria-expanded="false" data-profile-toggle>
+                  {% if request.session.google_profile_picture %}
+                    <img class="profile-avatar profile-photo" src="{{ request.session.google_profile_picture }}" alt="{{ user.username }} profile photo">
+                  {% else %}
+                    <span class="profile-avatar">{{ user.username|first|upper }}</span>
+                  {% endif %}
+                  <span>{{ user.username }}</span>
+                  <span>⌄</span>
+                </button>
+                <div class="profile-dropdown" data-profile-menu>
+                  <strong>{{ user.username }}</strong>
+                  {% if user.is_staff %}<a href="{% url 'product_create' %}" data-i18n="addProduct">Add product</a>{% endif %}
+                  <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="profile-logout" data-i18n="logout">Log out</button>
+                  </form>
+                </div>
+              </div>
+            {% else %}
+              <a class="btn btn-light" href="{% url 'login' %}" data-i18n="signIn">Sign in</a>
+              <a class="btn btn-primary" href="{% url 'register' %}" data-i18n="register">Create account</a>
+            {% endif %}
+          </div>
+        </header>
+
+        <section class="home-hero optimized-hero" data-reveal>
+          <div class="home-hero-copy" style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <span class="home-hero-eyebrow" data-i18n="heroEyebrow" style="justify-content: center;">Thoughtful details. A warmer home.</span>
+            <h1 data-i18n="heroTitle">To'g'ri tanlangan parda xona kayfiyatini o'zgartiradi.</h1>
+            <p data-i18n="heroDescription" style="margin-left: auto; margin-right: auto;">Parda va jalyuzilarni xona, rang va mato bo'yicha ko'rib, uyingizga mos uslubni toping.</p>
+
+            <div class="community-proof site-visits-badge" style="margin: 22px auto; font-size: 16px; padding: 10px 22px; border-radius: 30px; display: inline-flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
+              <span class="community-proof-icon" aria-hidden="true" style="font-size: 18px; color: #e5a93c;">👁️‍🗨️</span>
+              <strong style="font-size: 18px; font-weight: 700; color: #fff;" data-visit-counter="{{ site_visit_count }}">0</strong>
+              <span style="opacity: 0.9;">saytga tashrif buyurganlar</span>
+            </div>
+
+            <div class="home-hero-actions" style="justify-content: center;">
+              <a class="home-hero-primary" href="#catalog"><span data-i18n="heroExplore">To'plamni ko'rish</span><i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+              <a class="home-hero-secondary" href="tel:+998974244242"><i class="fas fa-phone" aria-hidden="true"></i><span data-i18n="heroContact">Biz bilan bog'lanish</span></a>
+            </div>
+            <div class="home-hero-note" style="justify-content: center;"><span aria-hidden="true">✦</span><span data-i18n="heroNote">Nozik bir detal ham makonni o'zingiznikidek his qildiradi.</span></div>
+          </div>
+        </section>
+
+        <section class="gallery-header" data-reveal id="catalog">
+          <div class="header-row">
+            <h2 data-i18n="catalogTitle">PARDA KATALOGI</h2>
+          </div>
+
+          <form class="search-bar" method="get" action="{% url 'home' %}" role="search">
+            {% if active_category and active_category != 'all' %}
+              <input type="hidden" name="category" value="{{ active_category }}" />
+            {% endif %}
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input
+              type="search"
+              name="q"
+              value="{{ search_query }}"
+              placeholder="Pardani nomi, rangi, matosi bo'yicha qidiring…"
+              aria-label="Search products"
+              data-i18n-aria-label="searchProducts"
+              data-i18n-placeholder="searchPlaceholder"
+              autocomplete="off"
+            />
+            <button type="submit" class="search-submit" data-i18n="searchBtn">Qidirish</button>
+            {% if search_query %}
+              <a class="search-clear" href="{% if active_category and active_category != 'all' %}{% url 'home' %}?category={{ active_category }}{% else %}{% url 'home' %}{% endif %}" aria-label="Clear search" title="Clear" data-i18n-aria-label="clearSearch" data-i18n-title="clearSearch">×</a>
+            {% endif %}
+          </form>
+
+          <div class="meta-row">
+            {% if search_query %}
+              <span data-i18n="resultsFor">Natijalar</span> <strong>“{{ search_query }}”</strong> — <strong>{{ products|length }}</strong> <span data-i18n="products">mahsulot</span>
+            {% else %}
+              <span data-i18n="showing">Jami</span> <strong>{{ products|length }}</strong> <span data-i18n="products">mahsulot</span>
+            {% endif %}
+          </div>
+        </section>
+
+        <section class="home-benefits" aria-labelledby="home-benefits-title" data-reveal>
+          <div class="home-benefits-heading">
+            <span class="promo-carousel-eyebrow" data-i18n="benefitsEyebrow">HAYOT TARZINGIZGA MOS</span>
+            <h2 id="home-benefits-title" data-i18n="benefitsTitle">O'zingizga mos uslubni topish oson bo'lsin.</h2>
+          </div>
+          <div class="home-benefits-grid">
+            <article class="home-benefit-card" data-reveal-item>
+              <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-door-open"></i></span>
+              <h3 data-i18n="benefitRoomTitle">Har bir xona uchun uslub</h3>
+              <p data-i18n="benefitRoomText">Mehmonxona, yotoqxona, oshxona va boshqa xonalar uchun g'oyalarni ko'ring.</p>
+            </article>
+            <article class="home-benefit-card" data-reveal-item>
+              <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-sliders-h"></i></span>
+              <h3 data-i18n="benefitSearchTitle">O'zingizga qulay tarzda tanlang</h3>
+              <p data-i18n="benefitSearchText">Kategoriya orqali saralang yoki rang, mato va uslub bo'yicha qidiring.</p>
+            </article>
+            <article class="home-benefit-card" data-reveal-item>
+              <span class="home-benefit-icon" aria-hidden="true"><i class="fas fa-heart"></i></span>
+              <h3 data-i18n="benefitFavoriteTitle">Yoqtirganlaringizni saqlang</h3>
+              <p data-i18n="benefitFavoriteText">Yoqtirgan pardalaringizni sevimlilarga qo'shib, istalgan vaqtda qayting.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="category-bar" aria-label="Category filters" data-i18n-aria-label="categoryFilters" data-reveal>
+          {% for key, label in categories %}
+            <a href="{% url 'home' %}?{% if key != 'all' %}category={{ key }}{% endif %}{% if search_query %}{% if key != 'all' %}&{% endif %}q={{ search_query|urlencode }}{% endif %}" class="category-pill {% if active_category == key %}active{% endif %}">
+              <span data-i18n="category_{{ key }}">{{ label }}</span>
+            </a>
+          {% endfor %}
+        </section>
+
+        <section class="gallery-toolbar" aria-label="Gallery controls" data-reveal>
+          <div class="toolbar-right catalog-controls">
+            <button class="sort-btn" type="button" data-action="sort" aria-label="Sort products by name" data-i18n-aria-label="sortProducts"><span class="sort-icon">↕</span><span class="sort-label" data-i18n="sort">Nomi</span></button>
+            <div class="view-switcher" aria-label="Catalog view" data-i18n-aria-label="catalogView">
+              <button class="grid-btn active" type="button" data-view="grid" aria-label="Grid view" title="Grid view" data-i18n-aria-label="gridView" data-i18n-title="gridView"><span class="dots"></span></button>
+              <button class="grid-btn" type="button" data-view="list" aria-label="List view" title="List view" data-i18n-aria-label="listView" data-i18n-title="listView"><span class="lines"></span></button>
+            </div>
+          </div>
+        </section>
+
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="message success">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <section class="gallery-grid" aria-label="Collection gallery" data-i18n-aria-label="collectionGallery">
+          {% for product in products %}
+            <article class="gallery-card {% if forloop.counter == 1 or forloop.counter == 3 %}tall{% elif forloop.counter == 4 %}wide{% endif %}" data-reveal-item>
+              <a class="card-link" href="{% url 'product_detail' product.slug %}">
+                {% if product.image %}
+                  <img class="product-photo" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" />
+                {% elif product.image_url %}
+                  <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" />
+                {% else %}
+                  <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80" alt="{{ product.name }}" loading="lazy" />
+                {% endif %}
+                <div class="card-overlay">
+                  <div>
+                    <span class="product-tag product-category" data-category="{{ product.category }}">{{ product.category|title }}</span>
+                    <h3>{{ product.name }}</h3>
+                  </div>
+                  <strong>${{ product.price }}</strong>
+                </div>
+              </a>
+              <div class="image-actions" aria-label="Product actions" data-i18n-aria-label="productActions">
+                <a class="image-action image-preview" href="{% url 'product_detail' product.slug %}" aria-label="View {{ product.name }}" title="View product" data-i18n-title="viewProduct">◉</a>
+                <div class="image-action-row">
+                  <button class="image-action favorite-card-action{% if product.id in favorite_ids %} selected{% endif %}" type="button" data-favorite-slug="{{ product.slug }}" aria-label="Add {{ product.name }} to favorites" title="Add to favorites" data-i18n-title="favorite">☆</button>
+                  {% if product.image %}
+                    <button class="image-action" type="button" data-download-image="{{ product.image.url }}" data-download-name="{{ product.slug }}" aria-label="Download {{ product.name }}" title="Download image" data-i18n-title="addImage">↓</button>
+                  {% elif product.image_url %}
+                    <button class="image-action" type="button" data-download-image="{{ product.image_url }}" data-download-name="{{ product.slug }}" aria-label="Download {{ product.name }}" title="Download image" data-i18n-title="addImage">↓</button>
+                  {% endif %}
+                </div>
+              </div>
+            </article>
+          {% empty %}
+            <div class="empty-state" data-i18n="emptyProducts">Hozircha mahsulot mavjud emas.</div>
+          {% endfor %}
+        </section>
+
+        {% include 'app/partials/footer.html' %}
+      </main>
+    </div>
+
+    {% include 'app/partials/ai_assistant.html' %}
+    <script src="{% static 'app/js/main.js' %}?v=13"></script>
+  </body>
 </html>

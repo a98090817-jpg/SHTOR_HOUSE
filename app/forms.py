@@ -38,7 +38,7 @@ class ProductForm(forms.ModelForm):
         required=True,
         label='Product image (file)',
         widget=forms.ClearableFileInput(attrs={
-            'accept': '.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp',
+            'accept': 'image/*,.heic,.heif',
         }),
     )
 
@@ -68,7 +68,7 @@ class ProductForm(forms.ModelForm):
             return normalize_product_image(uploaded_image)
         except (Image.DecompressionBombError, Image.UnidentifiedImageError, OSError, ValueError):
             raise ValidationError(
-                'Upload a valid JPG, PNG, or WEBP image.',
+                'Upload a valid JPG, PNG, WEBP, HEIC, or HEIF image.',
                 code='invalid_image',
             ) from None
 

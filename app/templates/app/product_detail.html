@@ -1,90 +1,92 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ product.name }} | SHTOR HOUSE</title>
-    <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
-    <meta name="csrf-token" content="{{ csrf_token }}" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=19" />
-    <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=7" />
-  </head>
-  <body class="detail-page">
-    <div class="detail-shell">
-      <header class="detail-topbar">
-        <a href="{% url 'home' %}" class="brand-link">
-          <img class="site-logo-image" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" />
-          <span data-i18n="back">← Back</span>
-        </a>
-        <div class="detail-actions">
-          {% include 'app/partials/language_picker.html' %}
-          <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
-          <button class="btn btn-light" type="button" data-share data-i18n="share">Share</button>
-        </div>
-      </header>
-
-      <main class="detail-layout">
-        <section class="detail-media">
-          {% if product.image %}
-            <img class="product-photo" src="{{ product.image.url }}" alt="{{ product.name }}" />
-          {% elif product.image_url %}
-            <img src="{{ product.image_url }}" alt="{{ product.name }}" />
-          {% else %}
-            <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1000&q=80" alt="{{ product.name }}" />
-          {% endif %}
-        </section>
-
-        <aside class="detail-info">
-          <p class="eyebrow product-category" data-category="{{ product.category }}">{{ product.category|title }}</p>
-          <h1>{{ product.name }}</h1>
-          <div class="price-row">
-            <span class="price">${{ product.price }}</span>
-            <span class="status" data-i18n="inStock">In stock</span>
-          </div>
-
-          <p class="description">{{ product.description }}</p>
-
-          <ul class="spec-list">
-            {% if product.material %}<li><strong data-i18n="material">Material:</strong> {{ product.material }}</li>{% endif %}
-            {% if product.length_meters %}<li><strong data-i18n="length">Length:</strong> {{ product.length_meters }} m</li>{% endif %}
-            {% if product.origin %}<li><strong data-i18n="origin">Origin:</strong> {{ product.origin }}</li>{% endif %}
-            {% if product.color %}<li><strong data-i18n="color">Color:</strong> {{ product.color }}</li>{% endif %}
-            <li><strong data-i18n="style">Style:</strong> <span data-i18n="premiumLayered">Premium layered</span></li>
-          </ul>
-
-          <div class="detail-actions detail-purchase-actions">
-            <button class="btn btn-light favorite-btn{% if is_favorite %} selected{% endif %}" type="button" data-favorite-slug="{{ product.slug }}" data-i18n="favorite">☆ Add to favorites</button>
-            <button class="btn btn-primary" type="button" data-buy data-product="{{ product.name }}" data-i18n="buy">Buy now</button>
-          </div>
-
-          {% if user.is_staff %}
-            <form method="post" action="{% url 'product_delete' product.slug %}" class="delete-product-form" data-confirm-i18n="deleteConfirm">
-              {% csrf_token %}
-              <button class="delete-product-button" type="submit"><span aria-hidden="true">⌫</span> <span data-i18n="deleteProduct">Delete product</span></button>
-            </form>
-          {% endif %}
-        </aside>
-      </main>
-      {% include 'app/partials/footer.html' %}
-    </div>
-    <div class="modal-backdrop" data-modal hidden>
-      <div class="contact-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <button class="modal-close" type="button" data-modal-close aria-label="Close" data-i18n-aria-label="close">×</button>
-        <p class="eyebrow" data-i18n="purchase">Purchase request</p>
-        <h2 id="modal-title"><span data-i18n="contactAbout">Contact us about</span> {{ product.name }}</h2>
-        <p data-i18n="contactText">Choose the easiest way to reach us and we will help you complete your order.</p>
-        <div class="modal-contacts">
-          <a href="tel:+998974244242">☎ +998 97 424 42 42</a>
-          <a href="https://www.instagram.com/shtor_house?exln=MWRrajd1ejF4Y3JnaA==" target="_blank" rel="noopener noreferrer">◎ Instagram</a>
-          <a href="https://t.me/Shtor_House_Shop" target="_blank" rel="noopener noreferrer">➤ Telegram</a>
-        </div>
-      </div>
-    </div>
-    {% include 'app/partials/ai_assistant.html' %}
-    <script src="{% static 'app/js/main.js' %}?v=12"></script>
-  </body>
-</html>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ product.name }} | SHTOR HOUSE</title>
+    <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=20" />
+    <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=7" />
+    <meta name="turbo-cache-control" content="no-cache" />
+    <script src="{% static 'app/js/turbo.es2017-umd.js' %}"></script>
+  </head>
+  <body class="detail-page">
+    <div class="detail-shell">
+      <header class="detail-topbar">
+        <a href="{% url 'home' %}" class="brand-link">
+          <img class="site-logo-image" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" />
+          <span data-i18n="back">← Back</span>
+        </a>
+        <div class="detail-actions">
+          {% include 'app/partials/language_picker.html' %}
+          <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
+          <button class="btn btn-light" type="button" data-share data-i18n="share">Share</button>
+        </div>
+      </header>
+
+      <main class="detail-layout">
+        <section class="detail-media">
+          {% if product.image %}
+            <img class="product-photo" src="{{ product.image.url }}" alt="{{ product.name }}" />
+          {% elif product.image_url %}
+            <img src="{{ product.image_url }}" alt="{{ product.name }}" />
+          {% else %}
+            <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1000&q=80" alt="{{ product.name }}" />
+          {% endif %}
+        </section>
+
+        <aside class="detail-info">
+          <p class="eyebrow product-category" data-category="{{ product.category }}">{{ product.category|title }}</p>
+          <h1>{{ product.name }}</h1>
+          <div class="price-row">
+            <span class="price">${{ product.price }}</span>
+            <span class="status" data-i18n="inStock">In stock</span>
+          </div>
+
+          <p class="description">{{ product.description }}</p>
+
+          <ul class="spec-list">
+            {% if product.material %}<li><strong data-i18n="material">Material:</strong> {{ product.material }}</li>{% endif %}
+            {% if product.length_meters %}<li><strong data-i18n="length">Length:</strong> {{ product.length_meters }} m</li>{% endif %}
+            {% if product.origin %}<li><strong data-i18n="origin">Origin:</strong> {{ product.origin }}</li>{% endif %}
+            {% if product.color %}<li><strong data-i18n="color">Color:</strong> {{ product.color }}</li>{% endif %}
+            <li><strong data-i18n="style">Style:</strong> <span data-i18n="premiumLayered">Premium layered</span></li>
+          </ul>
+
+          <div class="detail-actions detail-purchase-actions">
+            <button class="btn btn-light favorite-btn{% if is_favorite %} selected{% endif %}" type="button" data-favorite-slug="{{ product.slug }}" data-i18n="favorite">☆ Add to favorites</button>
+            <button class="btn btn-primary" type="button" data-buy data-product="{{ product.name }}" data-i18n="buy">Buy now</button>
+          </div>
+
+          {% if user.is_staff %}
+            <form method="post" action="{% url 'product_delete' product.slug %}" class="delete-product-form" data-confirm-i18n="deleteConfirm">
+              {% csrf_token %}
+              <button class="delete-product-button" type="submit"><span aria-hidden="true">⌫</span> <span data-i18n="deleteProduct">Delete product</span></button>
+            </form>
+          {% endif %}
+        </aside>
+      </main>
+      {% include 'app/partials/footer.html' %}
+    </div>
+    <div class="modal-backdrop" data-modal hidden>
+      <div class="contact-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button class="modal-close" type="button" data-modal-close aria-label="Close" data-i18n-aria-label="close">×</button>
+        <p class="eyebrow" data-i18n="purchase">Purchase request</p>
+        <h2 id="modal-title"><span data-i18n="contactAbout">Contact us about</span> {{ product.name }}</h2>
+        <p data-i18n="contactText">Choose the easiest way to reach us and we will help you complete your order.</p>
+        <div class="modal-contacts">
+          <a href="tel:+998974244242">☎ +998 97 424 42 42</a>
+          <a href="https://www.instagram.com/shtor_house?exln=MWRrajd1ejF4Y3JnaA==" target="_blank" rel="noopener noreferrer">◎ Instagram</a>
+          <a href="https://t.me/Shtor_House_Shop" target="_blank" rel="noopener noreferrer">➤ Telegram</a>
+        </div>
+      </div>
+    </div>
+    {% include 'app/partials/ai_assistant.html' %}
+    <script src="{% static 'app/js/main.js' %}?v=13"></script>
+  </body>
+</html>

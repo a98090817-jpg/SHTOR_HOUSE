@@ -449,7 +449,7 @@ class ProductCatalogTests(TestCase):
         self.assertContains(response, '/static/app/css/style.css')
         self.assertContains(response, 'Add curtain')
         self.assertContains(response, 'id="id_image"')
-        self.assertContains(response, 'accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"')
+        self.assertContains(response, 'accept="image/*,.heic,.heif"')
         for field_id in (
             'id_name', 'id_material', 'id_length_meters', 'id_price',
             'id_color', 'id_origin', 'id_category', 'id_description',
