@@ -47,7 +47,7 @@
 
           {% include 'app/partials/language_picker.html' %}
 
-          <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">вј</button>
+          <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme"><i class="fas fa-moon" aria-hidden="true"></i></button>
 
           <button class="btn btn-light" type="button" data-share data-i18n="share">Share</button>
 
@@ -107,7 +107,7 @@
 
           <div class="detail-actions detail-purchase-actions">
 
-            <button class="btn btn-light favorite-btn{% if is_favorite %} selected{% endif %}" type="button" data-favorite-slug="{{ product.slug }}" data-i18n="favorite">в† Add to favorites</button>
+            <button class="btn btn-light favorite-btn{% if is_favorite %} selected{% endif %}" type="button" data-favorite-slug="{{ product.slug }}" data-i18n="favorite"><i class="fas fa-heart" aria-hidden="true"></i> Add to favorites</button>
 
             <button class="btn btn-primary" type="button" data-buy data-product="{{ product.name }}" data-i18n="buy">Buy now</button>
 
@@ -119,7 +119,7 @@
 
               {% csrf_token %}
 
-              <button class="delete-product-button" type="submit"><span aria-hidden="true">вЊ«</span> <span data-i18n="deleteProduct">Delete product</span></button>
+              <button class="delete-product-button" type="submit"><i class="fas fa-trash" aria-hidden="true"></i> <span data-i18n="deleteProduct">Delete product</span></button>
 
             </form>
 
@@ -147,11 +147,11 @@
 
         <div class="modal-contacts">
 
-          <a href="tel:+998974244242">вЋ +998 97 424 42 42</a>
+          <a href="tel:+998974244242"><i class="fas fa-phone" aria-hidden="true"></i> +998 97 424 42 42</a>
 
-          <a href="https://www.instagram.com/shtor_house?exln=MWRrajd1ejF4Y3JnaA==" target="_blank" rel="noopener noreferrer">в—Ћ Instagram</a>
+          <a href="https://www.instagram.com/shtor_house?exln=MWRrajd1ejF4Y3JnaA==" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram" aria-hidden="true"></i> Instagram</a>
 
-          <a href="https://t.me/Shtor_House_Shop" target="_blank" rel="noopener noreferrer">вћ¤ Telegram</a>
+          <a href="https://t.me/Shtor_House_Shop" target="_blank" rel="noopener noreferrer"><i class="fab fa-telegram-plane" aria-hidden="true"></i> Telegram</a>
 
         </div>
 

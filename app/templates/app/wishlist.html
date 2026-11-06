@@ -53,7 +53,7 @@
 
           {% include 'app/partials/language_picker.html' %}
 
-          <button class="theme-toggle btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">вј</button>
+          <button class="theme-toggle btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme"><i class="fas fa-moon" aria-hidden="true"></i></button>
 
           {% if user.is_authenticated %}
 
@@ -75,7 +75,7 @@
 
               <span>{{ user.username }}</span>
 
-              <span>вЊ„</span>
+               <i class="fas fa-chevron-down" aria-hidden="true"></i>
 
             </button>
 
@@ -181,7 +181,7 @@
 
             <a class="image-action image-preview" href="{% url 'product_detail' product.slug %}"
 
-              aria-label="View {{ product.name }}" title="View product" data-i18n-title="viewProduct">в—‰</a>
+              aria-label="View {{ product.name }}" title="View product" data-i18n-title="viewProduct"><i class="fas fa-eye" aria-hidden="true"></i></a>
 
             <div class="image-action-row">
 

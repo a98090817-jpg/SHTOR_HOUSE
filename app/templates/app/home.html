@@ -348,7 +348,7 @@
 
               <div class="image-actions" aria-label="Product actions" data-i18n-aria-label="productActions">
 
-                <a class="image-action image-preview" href="{% url 'product_detail' product.slug %}" aria-label="View {{ product.name }}" title="View product" data-i18n-title="viewProduct">в—‰</a>
+                <a class="image-action image-preview" href="{% url 'product_detail' product.slug %}" aria-label="View {{ product.name }}" title="View product" data-i18n-title="viewProduct"><i class="fas fa-eye" aria-hidden="true"></i></a>
 
                 <div class="image-action-row">
 
@@ -356,11 +356,11 @@
 
                   {% if product.image %}
 
-                    <button class="image-action" type="button" data-download-image="{{ product.image.url }}" data-download-name="{{ product.slug }}" aria-label="Download {{ product.name }}" title="Download image" data-i18n-title="addImage">в†“</button>
+                    <button class="image-action" type="button" data-download-image="{{ product.image.url }}" data-download-name="{{ product.slug }}" aria-label="Download {{ product.name }}" title="Download image" data-i18n-title="addImage"><i class="fas fa-download" aria-hidden="true"></i></button>
 
                   {% elif product.image_url %}
 
-                    <button class="image-action" type="button" data-download-image="{{ product.image_url }}" data-download-name="{{ product.slug }}" aria-label="Download {{ product.name }}" title="Download image" data-i18n-title="addImage">в†“</button>
+                    <button class="image-action" type="button" data-download-image="{{ product.image_url }}" data-download-name="{{ product.slug }}" aria-label="Download {{ product.name }}" title="Download image" data-i18n-title="addImage"><i class="fas fa-download" aria-hidden="true"></i></button>
 
                   {% endif %}
 
