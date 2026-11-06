@@ -1,51 +1,92 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-page-title="pageRegister">Register | SHTOR HOUSE</title>
-    <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
-    <meta name="csrf-token" content="{{ csrf_token }}" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=20" />
-    <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=7" />
+﻿{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title data-page-title="pageRegister">Register | SHTOR HOUSE</title>
+
+    <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
+
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=20" />
+
     <meta name="turbo-cache-control" content="no-cache" />
     <script src="{% static 'app/js/turbo.es2017-umd.js' %}"></script>
-  </head>
-  <body class="auth-page">
-    <div class="auth-toolbar">
-      {% include 'app/partials/language_picker.html' %}
-      <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
-    </div>
-    <div class="auth-shell">
-      <div class="auth-card">
-        <div class="auth-brand"><img class="site-logo-image auth-brand-logo" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" /></div>
-        <div class="auth-header">
-          <p class="eyebrow" data-i18n="registerEyebrow">Welcome</p>
-          <h1 data-i18n="registerTitle">Create account</h1>
-        </div>
-
-        <form method="post" class="auth-form">
-          {% csrf_token %}
-          {% for field in form %}
-            <div class="field-group">
-              <label for="{{ field.id_for_label }}" data-field-name="{{ field.name }}">{{ field.label }}</label>
-              {{ field }}
-              {% if field.errors %}
-                <div class="field-errors">{{ field.errors }}</div>
-              {% endif %}
-            </div>
-          {% endfor %}
-          <button type="submit" class="quote-submit" data-i18n="signUp">Sign up</button>
-        </form>
-
-        <p class="switch-text"><span data-i18n="alreadyAccount">Already have an account?</span> <a href="{% url 'login' %}" data-i18n="logIn">Log in</a></p>
-      </div>
-    </div>
-    {% include 'app/partials/ai_assistant.html' %}
-    <script src="{% static 'app/js/main.js' %}?v=13"></script>
-  </body>
-</html>
+  </head>
+
+  <body class="auth-page">
+
+    <div class="auth-toolbar">
+
+      {% include 'app/partials/language_picker.html' %}
+
+      <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">вј</button>
+
+    </div>
+
+    <div class="auth-shell">
+
+      <div class="auth-card">
+
+        <div class="auth-brand"><img class="site-logo-image auth-brand-logo" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" /></div>
+
+        <div class="auth-header">
+
+          <p class="eyebrow" data-i18n="registerEyebrow">Welcome</p>
+
+          <h1 data-i18n="registerTitle">Create account</h1>
+
+        </div>
+
+        <form method="post" class="auth-form">
+
+          {% csrf_token %}
+
+          {% for field in form %}
+
+            <div class="field-group">
+
+              <label for="{{ field.id_for_label }}" data-field-name="{{ field.name }}">{{ field.label }}</label>
+
+              {{ field }}
+
+              {% if field.errors %}
+
+                <div class="field-errors">{{ field.errors }}</div>
+
+              {% endif %}
+
+            </div>
+
+          {% endfor %}
+
+          <button type="submit" class="quote-submit" data-i18n="signUp">Sign up</button>
+
+        </form>
+
+        <p class="switch-text"><span data-i18n="alreadyAccount">Already have an account?</span> <a href="{% url 'login' %}" data-i18n="logIn">Log in</a></p>
+
+      </div>
+
+    </div>
+
+    <script src="{% static 'app/js/main.js' %}?v=13"></script>
+
+  </body>
+
+</html>
+

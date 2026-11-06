@@ -3395,3 +3395,136 @@ textarea:focus-visible {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18) !important;
     }
 }
+
+/* =========================================================
+   ANDROID: Til tanlovi va theme toggle o'rtasidagi ustunlik,
+   bosilmagan tugmalarni tuzatish (faqat CSS, HTML o'zgarmaydi)
+   ========================================================= */
+@media (max-width: 768px) {
+    html.is-android .topbar {
+        flex-wrap: nowrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 10px 12px 10px 14px !important;
+    }
+
+    html.is-android .topbar > * {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+    }
+
+    /* Til tanlovchi va theme toggle bir qatlamda, bir-birini yopmasin */
+    html.is-android .top-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        margin-left: auto !important;
+        z-index: 20 !important;
+        position: relative !important;
+    }
+
+    /* Language picker — alohida joyga, chétroqqa */
+    html.is-android .language-picker {
+        position: static !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        padding: 4px 8px 4px 8px !important;
+        border-radius: 999px !important;
+        z-index: 20 !important;
+        min-width: 0 !important;
+        pointer-events: auto !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+    }
+
+    html.is-android .language-picker-trigger {
+        padding: 4px 4px 4px 2px !important;
+        gap: 6px !important;
+        pointer-events: auto !important;
+        cursor: pointer !important;
+    }
+
+    html.is-android .language-picker-menu {
+        position: absolute !important;
+        top: calc(100% + 6px) !important;
+        right: 0 !important;
+        left: auto !important;
+        z-index: 9999 !important;
+        max-width: calc(100vw - 20px) !important;
+        pointer-events: auto !important;
+    }
+
+    html.is-android .language-picker-option {
+        min-height: 36px !important;
+        padding: 8px 10px !important;
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+    }
+
+    /* Theme toggle — til tanlovchisidan ajratib, bosiladigan qilamiz */
+    html.is-android .theme-toggle {
+        position: relative !important;
+        z-index: 20 !important;
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 40px !important;
+        height: 38px !important;
+        margin-left: 8px !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    html.is-android .theme-toggle svg {
+        pointer-events: none !important;
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    /* Barcha tugmalar Androidda bosilishi uchun pointer-events faollashtiriladi */
+    html.is-android button,
+    html.is-android a,
+    html.is-android .btn,
+    html.is-android .btn-light,
+    html.is-android .btn-primary,
+    html.is-android .quote-submit,
+    html.is-android .profile-trigger,
+    html.is-android .image-action,
+    html.is-android .favorite-btn,
+    html.is-android .delete-product-button {
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(215, 185, 142, 0.2);
+        position: relative !important;
+        z-index: 10 !important;
+    }
+
+    /* Header elementlarini ustunga chiqaramiz */
+    html.is-android .topbar,
+    html.is-android .detail-topbar,
+    html.is-android .auth-toolbar {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 100 !important;
+    }
+
+    /* Profil menyusi va til tanlovchi menysi kliklanishi uchun z-index */
+    html.is-android .profile-dropdown {
+        z-index: 9999 !important;
+        pointer-events: auto !important;
+    }
+
+    /* Topbar ichidagi elementlar bir-birini qoplamasin */
+    html.is-android .top-meta,
+    html.is-android .top-actions {
+        position: relative !important;
+        z-index: 15 !important;
+    }
+}

@@ -1,78 +1,144 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-page-title="pageSignIn">Sign in | SHTOR HOUSE</title>
-    <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
-    <meta name="csrf-token" content="{{ csrf_token }}" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=20" />
-    <link rel="stylesheet" href="{% static 'app/css/ai_assistant.css' %}?v=7" />
+﻿{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title data-page-title="pageSignIn">Sign in | SHTOR HOUSE</title>
+
+    <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
+
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=20" />
+
     <meta name="turbo-cache-control" content="no-cache" />
     <script src="{% static 'app/js/turbo.es2017-umd.js' %}"></script>
-  </head>
-  <body class="auth-page">
-    <div class="auth-toolbar">
-      {% include 'app/partials/language_picker.html' %}
-      <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">☼</button>
-    </div>
-    <main class="auth-shell login-shell">
-      <section class="auth-card login-card">
-        <div class="auth-brand"><img class="site-logo-image auth-brand-logo" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" /></div>
-        <div class="auth-header">
-          <p class="eyebrow" data-i18n="welcomeBack">Welcome back</p>
-          <h1 data-i18n="signInTitle">Sign in</h1>
-          <p class="auth-subtitle" data-i18n="signInSubtitle">Continue to your SHTOR HOUSE account.</p>
-        </div>
-
-        {% if messages %}<div class="messages auth-messages">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
-
-        {% if form.non_field_errors %}<div class="field-errors form-error">{{ form.non_field_errors }}</div>{% endif %}
-        <form method="post" class="auth-form">
-          {% csrf_token %}
-          <div class="field-group">
-            <label for="{{ form.username.id_for_label }}" data-i18n="emailUsername">{{ form.username.label }}</label>
-            {{ form.username }}
-            {% if form.username.errors %}<div class="field-errors">{{ form.username.errors }}</div>{% endif %}
-          </div>
-          <div class="field-group">
-            <label for="{{ form.password.id_for_label }}" data-i18n="password">Password</label>
-            <div class="password-input-wrap">
-              {{ form.password }}
-              <button
-                class="password-toggle"
-                type="button"
-                data-password-toggle
-                data-i18n-aria-label="showPassword"
-                aria-label="Show password"
-                aria-pressed="false"
-              >
-                <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-                <svg class="eye-off-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
-                  <path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a15.8 15.8 0 0 1-3.1 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10.7 10.7 0 0 0 4.1-.8"></path>
-                </svg>
-              </button>
-            </div>
-            {% if form.password.errors %}<div class="field-errors">{{ form.password.errors }}</div>{% endif %}
-          </div>
-          <button type="submit" class="quote-submit auth-submit" data-i18n="continue">Continue</button>
-        </form>
-
-        <a class="forgot-link" href="{% url 'password_reset' %}" data-i18n="forgot">Forgot password?</a>
-        <div class="auth-divider"><span data-i18n="or">or</span></div>
-        <a class="social-login" href="{% url 'google_login' %}" data-turbo="false"><span class="google-mark">G</span> <span data-i18n="google">Continue with Google</span></a>
-        <p class="switch-text"><span data-i18n="noAccount">Don't have an account?</span> <a href="{% url 'register' %}" data-i18n="signUp">Sign up</a></p>
-      </section>
-    </main>
-    {% include 'app/partials/ai_assistant.html' %}
-    <script src="{% static 'app/js/main.js' %}?v=13"></script>
-  </body>
-</html>
+  </head>
+
+  <body class="auth-page">
+
+    <div class="auth-toolbar">
+
+      {% include 'app/partials/language_picker.html' %}
+
+      <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme">вј</button>
+
+    </div>
+
+    <main class="auth-shell login-shell">
+
+      <section class="auth-card login-card">
+
+        <div class="auth-brand"><img class="site-logo-image auth-brand-logo" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" /></div>
+
+        <div class="auth-header">
+
+          <p class="eyebrow" data-i18n="welcomeBack">Welcome back</p>
+
+          <h1 data-i18n="signInTitle">Sign in</h1>
+
+          <p class="auth-subtitle" data-i18n="signInSubtitle">Continue to your SHTOR HOUSE account.</p>
+
+        </div>
+
+        {% if messages %}<div class="messages auth-messages">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+
+        {% if form.non_field_errors %}<div class="field-errors form-error">{{ form.non_field_errors }}</div>{% endif %}
+
+        <form method="post" class="auth-form">
+
+          {% csrf_token %}
+
+          <div class="field-group">
+
+            <label for="{{ form.username.id_for_label }}" data-i18n="emailUsername">{{ form.username.label }}</label>
+
+            {{ form.username }}
+
+            {% if form.username.errors %}<div class="field-errors">{{ form.username.errors }}</div>{% endif %}
+
+          </div>
+
+          <div class="field-group">
+
+            <label for="{{ form.password.id_for_label }}" data-i18n="password">Password</label>
+
+            <div class="password-input-wrap">
+
+              {{ form.password }}
+
+              <button
+
+                class="password-toggle"
+
+                type="button"
+
+                data-password-toggle
+
+                data-i18n-aria-label="showPassword"
+
+                aria-label="Show password"
+
+                aria-pressed="false"
+
+              >
+
+                <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+
+                  <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"></path>
+
+                  <circle cx="12" cy="12" r="3"></circle>
+
+                </svg>
+
+                <svg class="eye-off-icon" viewBox="0 0 24 24" aria-hidden="true">
+
+                  <path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+
+                  <path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a15.8 15.8 0 0 1-3.1 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10.7 10.7 0 0 0 4.1-.8"></path>
+
+                </svg>
+
+              </button>
+
+            </div>
+
+            {% if form.password.errors %}<div class="field-errors">{{ form.password.errors }}</div>{% endif %}
+
+          </div>
+
+          <button type="submit" class="quote-submit auth-submit" data-i18n="continue">Continue</button>
+
+        </form>
+
+        <a class="forgot-link" href="{% url 'password_reset' %}" data-i18n="forgot">Forgot password?</a>
+
+        <div class="auth-divider"><span data-i18n="or">or</span></div>
+
+        <a class="social-login" href="{% url 'google_login' %}" data-turbo="false"><span class="google-mark">G</span> <span data-i18n="google">Continue with Google</span></a>
+
+        <p class="switch-text"><span data-i18n="noAccount">Don't have an account?</span> <a href="{% url 'register' %}" data-i18n="signUp">Sign up</a></p>
+
+      </section>
+
+    </main>
+
+    <script src="{% static 'app/js/main.js' %}?v=13"></script>
+
+  </body>
+
+</html>
+
