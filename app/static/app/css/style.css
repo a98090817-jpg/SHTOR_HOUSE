@@ -2856,9 +2856,7 @@ textarea:focus-visible {
 }
 
 .home-benefit-card,
-.gallery-card,
-.topbar,
-.home-hero {
+.gallery-card {
     will-change: transform;
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -3697,4 +3695,36 @@ textarea:focus-visible {
         z-index: 10 !important;
         touch-action: manipulation !important;
     }
+}
+
+/* =========================================================
+   IPHONE / MOBILE — topbar tugmalar birinchi bosishda ishlashi
+   ========================================================= */
+.topbar,
+.detail-topbar,
+.auth-toolbar {
+    will-change: auto !important;
+    transform: none !important;
+    backface-visibility: visible !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    pointer-events: auto !important;
+}
+
+.topbar *,
+.detail-topbar *,
+.auth-toolbar * {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent;
+    position: relative !important;
+    z-index: 1000 !important;
+    cursor: pointer !important;
+}
+
+.profile-dropdown,
+.language-picker-menu {
+    z-index: 1001 !important;
+    pointer-events: auto !important;
 }
