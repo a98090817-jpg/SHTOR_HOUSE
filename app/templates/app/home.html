@@ -352,7 +352,7 @@
 
                 <div class="image-action-row">
 
-                  <button class="image-action favorite-card-action{% if product.id in favorite_ids %} selected{% endif %}" type="button" data-favorite-slug="{{ product.slug }}" aria-label="Add {{ product.name }} to favorites" title="Add to favorites" data-i18n-title="favorite">в†</button>
+                  <button class="image-action favorite-card-action{% if product.id in favorite_ids %} selected{% endif %}" type="button" data-favorite-slug="{{ product.slug }}" aria-label="Add {{ product.name }} to favorites" title="Add to favorites" data-i18n-title="favorite"><i class="fas fa-heart" aria-hidden="true"></i></button>
 
                   {% if product.image %}
 
