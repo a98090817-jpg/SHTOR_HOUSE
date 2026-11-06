@@ -3662,3 +3662,39 @@ textarea:focus-visible {
     font-size: 1.15rem !important;
     line-height: 1 !important;
 }
+
+/* =========================================================
+   IPHONE / MOBILE — login sahifadagi tugmalar ko'rinadi
+   ========================================================= */
+@media (max-width: 520px) {
+    .auth-toolbar {
+        position: static !important;
+        top: auto !important;
+        right: auto !important;
+        padding: 12px 14px !important;
+        z-index: 100 !important;
+        pointer-events: auto !important;
+    }
+
+    .auth-shell,
+    .login-shell {
+        min-height: auto !important;
+        padding-bottom: 24px !important;
+    }
+
+    .auth-card {
+        padding-bottom: 44px !important;
+        overflow: visible !important;
+    }
+
+    .social-login,
+    .switch-text,
+    .forgot-link,
+    .auth-divider,
+    .quote-submit.auth-submit {
+        pointer-events: auto !important;
+        position: relative !important;
+        z-index: 10 !important;
+        touch-action: manipulation !important;
+    }
+}
