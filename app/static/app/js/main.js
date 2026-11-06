@@ -787,13 +787,26 @@ function initSitePage() {
 }
 
 function bootSiteInteractions() {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSitePage);
-  } else {
-    initSitePage();
-  }
-  // Turbo sahifani yangilaganda barcha interaktivlik qayta bog'lanadi.
+  // Asosiy: turbo:load — Turbo rendering tugagach ishlaydi (birinchi yuklash va navigatsiya).
+  // Bu sahifa to'liq tayyor bo'lgandan keyin listener'lar bog'lanishini kafolatlaydi.
   document.addEventListener('turbo:load', initSitePage);
+
+  // Zaxira: Turbo ishlamasa (masalan, yuklanish xatosi) — DOMContentLoaded orqali.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(function () {
+        if (!pageAbortController) {
+          initSitePage();
+        }
+      }, 100);
+    });
+  } else {
+    setTimeout(function () {
+      if (!pageAbortController) {
+        initSitePage();
+      }
+    }, 100);
+  }
 }
 
 bootSiteInteractions();
