@@ -3742,7 +3742,10 @@ textarea:focus-visible {
 }
 
 /* =========================================================
-   IPHONE / MOBILE — topbar tugmalar birinchi bosishda ishlashi
+   TOPBAR — tugmalar birinchi bosishda ishlashi
+   MUHIM: faqat bosiladigan elementlarga tegamiz.
+   Konteynerlar va dropdown'larga position berilmaydi —
+   aks holda ular header oqimini surib yuboradi (iOS/noutbuk bugi).
    ========================================================= */
 .topbar,
 .detail-topbar,
@@ -3754,21 +3757,47 @@ textarea:focus-visible {
     top: 0 !important;
     z-index: 1000 !important;
     pointer-events: auto !important;
+    overflow: visible !important;
 }
 
-.topbar *,
-.detail-topbar *,
-.auth-toolbar * {
+.topbar button,
+.topbar a,
+.detail-topbar button,
+.detail-topbar a,
+.auth-toolbar button,
+.auth-toolbar a {
     pointer-events: auto !important;
     touch-action: manipulation !important;
     -webkit-tap-highlight-color: transparent;
-    position: relative !important;
-    z-index: 1000 !important;
     cursor: pointer !important;
 }
 
-.profile-dropdown,
-.language-picker-menu {
-    z-index: 1001 !important;
+/* Dropdown'lar HAR DOIM absolute — header balandligiga ta'sir qilmaydi */
+.topbar .profile-menu {
+    position: relative !important;
+}
+
+.topbar .profile-dropdown,
+.topbar .language-picker-menu,
+.detail-topbar .language-picker-menu,
+.auth-toolbar .language-picker-menu {
+    position: absolute !important;
+    z-index: 100000 !important;
     pointer-events: auto !important;
+    width: max-content;
+    max-width: calc(100vw - 20px);
+}
+
+.topbar .profile-dropdown {
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    left: auto !important;
+}
+
+.topbar .language-picker-menu,
+.detail-topbar .language-picker-menu,
+.auth-toolbar .language-picker-menu {
+    top: calc(100% + 9px) !important;
+    right: 0 !important;
+    left: auto !important;
 }
