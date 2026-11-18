@@ -322,6 +322,38 @@ body.light-mode .add-product-plus { color: #fff; }
 body.light-mode .profile-trigger { color: #2b2520; background: rgba(255,255,255,0.65); }
 body.light-mode .profile-dropdown { background: rgba(250,247,243,0.98); }
 
+/* =========================================================
+   PROFILE DROPDOWN — barcha qurilmalarda (iOS/Android) to'g'ri overlay
+   Flex container (top-actions) ichida absolute bo'lib, headerni surmasin
+   ========================================================= */
+.profile-menu {
+    position: relative;
+    z-index: 20; /* top-actions ichida ustunda turish uchun */
+}
+
+.profile-dropdown {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    left: auto !important;
+    z-index: 9999 !important; /* barcha header elementlari ustida */
+    pointer-events: auto !important;
+    /* flex container flow'iga ta'sir qilmaslik uchun */
+    max-width: calc(100vw - 20px);
+    box-sizing: border-box;
+}
+
+/* Topbar va top-actions — dropdownni chetlashtirmaslik uchun */
+.topbar,
+.top-actions {
+    overflow: visible !important;
+}
+
+.top-actions {
+    position: relative;
+    z-index: 15;
+}
+
 .language-picker {
     position: relative;
     display: inline-flex;
@@ -417,6 +449,20 @@ body.light-mode .profile-dropdown { background: rgba(250,247,243,0.98); }
 
 .language-picker-menu[hidden] {
     display: none;
+}
+
+/* =========================================================
+   LANGUAGE PICKER MENU — iOS da ham to'g'ri overlay (Androidda alohida CSS bor)
+   ========================================================= */
+.language-picker-menu {
+    position: absolute !important;
+    top: calc(100% + 9px) !important;
+    right: 0 !important;
+    left: auto !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+    max-width: calc(100vw - 20px);
+    box-sizing: border-box;
 }
 
 .language-picker-option {
