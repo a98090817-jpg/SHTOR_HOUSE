@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from PIL import Image
 
 from .image_processing import normalize_product_image
-from .models import Product, QuoteRequest
+from .models import AdminMessage, Product, QuoteRequest
 
 
 class EmailOrUsernameLoginForm(AuthenticationForm):
@@ -95,6 +95,46 @@ class QuoteRequestForm(forms.ModelForm):
             'full_name': forms.TextInput(attrs={'placeholder': 'Your full name'}),
             'email': forms.EmailInput(attrs={'placeholder': 'you@example.com'}),
             'message': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Tell us about your room and preferred style'}),
+        }
+
+
+class AdminMessageForm(forms.ModelForm):
+    """Mahsulot sahifasidan administratorga yoziladigan xabar formasi."""
+
+    phone = forms.CharField(
+        required=False,
+        validators=[RegexValidator(
+            regex=r'^[0-9+()\-\s]+$',
+            message='Please enter a valid phone number using digits only.',
+        )],
+        widget=forms.TextInput(attrs={
+            'type': 'tel',
+            'inputmode': 'numeric',
+            'autocomplete': 'tel',
+            'placeholder': '+998 90 123 45 67',
+            'data-i18n-placeholder': 'msgPhonePlaceholder',
+        }),
+    )
+
+    class Meta:
+        model = AdminMessage
+        fields = ['full_name', 'email', 'phone', 'message']
+        widgets = {
+            'full_name': forms.TextInput(attrs={
+                'placeholder': 'Your full name',
+                'autocomplete': 'name',
+                'data-i18n-placeholder': 'msgNamePlaceholder',
+            }),
+            'email': forms.EmailInput(attrs={
+                'placeholder': 'you@example.com',
+                'autocomplete': 'email',
+                'data-i18n-placeholder': 'msgEmailPlaceholder',
+            }),
+            'message': forms.Textarea(attrs={
+                'rows': 6,
+                'placeholder': 'Write your message to the administrator…',
+                'data-i18n-placeholder': 'msgTextPlaceholder',
+            }),
         }
 
 

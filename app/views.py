@@ -25,8 +25,17 @@ from django.utils import timezone
 from django.utils.http import http_date
 from django.utils.text import slugify
 from django.views.decorators.http import require_GET, require_POST
-from .forms import EmailOrUsernameLoginForm, ProductForm, QuoteRequestForm, CustomUserCreationForm
-from .models import Favorite, Product, QuoteRequest, SiteVisitCounter
+from .activity import build_user_directory, notify_admin
+from .forms import AdminMessageForm, EmailOrUsernameLoginForm, ProductForm, QuoteRequestForm, CustomUserCreationForm
+from .models import (
+    AdminMessage,
+    AdminNotification,
+    ConcurrentLoginSlot,
+    Favorite,
+    Product,
+    QuoteRequest,
+    SiteVisitCounter,
+)
 from .visit_counter import increment_visit_count
 
 # Katalogdagi saralash turlari. Birinchi variant — standart ko'rinish.
@@ -350,6 +359,8 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            request.session['login_method'] = 'password'
+            request.session['login_notification_kind'] = 'register'
             login(request, user)
             messages.success(request, 'Account created successfully.')
             return redirect('home')
@@ -457,6 +468,7 @@ def google_callback(request):
 
     user_model = get_user_model()
     email = email.strip()
+    created = False
     try:
         with transaction.atomic():
             user = user_model.objects.filter(email__iexact=email).first()
@@ -468,15 +480,18 @@ def google_callback(request):
                     username = f'{base_username[:140 - len(str(suffix)) - 1]}-{suffix}'
                     suffix += 1
                 user = user_model.objects.create_user(username=username, email=email)
+                created = True
     except IntegrityError:
         user = user_model.objects.filter(email__iexact=email).first()
         if not user:
             raise
 
     if not user.is_active:
-        messages.error(request, 'Google sign-in could not be completed.')
+        messages.error(request, 'This account has been blocked by an administrator.')
         return redirect('login')
 
+    request.session['login_method'] = 'google'
+    request.session['login_notification_kind'] = 'register' if created else 'login'
     login(request, user)
     # OAuth state uchun qo'yilgan 10 daqiqalik muddatni bekor qilamiz:
     # aks holda Google bilan kirgan foydalanuvchi 10 daqiqada chiqib ketadi.
@@ -559,9 +574,12 @@ def admin_dashboard(request):
     active_products = Product.objects.filter(is_active=True).count()
     total_requests = QuoteRequest.objects.count()
     requests_last_7 = QuoteRequest.objects.filter(created_at__gte=week_ago).count()
-    total_users = user_model.objects.count()
-    users_last_7 = user_model.objects.filter(date_joined__gte=week_ago).count()
+    total_users = user_model.objects.filter(is_staff=False).count()
+    users_last_7 = user_model.objects.filter(
+        is_staff=False, date_joined__gte=week_ago
+    ).count()
     total_favorites = Favorite.objects.count()
+    user_directory, user_stats = build_user_directory(limit=6)
     visits_count = max(
         SiteVisitCounter.objects.filter(pk=1)
         .values_list('count', flat=True)
@@ -633,7 +651,174 @@ def admin_dashboard(request):
         'recent_products': recent_products,
         'request_series': request_series,
         'category_rows': category_rows,
+        'user_directory': user_directory,
+        'user_stats': user_stats,
+        'google_users': user_stats['google_users'],
+        'password_users': user_stats['password_users'],
+        'blocked_users': user_stats['blocked_users'],
+        'google_logins': user_stats['google_logins'],
+        'unread_notifications': AdminNotification.objects.filter(is_read=False).count(),
     })
+
+def _staff_guard(request, next_url):
+    """Administrator bo'lmagan foydalanuvchilarni sahifadan qaytaradi."""
+    if not request.user.is_authenticated:
+        return redirect(f'/login/?next={next_url}')
+    if not request.user.is_staff:
+        messages.error(request, 'Only an administrator can open this page.')
+        return redirect('home')
+    return None
+
+
+def admin_users(request):
+    """Foydalanuvchilar ro'yxati: kirish usuli, sevimlilari va blok holati."""
+    guard = _staff_guard(request, reverse('admin_users'))
+    if guard:
+        return guard
+
+    users, stats = build_user_directory()
+    active_filter = (request.GET.get('filter') or 'all').strip().lower()
+    if active_filter == 'google':
+        users = [user for user in users if user.login_method == 'google']
+    elif active_filter == 'password':
+        users = [user for user in users if user.login_method == 'password']
+    elif active_filter == 'blocked':
+        users = [user for user in users if user.is_blocked]
+    else:
+        active_filter = 'all'
+
+    return render(request, 'app/users.html', {
+        'users': users,
+        'user_stats': stats,
+        'active_filter': active_filter,
+        'google_users': stats['google_users'],
+        'password_users': stats['password_users'],
+        'blocked_users': stats['blocked_users'],
+        'google_logins': stats['google_logins'],
+    })
+
+
+@require_POST
+def admin_user_toggle_block(request, user_id):
+    """Foydalanuvchini bloklaydi yoki blokdan chiqaradi."""
+    guard = _staff_guard(request, reverse('admin_users'))
+    if guard:
+        return guard
+
+    user_model = get_user_model()
+    target = get_object_or_404(user_model, pk=user_id)
+    if target.is_staff or target.is_superuser:
+        messages.error(request, 'Staff accounts cannot be blocked.')
+    elif target.pk == request.user.pk:
+        messages.error(request, 'You cannot block your own account.')
+    else:
+        target.is_active = not target.is_active
+        target.save(update_fields=['is_active'])
+        if not target.is_active:
+            # Bloklangan foydalanuvchining band login slotini bo'shatamiz.
+            ConcurrentLoginSlot.objects.filter(user=target).update(
+                user=None, session_key=None, expires_at=None
+            )
+        if target.is_active:
+            messages.success(request, 'The user has been unblocked.')
+        else:
+            messages.success(request, 'The user has been blocked.')
+
+    if request.POST.get('next') == 'notifications':
+        return redirect('admin_notifications')
+    return redirect('admin_users')
+
+
+def admin_notifications_page(request):
+    """Administrator bildirishnomalarining to'liq ro'yxati."""
+    guard = _staff_guard(request, reverse('admin_notifications'))
+    if guard:
+        return guard
+
+    base = AdminNotification.objects.select_related(
+        'user', 'product', 'admin_message'
+    ).order_by('-created_at')
+    counts = {'all': base.count(), 'unread': base.filter(is_read=False).count()}
+    for kind_value, _label in AdminNotification.KIND_CHOICES:
+        counts[kind_value] = base.filter(kind=kind_value).count()
+
+    active_filter = (request.GET.get('kind') or 'all').strip().lower()
+    if active_filter == 'unread':
+        notifications = base.filter(is_read=False)
+    elif active_filter in dict(AdminNotification.KIND_CHOICES):
+        notifications = base.filter(kind=active_filter)
+    else:
+        active_filter = 'all'
+        notifications = base
+
+    return render(request, 'app/notifications.html', {
+        'notifications': list(notifications[:200]),
+        'notification_counts': counts,
+        'active_filter': active_filter,
+        'unread_notifications': counts['unread'],
+    })
+
+
+@require_POST
+def admin_notifications_mark_read(request):
+    """Barcha bildirishnomalarni o'qilgan deb belgilaydi."""
+    guard = _staff_guard(request, reverse('admin_notifications'))
+    if guard:
+        return guard
+
+    updated = AdminNotification.objects.filter(is_read=False).update(is_read=True)
+    if updated:
+        messages.success(request, 'All notifications have been marked as read.')
+    else:
+        messages.info(request, 'There are no unread notifications.')
+
+    if request.POST.get('next') == 'dashboard':
+        return redirect('admin_dashboard')
+    return redirect('admin_notifications')
+
+
+def contact_admin(request):
+    """Foydalanuvchining administratorga shaxsiy xabar yuborish sahifasi."""
+    product = None
+    product_slug = request.POST.get('product') or request.GET.get('product')
+    if product_slug:
+        product = Product.objects.filter(slug=product_slug, is_active=True).first()
+
+    initial = {}
+    if request.user.is_authenticated:
+        initial['full_name'] = request.user.get_full_name() or request.user.username
+        initial['email'] = request.user.email
+
+    if request.method == 'POST':
+        form = AdminMessageForm(request.POST)
+        if form.is_valid():
+            admin_message = form.save(commit=False)
+            if request.user.is_authenticated:
+                admin_message.user = request.user
+            admin_message.product = product
+            admin_message.save()
+            if not request.user.is_staff:
+                notify_admin(
+                    'message',
+                    user=request.user if request.user.is_authenticated else None,
+                    sender_name=admin_message.full_name,
+                    product=product,
+                    admin_message=admin_message,
+                )
+            messages.success(
+                request, 'Your message has been sent to the administrator.'
+            )
+            if product:
+                return redirect('product_detail', slug=product.slug)
+            return redirect('home')
+    else:
+        form = AdminMessageForm(initial=initial)
+
+    return render(request, 'app/contact_admin.html', {
+        'form': form,
+        'product': product,
+    })
+
 
 @require_POST
 def toggle_favorite(request, slug):
@@ -652,6 +837,13 @@ def toggle_favorite(request, slug):
     else:
         Favorite.objects.create(user=request.user, product=product)
         is_favorite = True
+        if not request.user.is_staff:
+            notify_admin(
+                'favorite',
+                user=request.user,
+                sender_name=request.user.username,
+                product=product,
+            )
     count = Favorite.objects.filter(user=request.user).count()
     return JsonResponse({'ok': True, 'is_favorite': is_favorite, 'count': count})
 

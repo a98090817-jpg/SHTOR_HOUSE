@@ -1,7 +1,10 @@
 from django.contrib import admin
 from .models import (
+    AdminMessage,
+    AdminNotification,
     ConcurrentLoginSlot,
     Favorite,
+    LoginRecord,
     Product,
     QuoteRequest,
     SiteVisitCounter,
@@ -40,6 +43,28 @@ class SiteVisitCounterAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         # Hisoblagichni o'chirib 0 ga tushirishning oldini olamiz.
         return False
+
+
+@admin.register(LoginRecord)
+class LoginRecordAdmin(admin.ModelAdmin):
+    list_display = ('user', 'method', 'ip_address', 'created_at')
+    list_filter = ('method', 'created_at')
+    search_fields = ('user__username', 'user__email', 'ip_address')
+    readonly_fields = ('user', 'method', 'ip_address', 'user_agent', 'created_at')
+
+
+@admin.register(AdminMessage)
+class AdminMessageAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'email', 'phone', 'product', 'is_read', 'created_at')
+    list_filter = ('is_read', 'created_at')
+    search_fields = ('full_name', 'email', 'phone', 'message', 'product__name')
+
+
+@admin.register(AdminNotification)
+class AdminNotificationAdmin(admin.ModelAdmin):
+    list_display = ('kind', 'sender_name', 'user', 'product', 'login_method', 'is_read', 'created_at')
+    list_filter = ('kind', 'is_read', 'login_method', 'created_at')
+    search_fields = ('sender_name', 'user__username', 'product__name')
 
 
 @admin.register(ConcurrentLoginSlot)

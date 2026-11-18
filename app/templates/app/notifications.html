@@ -1,0 +1,244 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title data-page-title="pageNotifications">Notifications | SHTOR HOUSE</title>
+
+  <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
+
+  <meta name="csrf-token" content="{{ csrf_token }}" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=23" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <meta name="turbo-cache-control" content="no-cache" />
+  <script src="{% static 'app/js/turbo.es2017-umd.js' %}"></script>
+
+</head>
+
+<body>
+
+  <div class="page-shell">
+
+    <main class="content">
+
+      <header class="topbar">
+
+        <div class="top-meta">
+
+          <a class="site-brand" href="{% url 'home' %}" aria-label="SHTOR HOUSE">
+            <img class="site-logo-image" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" />
+          </a>
+
+          <a class="top-link" href="{% url 'admin_dashboard' %}"><i class="fas fa-arrow-left" aria-hidden="true"></i> <span data-i18n="dashboard">Dashboard</span></a>
+
+        </div>
+
+        <div class="top-actions">
+
+          <a class="add-product-plus" href="{% url 'product_create' %}" aria-label="Add product" title="Add product" data-i18n-aria-label="addProduct" data-i18n-title="addProduct">+</a>
+
+          {% include 'app/partials/language_picker.html' %}
+
+          <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme"><i class="fas fa-moon" aria-hidden="true"></i></button>
+
+          {% include 'app/partials/admin_bell.html' %}
+
+          <div class="profile-menu">
+
+            <button class="profile-trigger" type="button" aria-expanded="false" data-profile-toggle>
+              {% if request.session.google_profile_picture %}
+                <img class="profile-avatar profile-photo" src="{{ request.session.google_profile_picture }}" alt="{{ user.username }} profile photo">
+              {% else %}
+                <span class="profile-avatar">{{ user.username|first|upper }}</span>
+              {% endif %}
+              <span>{{ user.username }}</span>
+              <i class="fas fa-chevron-down" aria-hidden="true"></i>
+            </button>
+
+            <div class="profile-dropdown" data-profile-menu>
+              <strong>{{ user.username }}</strong>
+              <a href="{% url 'admin_dashboard' %}" data-i18n="dashboard">Dashboard</a>
+              <a href="{% url 'admin_users' %}" data-i18n="users">Users</a>
+              <a href="{% url 'admin_notifications' %}" data-i18n="notifications">Notifications</a>
+              <a href="{% url 'product_create' %}" data-i18n="addProduct">Add product</a>
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="profile-logout" data-i18n="logout">Log out</button>
+              </form>
+            </div>
+
+          </div>
+
+        </div>
+
+      </header>
+
+      <div class="dashboard-main notifications-main">
+
+        <section class="dashboard-hero notifications-hero">
+
+          <div>
+            <p class="eyebrow" data-i18n="notificationsEyebrow">Activity feed</p>
+            <h1 data-i18n="notificationsTitle">Notifications</h1>
+            <p class="dashboard-subtitle" data-i18n="notificationsSubtitle">Every sign-in, favorite and message from your customers, collected in one place.</p>
+          </div>
+
+          <div class="notifications-hero-actions">
+            <span class="dashboard-hero-badge"><i class="fas fa-bell" aria-hidden="true"></i><strong>{{ unread_notifications }}</strong> <span data-i18n="unread">unread</span></span>
+            {% if unread_notifications %}
+              <form method="post" action="{% url 'admin_notifications_mark_read' %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="notifications" />
+                <button class="dashboard-link-btn notifications-read-all" type="submit">
+                  <i class="fas fa-check-double" aria-hidden="true"></i>
+                  <span data-i18n="markAllRead">Mark all read</span>
+                </button>
+              </form>
+            {% endif %}
+          </div>
+
+        </section>
+
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <nav class="users-filter notifications-filter" aria-label="Notification filters" data-i18n-aria-label="notificationFilters">
+          <a class="users-filter-chip {% if active_filter == 'all' %}active{% endif %}" href="{% url 'admin_notifications' %}">
+            <span data-i18n="filterAll">All</span><strong>{{ notification_counts.all }}</strong>
+          </a>
+          <a class="users-filter-chip {% if active_filter == 'unread' %}active{% endif %}" href="{% url 'admin_notifications' %}?kind=unread">
+            <i class="fas fa-circle-dot" aria-hidden="true"></i><span data-i18n="filterUnread">Unread</span><strong>{{ notification_counts.unread }}</strong>
+          </a>
+          <a class="users-filter-chip {% if active_filter == 'login' %}active{% endif %}" href="{% url 'admin_notifications' %}?kind=login">
+            <i class="fas fa-right-to-bracket" aria-hidden="true"></i><span data-i18n="notifKindLogin">Sign-ins</span><strong>{{ notification_counts.login }}</strong>
+          </a>
+          <a class="users-filter-chip {% if active_filter == 'register' %}active{% endif %}" href="{% url 'admin_notifications' %}?kind=register">
+            <i class="fas fa-user-plus" aria-hidden="true"></i><span data-i18n="notifKindRegister">Registrations</span><strong>{{ notification_counts.register }}</strong>
+          </a>
+          <a class="users-filter-chip {% if active_filter == 'favorite' %}active{% endif %}" href="{% url 'admin_notifications' %}?kind=favorite">
+            <i class="fas fa-heart" aria-hidden="true"></i><span data-i18n="notifKindFavorite">Favorites</span><strong>{{ notification_counts.favorite }}</strong>
+          </a>
+          <a class="users-filter-chip {% if active_filter == 'message' %}active{% endif %}" href="{% url 'admin_notifications' %}?kind=message">
+            <i class="fas fa-envelope" aria-hidden="true"></i><span data-i18n="notifKindMessage">Messages</span><strong>{{ notification_counts.message }}</strong>
+          </a>
+        </nav>
+
+        {% if notifications %}
+          <div class="notification-feed">
+            {% for n in notifications %}
+              <article class="notification-card kind-{{ n.kind }}{% if not n.is_read %} is-unread{% endif %}" id="notification-{{ n.id }}">
+
+                <span class="notification-icon">
+                  <i class="fas {% if n.kind == 'login' %}fa-right-to-bracket{% elif n.kind == 'register' %}fa-user-plus{% elif n.kind == 'favorite' %}fa-heart{% else %}fa-envelope{% endif %}" aria-hidden="true"></i>
+                </span>
+
+                <div class="notification-body">
+
+                  <div class="notification-head">
+                    <div class="notification-who">
+                      <strong>{{ n.sender_name|default:n.user.username|default:"—" }}</strong>
+                      <span class="notification-kind-badge" data-i18n="notifKind{{ n.kind|capfirst }}">{{ n.get_kind_display }}</span>
+                      {% if n.login_method %}
+                        <span class="dashboard-method-badge {{ n.login_method }}">
+                          {% if n.login_method == 'google' %}<i class="fab fa-google" aria-hidden="true"></i> Google{% else %}<i class="fas fa-key" aria-hidden="true"></i> <span data-i18n="viaPassword">via password</span>{% endif %}
+                        </span>
+                      {% endif %}
+                      {% if not n.is_read %}<span class="notification-unread-dot" aria-label="Unread" data-i18n-aria-label="unread"></span>{% endif %}
+                    </div>
+                    <time class="notification-time">{{ n.created_at|date:"d.m.Y H:i" }}</time>
+                  </div>
+
+                  {% if n.kind == 'login' %}
+                    <p class="notification-text">
+                      {% if n.login_method == 'google' %}
+                        <span data-i18n="notifLoginGoogle">Signed in with Google</span>
+                      {% else %}
+                        <span data-i18n="notifLoginPassword">Signed in with password</span>
+                      {% endif %}
+                    </p>
+                  {% elif n.kind == 'register' %}
+                    <p class="notification-text">
+                      <span data-i18n="notifRegisteredLong">Created a new account on the site.</span>
+                      {% if n.login_method == 'google' %}<span data-i18n="viaGoogle">via Google</span>{% endif %}
+                    </p>
+                  {% elif n.kind == 'favorite' %}
+                    <p class="notification-text">
+                      <span data-i18n="notifFavoritedLong">Added a curtain to favorites:</span>
+                      {% if n.product %}<a href="{% url 'product_detail' n.product.slug %}">{{ n.product.name }}</a>{% endif %}
+                    </p>
+                  {% else %}
+                    <p class="notification-text" data-i18n="notifMessageLong">Sent a message to the administrator.</p>
+                    {% if n.product %}
+                      <p class="notification-product-line"><i class="fas fa-tag" aria-hidden="true"></i> <a href="{% url 'product_detail' n.product.slug %}">{{ n.product.name }}</a></p>
+                    {% endif %}
+                    {% if n.admin_message %}
+                      <blockquote class="notification-message">{{ n.admin_message.message|linebreaksbr }}</blockquote>
+                      {% if n.admin_message.email or n.admin_message.phone %}
+                        <div class="notification-contacts">
+                          {% if n.admin_message.email %}<a href="mailto:{{ n.admin_message.email }}"><i class="fas fa-envelope" aria-hidden="true"></i> {{ n.admin_message.email }}</a>{% endif %}
+                          {% if n.admin_message.phone %}<a href="tel:{{ n.admin_message.phone }}"><i class="fas fa-phone" aria-hidden="true"></i> {{ n.admin_message.phone }}</a>{% endif %}
+                        </div>
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+
+                  <div class="notification-footer">
+                    {% if n.user %}
+                      <a class="notification-user-link" href="{% url 'admin_users' %}#user-{{ n.user.pk }}">
+                        <i class="fas fa-user" aria-hidden="true"></i> <span data-i18n="viewUser">View user</span>
+                      </a>
+                      <form method="post" action="{% url 'admin_user_toggle_block' n.user.pk %}" data-confirm-i18n="{% if n.user.is_active %}blockUserConfirm{% else %}unblockUserConfirm{% endif %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="notifications" />
+                        {% if n.user.is_active %}
+                          <button class="user-block-btn" type="submit"><i class="fas fa-ban" aria-hidden="true"></i> <span data-i18n="blockUser">Block</span></button>
+                        {% else %}
+                          <button class="user-block-btn is-unblock" type="submit"><i class="fas fa-unlock" aria-hidden="true"></i> <span data-i18n="unblockUser">Unblock</span></button>
+                        {% endif %}
+                      </form>
+                    {% endif %}
+                  </div>
+
+                </div>
+
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="dashboard-empty notifications-empty" data-i18n="noNotifications">No notifications yet.</div>
+        {% endif %}
+
+        <p class="dashboard-footnote"><i class="fas fa-shield-halved" aria-hidden="true"></i> <span data-i18n="notificationsFootnote">Only administrators can see this activity.</span></p>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="{% static 'app/js/main.js' %}?v=15"></script>
+
+</body>
+
+</html>

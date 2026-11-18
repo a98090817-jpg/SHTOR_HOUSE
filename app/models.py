@@ -154,6 +154,114 @@ class Favorite(models.Model):
         return f"{self.user.username} - {self.product.name}"
 
 
+class LoginRecord(models.Model):
+    """Foydalanuvchi qaysi usulda tizimga kirganini saqlaydi.
+
+    Administrator foydalanuvchilar faolligini kuzatishi uchun har bir kirish
+    qayd etiladi: parol orqali yoki Google akkaunti orqali.
+    """
+
+    METHOD_CHOICES = [
+        ('password', 'Password'),
+        ('google', 'Google'),
+    ]
+
+    user = models.ForeignKey(
+        'auth.User', on_delete=models.CASCADE, related_name='login_records'
+    )
+    method = models.CharField(
+        max_length=20, choices=METHOD_CHOICES, default='password'
+    )
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [models.Index(fields=['user', '-created_at'])]
+
+    def __str__(self):
+        return f'{self.user.username} - {self.get_method_display()}'
+
+
+class AdminMessage(models.Model):
+    """Foydalanuvchidan administratorga yuborilgan shaxsiy xabar."""
+
+    user = models.ForeignKey(
+        'auth.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='admin_messages',
+    )
+    full_name = models.CharField(max_length=200)
+    email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=50, blank=True)
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='admin_messages',
+    )
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.full_name} - {self.created_at:%d.%m.%Y %H:%M}'
+
+
+class AdminNotification(models.Model):
+    """Administrator uchun bildirishnoma (kirish, sevimlilar, xabarlar)."""
+
+    KIND_CHOICES = [
+        ('login', 'Login'),
+        ('register', 'Registration'),
+        ('favorite', 'Favorite'),
+        ('message', 'Message'),
+    ]
+
+    kind = models.CharField(max_length=20, choices=KIND_CHOICES)
+    user = models.ForeignKey(
+        'auth.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='admin_notifications',
+    )
+    sender_name = models.CharField(max_length=200, blank=True)
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='admin_notifications',
+    )
+    admin_message = models.ForeignKey(
+        AdminMessage,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='notifications',
+    )
+    login_method = models.CharField(
+        max_length=20, blank=True, choices=LoginRecord.METHOD_CHOICES
+    )
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [models.Index(fields=['is_read', '-created_at'])]
+
+    def __str__(self):
+        return f'{self.get_kind_display()} - {self.sender_name or "—"}'
+
+
 class ConcurrentLoginSlot(models.Model):
     slot_number = models.PositiveSmallIntegerField(unique=True)
     user = models.ForeignKey(

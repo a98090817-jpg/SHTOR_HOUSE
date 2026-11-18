@@ -67,6 +67,8 @@
 
             <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme"><i class="fas fa-moon" aria-hidden="true"></i></button>
 
+            {% if user.is_staff %}{% include 'app/partials/admin_bell.html' %}{% endif %}
+
             {% if user.is_authenticated %}
 
               <div class="profile-menu">
@@ -94,6 +96,8 @@
                   <strong>{{ user.username }}</strong>
 
                   {% if user.is_staff %}<a href="{% url 'admin_dashboard' %}" data-i18n="dashboard">Dashboard</a>{% endif %}
+
+                  {% if user.is_staff %}<a href="{% url 'admin_users' %}" data-i18n="users">Users</a>{% endif %}
 
                   {% if user.is_staff %}<a href="{% url 'product_create' %}" data-i18n="addProduct">Add product</a>{% endif %}
 

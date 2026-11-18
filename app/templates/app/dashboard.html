@@ -59,6 +59,8 @@
 
           <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme"><i class="fas fa-moon" aria-hidden="true"></i></button>
 
+          {% include 'app/partials/admin_bell.html' %}
+
           <div class="profile-menu">
 
             <button class="profile-trigger" type="button" aria-expanded="false" data-profile-toggle>
@@ -84,6 +86,10 @@
               <strong>{{ user.username }}</strong>
 
               <a href="{% url 'admin_dashboard' %}" data-i18n="dashboard">Dashboard</a>
+
+              <a href="{% url 'admin_users' %}" data-i18n="users">Users</a>
+
+              <a href="{% url 'admin_notifications' %}" data-i18n="notifications">Notifications</a>
 
               <a href="{% url 'product_create' %}" data-i18n="addProduct">Add product</a>
 
@@ -122,6 +128,17 @@
             <span class="dashboard-hero-badge"><span class="dashboard-pulse" aria-hidden="true"></span><span data-i18n="liveOverview">Live overview</span></span>
 
             <span class="dashboard-updated">{% now "d.m.Y H:i" %}</span>
+
+            <a class="dashboard-hero-link" href="{% url 'admin_notifications' %}">
+              <i class="fas fa-bell" aria-hidden="true"></i>
+              <span data-i18n="notifications">Notifications</span>
+              {% if unread_notifications %}<span class="dashboard-hero-count">{{ unread_notifications }}</span>{% endif %}
+            </a>
+
+            <a class="dashboard-hero-link" href="{% url 'admin_users' %}">
+              <i class="fas fa-user-group" aria-hidden="true"></i>
+              <span data-i18n="users">Users</span>
+            </a>
 
           </div>
 
@@ -187,7 +204,7 @@
 
             <span class="dashboard-stat-label" data-i18n="statUsers">Users</span>
 
-            <span class="dashboard-stat-sub"><strong>{{ users_last_7 }}</strong> <span data-i18n="statNewUsers">new users</span></span>
+            <span class="dashboard-stat-sub"><strong>{{ google_users }}</strong> <span data-i18n="statGoogleAccounts">Google</span> · <strong>{{ password_users }}</strong> <span data-i18n="statPasswordAccounts">password</span></span>
 
           </article>
 
@@ -300,6 +317,42 @@
           </section>
 
         </div>
+
+        <section class="dashboard-panel dashboard-panel-wide dashboard-users-panel">
+          <div class="dashboard-panel-head">
+            <h2 data-i18n="userActivityTitle">User activity</h2>
+            <div class="dashboard-user-summary">
+              <span class="dashboard-method-badge google"><i class="fab fa-google" aria-hidden="true"></i> <strong>{{ google_users }}</strong> Google</span>
+              <span class="dashboard-method-badge password"><i class="fas fa-key" aria-hidden="true"></i> <strong>{{ password_users }}</strong> <span data-i18n="statPasswordAccounts">password</span></span>
+              {% if blocked_users %}<span class="dashboard-method-badge blocked"><i class="fas fa-ban" aria-hidden="true"></i> <strong>{{ blocked_users }}</strong> <span data-i18n="blockedLabel">blocked</span></span>{% endif %}
+              <a class="dashboard-link-btn" href="{% url 'admin_users' %}"><span data-i18n="viewAllUsers">All users</span><i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+          </div>
+
+          {% if user_directory %}
+            <div class="dashboard-user-list">
+              {% for member in user_directory %}
+                <a class="dashboard-user-row" href="{% url 'admin_users' %}#user-{{ member.pk }}">
+                  <span class="dashboard-user-avatar">{{ member.username|first|upper }}</span>
+                  <span class="dashboard-user-body">
+                    <strong>{{ member.username }}</strong>
+                    <span>{{ member.email|default:"—" }}</span>
+                  </span>
+                  <span class="dashboard-user-meta">
+                    <span class="dashboard-method-badge {{ member.login_method }}">
+                      {% if member.login_method == 'google' %}<i class="fab fa-google" aria-hidden="true"></i> Google{% else %}<i class="fas fa-key" aria-hidden="true"></i> <span data-i18n="statPasswordAccounts">password</span>{% endif %}
+                    </span>
+                    <span class="dashboard-user-favorites"><i class="fas fa-heart" aria-hidden="true"></i> {{ member.favorite_total }}</span>
+                    <span class="dashboard-user-last">{{ member.last_login|date:"d.m.Y H:i"|default:"—" }}</span>
+                    {% if member.is_blocked %}<span class="dashboard-method-badge blocked"><i class="fas fa-ban" aria-hidden="true"></i> <span data-i18n="blockedLabel">blocked</span></span>{% endif %}
+                  </span>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="dashboard-empty" data-i18n="noUsersYet">No users yet.</div>
+          {% endif %}
+        </section>
 
         <div class="dashboard-two-col">
 

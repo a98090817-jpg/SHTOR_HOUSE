@@ -21,6 +21,11 @@ urlpatterns = [
     path('quote/', views.quote_request, name='quote_request'),
     path('wishlist/', views.wishlist_page, name='wishlist'),
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('dashboard/users/', views.admin_users, name='admin_users'),
+    path('dashboard/users/<int:user_id>/toggle-block/', views.admin_user_toggle_block, name='admin_user_toggle_block'),
+    path('dashboard/notifications/', views.admin_notifications_page, name='admin_notifications'),
+    path('dashboard/notifications/read/', views.admin_notifications_mark_read, name='admin_notifications_mark_read'),
+    path('contact-admin/', views.contact_admin, name='contact_admin'),
     path('favorite/<slug:slug>/', views.toggle_favorite, name='toggle_favorite'),
     path('assistant/api/', views.assistant_api, name='assistant_api'),
 ]

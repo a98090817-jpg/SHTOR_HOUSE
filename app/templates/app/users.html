@@ -1,0 +1,275 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title data-page-title="pageUsers">Users | SHTOR HOUSE</title>
+
+  <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
+
+  <meta name="csrf-token" content="{{ csrf_token }}" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=23" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <meta name="turbo-cache-control" content="no-cache" />
+  <script src="{% static 'app/js/turbo.es2017-umd.js' %}"></script>
+
+</head>
+
+<body>
+
+  <div class="page-shell">
+
+    <main class="content">
+
+      <header class="topbar">
+
+        <div class="top-meta">
+
+          <a class="site-brand" href="{% url 'home' %}" aria-label="SHTOR HOUSE">
+            <img class="site-logo-image" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" />
+          </a>
+
+          <a class="top-link" href="{% url 'admin_dashboard' %}"><i class="fas fa-arrow-left" aria-hidden="true"></i> <span data-i18n="dashboard">Dashboard</span></a>
+
+        </div>
+
+        <div class="top-actions">
+
+          <a class="add-product-plus" href="{% url 'product_create' %}" aria-label="Add product" title="Add product" data-i18n-aria-label="addProduct" data-i18n-title="addProduct">+</a>
+
+          {% include 'app/partials/language_picker.html' %}
+
+          <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme"><i class="fas fa-moon" aria-hidden="true"></i></button>
+
+          {% include 'app/partials/admin_bell.html' %}
+
+          <div class="profile-menu">
+
+            <button class="profile-trigger" type="button" aria-expanded="false" data-profile-toggle>
+
+              {% if request.session.google_profile_picture %}
+                <img class="profile-avatar profile-photo" src="{{ request.session.google_profile_picture }}" alt="{{ user.username }} profile photo">
+              {% else %}
+                <span class="profile-avatar">{{ user.username|first|upper }}</span>
+              {% endif %}
+
+              <span>{{ user.username }}</span>
+              <i class="fas fa-chevron-down" aria-hidden="true"></i>
+
+            </button>
+
+            <div class="profile-dropdown" data-profile-menu>
+
+              <strong>{{ user.username }}</strong>
+
+              <a href="{% url 'admin_dashboard' %}" data-i18n="dashboard">Dashboard</a>
+
+              <a href="{% url 'admin_users' %}" data-i18n="users">Users</a>
+
+              <a href="{% url 'admin_notifications' %}" data-i18n="notifications">Notifications</a>
+
+              <a href="{% url 'product_create' %}" data-i18n="addProduct">Add product</a>
+
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="profile-logout" data-i18n="logout">Log out</button>
+              </form>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </header>
+
+      <div class="dashboard-main users-main">
+
+        <section class="dashboard-hero users-hero">
+
+          <div>
+            <p class="eyebrow" data-i18n="usersEyebrow">Audience</p>
+            <h1 data-i18n="usersTitle">Users</h1>
+            <p class="dashboard-subtitle" data-i18n="usersSubtitle">See how every customer signed in, what they saved to favorites and block accounts when needed.</p>
+          </div>
+
+          <div class="dashboard-hero-meta">
+            <span class="dashboard-hero-badge"><span class="dashboard-pulse" aria-hidden="true"></span><span data-i18n="usersLive">Live audience</span></span>
+            <a class="dashboard-hero-link" href="{% url 'admin_notifications' %}">
+              <i class="fas fa-bell" aria-hidden="true"></i>
+              <span data-i18n="notifications">Notifications</span>
+              {% if admin_unread_count %}<span class="dashboard-hero-count">{{ admin_unread_count }}</span>{% endif %}
+            </a>
+          </div>
+
+        </section>
+
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <section class="dashboard-stats users-stats" aria-label="User statistics" data-i18n-aria-label="userStatsAria">
+
+          <article class="dashboard-stat">
+            <span class="dashboard-stat-icon"><i class="fas fa-user-group" aria-hidden="true"></i></span>
+            <strong class="dashboard-stat-value">{{ user_stats.total_users }}</strong>
+            <span class="dashboard-stat-label" data-i18n="statAllUsers">All users</span>
+            <span class="dashboard-stat-sub" data-i18n="statRegisteredAccounts">registered accounts</span>
+          </article>
+
+          <article class="dashboard-stat">
+            <span class="dashboard-stat-icon"><i class="fab fa-google" aria-hidden="true"></i></span>
+            <strong class="dashboard-stat-value">{{ user_stats.google_users }}</strong>
+            <span class="dashboard-stat-label" data-i18n="statGoogleUsers">Google accounts</span>
+            <span class="dashboard-stat-sub"><strong>{{ google_logins }}</strong> <span data-i18n="statGoogleLogins">Google sign-ins</span></span>
+          </article>
+
+          <article class="dashboard-stat">
+            <span class="dashboard-stat-icon"><i class="fas fa-key" aria-hidden="true"></i></span>
+            <strong class="dashboard-stat-value">{{ user_stats.password_users }}</strong>
+            <span class="dashboard-stat-label" data-i18n="statPasswordUsers">Password accounts</span>
+            <span class="dashboard-stat-sub"><strong>{{ user_stats.password_logins }}</strong> <span data-i18n="statPasswordLogins">password sign-ins</span></span>
+          </article>
+
+          <article class="dashboard-stat">
+            <span class="dashboard-stat-icon"><i class="fas fa-ban" aria-hidden="true"></i></span>
+            <strong class="dashboard-stat-value">{{ user_stats.blocked_users }}</strong>
+            <span class="dashboard-stat-label" data-i18n="statBlockedUsers">Blocked</span>
+            <span class="dashboard-stat-sub" data-i18n="statBlockedHint">cannot sign in</span>
+          </article>
+
+        </section>
+
+        <nav class="users-filter" aria-label="User filters" data-i18n-aria-label="userFilters">
+          <a class="users-filter-chip {% if active_filter == 'all' %}active{% endif %}" href="{% url 'admin_users' %}">
+            <span data-i18n="filterAll">All</span><strong>{{ user_stats.total_users }}</strong>
+          </a>
+          <a class="users-filter-chip {% if active_filter == 'google' %}active{% endif %}" href="{% url 'admin_users' %}?filter=google">
+            <i class="fab fa-google" aria-hidden="true"></i><span data-i18n="filterGoogle">Google</span><strong>{{ user_stats.google_users }}</strong>
+          </a>
+          <a class="users-filter-chip {% if active_filter == 'password' %}active{% endif %}" href="{% url 'admin_users' %}?filter=password">
+            <i class="fas fa-key" aria-hidden="true"></i><span data-i18n="filterPassword">Password</span><strong>{{ user_stats.password_users }}</strong>
+          </a>
+          <a class="users-filter-chip {% if active_filter == 'blocked' %}active{% endif %}" href="{% url 'admin_users' %}?filter=blocked">
+            <i class="fas fa-ban" aria-hidden="true"></i><span data-i18n="filterBlocked">Blocked</span><strong>{{ user_stats.blocked_users }}</strong>
+          </a>
+        </nav>
+
+        {% if users %}
+          <div class="users-grid">
+            {% for member in users %}
+              <article class="user-card{% if member.is_blocked %} is-blocked{% endif %}" id="user-{{ member.pk }}">
+
+                <div class="user-card-head">
+                  <span class="user-avatar">{{ member.username|first|upper }}</span>
+                  <div class="user-identity">
+                    <strong>{{ member.username }}</strong>
+                    <span>{{ member.email|default:"—" }}</span>
+                  </div>
+                  <div class="user-badges">
+                    {% if member.login_method == 'google' %}
+                      <span class="user-badge google"><i class="fab fa-google" aria-hidden="true"></i> Google</span>
+                    {% else %}
+                      <span class="user-badge password"><i class="fas fa-key" aria-hidden="true"></i> <span data-i18n="filterPassword">Password</span></span>
+                    {% endif %}
+                    {% if member.is_blocked %}
+                      <span class="user-badge blocked"><i class="fas fa-ban" aria-hidden="true"></i> <span data-i18n="blockedLabel">blocked</span></span>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <dl class="user-facts">
+                  <div>
+                    <dt data-i18n="userJoined">Joined</dt>
+                    <dd>{{ member.date_joined|date:"d.m.Y" }}</dd>
+                  </div>
+                  <div>
+                    <dt data-i18n="userLastLogin">Last sign-in</dt>
+                    <dd>{{ member.last_login|date:"d.m.Y H:i"|default:"—" }}</dd>
+                  </div>
+                  <div>
+                    <dt data-i18n="userSignIns">Sign-ins</dt>
+                    <dd>{{ member.login_total }}{% if member.last_login_record %}<small> · {% if member.last_login_record.method == 'google' %}Google{% else %}<span data-i18n="filterPassword">Password</span>{% endif %}</small>{% endif %}</dd>
+                  </div>
+                </dl>
+
+                <div class="user-favorites">
+                  <div class="user-favorites-head">
+                    <span><i class="fas fa-heart" aria-hidden="true"></i> <span data-i18n="userFavorites">Favorites</span></span>
+                    <strong>{{ member.favorite_total }}</strong>
+                  </div>
+                  {% if member.favorite_items %}
+                    <div class="user-favorite-chips">
+                      {% for fav in member.favorite_items|slice:":6" %}
+                        <a class="user-favorite-chip" href="{% url 'product_detail' fav.product.slug %}">{{ fav.product.name }}</a>
+                      {% endfor %}
+                      {% if member.favorite_total > 6 %}
+                        <span class="user-favorite-more">+{{ member.favorite_total|add:"-6" }}</span>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <p class="user-favorites-empty" data-i18n="userNoFavorites">No favorite curtains yet.</p>
+                  {% endif %}
+                </div>
+
+                <div class="user-card-footer">
+                  <span class="user-login-method">
+                    {% if member.last_login_record %}
+                      <i class="fas {% if member.last_login_record.method == 'google' %}fa-right-to-bracket{% else %}fa-key{% endif %}" aria-hidden="true"></i>
+                      {% if member.last_login_record.method == 'google' %}<span data-i18n="viaGoogle">via Google</span>{% else %}<span data-i18n="viaPassword">via password</span>{% endif %}
+                    {% else %}
+                      <span data-i18n="userNeverSignedIn">Not signed in yet</span>
+                    {% endif %}
+                  </span>
+
+                  <form method="post" action="{% url 'admin_user_toggle_block' member.pk %}" data-confirm-i18n="{% if member.is_blocked %}unblockUserConfirm{% else %}blockUserConfirm{% endif %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="users" />
+                    {% if member.is_blocked %}
+                      <button class="user-block-btn is-unblock" type="submit"><i class="fas fa-unlock" aria-hidden="true"></i> <span data-i18n="unblockUser">Unblock</span></button>
+                    {% else %}
+                      <button class="user-block-btn" type="submit"><i class="fas fa-ban" aria-hidden="true"></i> <span data-i18n="blockUser">Block</span></button>
+                    {% endif %}
+                  </form>
+                </div>
+
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="dashboard-empty users-empty" data-i18n="noUsersYet">No users yet.</div>
+        {% endif %}
+
+        <p class="dashboard-footnote"><i class="fas fa-shield-halved" aria-hidden="true"></i> <span data-i18n="usersFootnote">Only administrators can see user activity and block accounts.</span></p>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="{% static 'app/js/main.js' %}?v=15"></script>
+
+</body>
+
+</html>

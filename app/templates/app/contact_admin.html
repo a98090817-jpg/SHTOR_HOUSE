@@ -1,0 +1,207 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title data-page-title="pageContactAdmin">Message to administrator | SHTOR HOUSE</title>
+
+  <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
+
+  <meta name="csrf-token" content="{{ csrf_token }}" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=23" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <meta name="turbo-cache-control" content="no-cache" />
+  <script src="{% static 'app/js/turbo.es2017-umd.js' %}"></script>
+
+</head>
+
+<body>
+
+  <div class="page-shell">
+
+    <main class="content">
+
+      <header class="topbar">
+
+        <div class="top-meta">
+
+          <a class="site-brand" href="{% url 'home' %}" aria-label="SHTOR HOUSE">
+            <img class="site-logo-image" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" />
+          </a>
+
+          <a class="top-link" href="{% if product %}{% url 'product_detail' product.slug %}{% else %}{% url 'home' %}{% endif %}">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span data-i18n="contactBackToProduct">Back to product</span>
+          </a>
+
+        </div>
+
+        <div class="top-actions">
+
+          {% if user.is_staff %}
+            <a class="add-product-plus" href="{% url 'product_create' %}" aria-label="Add product" title="Add product" data-i18n-aria-label="addProduct" data-i18n-title="addProduct">+</a>
+          {% endif %}
+
+          {% include 'app/partials/language_picker.html' %}
+
+          <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme"><i class="fas fa-moon" aria-hidden="true"></i></button>
+
+          {% if user.is_staff %}{% include 'app/partials/admin_bell.html' %}{% endif %}
+
+          {% if user.is_authenticated %}
+            <div class="profile-menu">
+              <button class="profile-trigger" type="button" aria-expanded="false" data-profile-toggle>
+                {% if request.session.google_profile_picture %}
+                  <img class="profile-avatar profile-photo" src="{{ request.session.google_profile_picture }}" alt="{{ user.username }} profile photo">
+                {% else %}
+                  <span class="profile-avatar">{{ user.username|first|upper }}</span>
+                {% endif %}
+                <span>{{ user.username }}</span>
+                <i class="fas fa-chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="profile-dropdown" data-profile-menu>
+                <strong>{{ user.username }}</strong>
+                {% if user.is_staff %}<a href="{% url 'admin_dashboard' %}" data-i18n="dashboard">Dashboard</a>{% endif %}
+                {% if user.is_staff %}<a href="{% url 'admin_users' %}" data-i18n="users">Users</a>{% endif %}
+                {% if user.is_staff %}<a href="{% url 'admin_notifications' %}" data-i18n="notifications">Notifications</a>{% endif %}
+                {% if user.is_staff %}<a href="{% url 'product_create' %}" data-i18n="addProduct">Add product</a>{% endif %}
+                <form method="post" action="{% url 'logout' %}">
+                  {% csrf_token %}
+                  <button type="submit" class="profile-logout" data-i18n="logout">Log out</button>
+                </form>
+              </div>
+            </div>
+          {% else %}
+            <a class="btn btn-light" href="{% url 'login' %}" data-i18n="signIn">Sign in</a>
+          {% endif %}
+
+        </div>
+
+      </header>
+
+      <div class="contact-admin-main">
+
+        <section class="contact-admin-hero">
+          <p class="eyebrow" data-i18n="adminContactEyebrow">Direct message</p>
+          <h1 data-i18n="adminContactTitle">Write to the administrator</h1>
+          <p class="contact-admin-subtitle" data-i18n="adminContactSubtitle">Ask a question, request a custom size or share a special wish — the message goes straight to the shop administrator.</p>
+        </section>
+
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="contact-admin-grid{% if not product %} is-single{% endif %}">
+
+          {% if product %}
+            <aside class="contact-product-card">
+              <span class="contact-product-label" data-i18n="aboutProduct">About this curtain</span>
+              {% if product.image_data %}
+                <img class="contact-product-image" src="{% url 'product_image' product.pk %}?v={{ product.image_stored_at|date:'U' }}" alt="{{ product.name }}" />
+              {% elif product.image %}
+                <img class="contact-product-image" src="{{ product.image.url }}" alt="{{ product.name }}" />
+              {% elif product.image_url %}
+                <img class="contact-product-image" src="{{ product.image_url }}" alt="{{ product.name }}" />
+              {% else %}
+                <img class="contact-product-image" src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80" alt="{{ product.name }}" />
+              {% endif %}
+              <h2>{{ product.name }}</h2>
+              <p class="contact-product-meta"><span data-i18n="category_{{ product.category }}">{{ product.category|title }}</span> · ${{ product.price }}</p>
+              <p class="contact-product-description">{{ product.description|truncatechars:180 }}</p>
+              <a class="contact-product-link" href="{% url 'product_detail' product.slug %}">
+                <span data-i18n="contactBackToProduct">Back to product</span>
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+              </a>
+            </aside>
+          {% endif %}
+
+          <section class="contact-form-card">
+            <div class="contact-form-head">
+              <h2 data-i18n="adminContactFormTitle">Your message</h2>
+              <span class="contact-form-badge"><i class="fas fa-lock" aria-hidden="true"></i> <span data-i18n="adminContactPrivate">Only the administrator sees this</span></span>
+            </div>
+
+            <form class="contact-admin-form" method="post" action="{% url 'contact_admin' %}">
+              {% csrf_token %}
+              {% if product %}<input type="hidden" name="product" value="{{ product.slug }}" />{% endif %}
+
+              {% if form.non_field_errors %}
+                <div class="form-errors">{{ form.non_field_errors }}</div>
+              {% endif %}
+
+              <div class="contact-form-row">
+                <label class="contact-field">
+                  <span data-i18n="msgFullName">Your name</span>
+                  {{ form.full_name }}
+                  {% if form.full_name.errors %}<small class="field-error">{{ form.full_name.errors|striptags }}</small>{% endif %}
+                </label>
+
+                <label class="contact-field">
+                  <span data-i18n="msgEmail">Email</span>
+                  {{ form.email }}
+                  {% if form.email.errors %}<small class="field-error">{{ form.email.errors|striptags }}</small>{% endif %}
+                </label>
+              </div>
+
+              <label class="contact-field">
+                <span data-i18n="msgPhone">Phone</span>
+                {{ form.phone }}
+                {% if form.phone.errors %}<small class="field-error">{{ form.phone.errors|striptags }}</small>{% endif %}
+              </label>
+
+              <label class="contact-field">
+                <span data-i18n="msgText">Message</span>
+                {{ form.message }}
+                {% if form.message.errors %}<small class="field-error">{{ form.message.errors|striptags }}</small>{% endif %}
+              </label>
+
+              <div class="contact-form-actions">
+                <button class="filter-submit contact-submit" type="submit">
+                  <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                  <span data-i18n="msgSend">Send message</span>
+                </button>
+                <a class="contact-cancel" href="{% if product %}{% url 'product_detail' product.slug %}{% else %}{% url 'home' %}{% endif %}" data-i18n="cancel">Cancel</a>
+              </div>
+
+              <p class="contact-form-note">
+                <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                <span data-i18n="adminContactNote">We usually reply within one working day.</span>
+              </p>
+            </form>
+          </section>
+
+        </div>
+
+      </div>
+
+      {% include 'app/partials/footer.html' %}
+
+    </main>
+
+  </div>
+
+  <script src="{% static 'app/js/main.js' %}?v=15"></script>
+
+</body>
+
+</html>

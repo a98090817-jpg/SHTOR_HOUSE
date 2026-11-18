@@ -157,7 +157,46 @@ function initSitePage() {
       recentProductsTitle: 'Recently added products', openCatalog: 'Open catalog',
       statusActive: 'Active', statusInactive: 'Inactive', statusFeatured: 'Featured',
       dashboardFootnote: 'Only administrators can see this page.',
-      adminOnly: 'Only an administrator can open the dashboard.'
+      adminOnly: 'Only an administrator can open the dashboard.',
+      // Admin bell & notifications
+      notifications: 'Notifications', unread: 'unread', allRead: 'All read', markAllRead: 'Mark all read',
+      noNotifications: 'No notifications yet.', viewAllNotifications: 'View all notifications',
+      notifToastTitle: 'New notifications', notifToastText: 'new activity from your customers', notifToastOpen: 'Open',
+      notifLoginGoogle: 'signed in with Google', notifLoginPassword: 'signed in with password',
+      notifRegistered: 'created an account', notifRegisteredLong: 'Created a new account on the site.',
+      notifFavorited: 'added to favorites', notifFavoritedLong: 'Added a curtain to favorites:',
+      notifMessage: 'sent a message to the administrator', notifMessageLong: 'Sent a message to the administrator.',
+      notifKindLogin: 'Sign-ins', notifKindRegister: 'Registrations', notifKindFavorite: 'Favorites', notifKindMessage: 'Messages',
+      filterUnread: 'Unread', viaGoogle: 'via Google', viaPassword: 'via password',
+      // Users page
+      users: 'Users', pageUsers: 'Users | SHTOR HOUSE', usersEyebrow: 'Audience', usersTitle: 'Users',
+      usersSubtitle: 'See how every customer signed in, what they saved to favorites and block accounts when needed.',
+      usersLive: 'Live audience', usersFootnote: 'Only administrators can see user activity and block accounts.',
+      userJoined: 'Joined', userLastLogin: 'Last sign-in', userSignIns: 'Sign-ins',
+      userFavorites: 'Favorites', userNoFavorites: 'No favorite curtains yet.',
+      userNeverSignedIn: 'Not signed in yet', filterAll: 'All', filterGoogle: 'Google', filterPassword: 'Password', filterBlocked: 'Blocked',
+      blockedLabel: 'blocked', blockUser: 'Block', blockUserConfirm: 'Block this user? They will not be able to sign in.',
+      unblockUser: 'Unblock', unblockUserConfirm: 'Unblock this user?',
+      statAllUsers: 'All users', statRegisteredAccounts: 'registered accounts',
+      statGoogleUsers: 'Google accounts', statGoogleLogins: 'Google sign-ins',
+      statPasswordUsers: 'Password accounts', statPasswordLogins: 'password sign-ins',
+      statBlockedUsers: 'Blocked', statBlockedHint: 'cannot sign in',
+      viewAllUsers: 'All users',
+      // Contact admin
+      contactBackToProduct: 'Back to product', adminContactEyebrow: 'Direct message', adminContactTitle: 'Write to the administrator',
+      adminContactSubtitle: 'Ask a question, request a custom size or share a special wish — the message goes straight to the shop administrator.',
+      adminContactFormTitle: 'Your message', adminContactPrivate: 'Only the administrator sees this',
+      msgFullName: 'Your name', msgNamePlaceholder: 'Your full name', msgEmail: 'Email', msgEmailPlaceholder: 'you@example.com',
+      msgPhone: 'Phone', msgPhonePlaceholder: '+998 90 123 45 67', msgText: 'Message', msgTextPlaceholder: 'Write your message to the administrator…',
+      msgSend: 'Send message', adminContactNote: 'We usually reply within one working day.',
+      pageContactAdmin: 'Message to administrator | SHTOR HOUSE',
+      writeToAdmin: 'Write to administrator',
+      // Notifications page
+      notificationsEyebrow: 'Activity feed', notificationsTitle: 'Notifications', notificationsSubtitle: 'Every sign-in, favorite and message from your customers, collected in one place.',
+      notificationsFootnote: 'Only administrators can see this activity.', notificationFilters: 'Notification filters',
+      viewUser: 'View user',
+      // Product detail
+      contactAbout: 'Contact us about', contactText: 'Choose the easiest way to reach us and we will help you complete your order.',
     },
     uz: {
       registerEyebrow: 'Xush kelibsiz', registerTitle: 'Akkaunt yaratish', alreadyAccount: 'Akkauntingiz bormi?', logIn: 'Kirish',
@@ -235,7 +274,46 @@ function initSitePage() {
       recentProductsTitle: 'Yaqinda qo‘shilgan mahsulotlar', openCatalog: 'Katalogni ochish',
       statusActive: 'Faol', statusInactive: 'Nofaol', statusFeatured: 'Tavsiya etilgan',
       dashboardFootnote: 'Bu sahifani faqat administratorlar ko‘ra oladi.',
-      adminOnly: 'Statistikani faqat administrator ocha oladi.'
+      adminOnly: 'Statistikani faqat administrator ocha oladi.',
+      // Admin bell & notifications
+      notifications: 'Bildirishnomalar', unread: 'o‘qilmagan', allRead: 'Hammasi o‘qilgan', markAllRead: 'Hammasini o‘qilgan deb belgilash',
+      noNotifications: 'Hozircha bildirishnoma yo‘q.', viewAllNotifications: 'Barcha bildirishnomalarni ko‘rish',
+      notifToastTitle: 'Yangi bildirishnomalar', notifToastText: 'mijozlaringizdan yangi faollik', notifToastOpen: 'Ochish',
+      notifLoginGoogle: 'Google orqali kirdi', notifLoginPassword: 'parol bilan kirdi',
+      notifRegistered: 'akkaunt yaratdi', notifRegisteredLong: 'Saytda yangi akkaunt yaratti.',
+      notifFavorited: 'sevimlilarga qo‘shdi', notifFavoritedLong: 'Pardani sevimlilarga qo‘shdi:',
+      notifMessage: 'administratorga xabar yubordi', notifMessageLong: 'Administratorga xabar yubordi.',
+      notifKindLogin: 'Kirishlar', notifKindRegister: 'Ro‘yxatdan o‘tishlar', notifKindFavorite: 'Sevimlilar', notifKindMessage: 'Xabarlar',
+      filterUnread: 'O‘qilmagan', viaGoogle: 'Google orqali', viaPassword: 'parol orqali',
+      // Users page
+      users: 'Foydalanuvchilar', pageUsers: 'Foydalanuvchilar | SHTOR HOUSE', usersEyebrow: 'Auditoriya', usersTitle: 'Foydalanuvchilar',
+      usersSubtitle: 'Har bir mijoz qanday kirganini, nimalarni sevimlilarga qo‘shganini ko‘ring va kerak bo‘lsa bloklang.',
+      usersLive: 'Jonli auditoriya', usersFootnote: 'Faqat administratorlar foydalanuvchi faolligini ko‘ra oladi va bloklay oladi.',
+      userJoined: 'Qo‘shilgan', userLastLogin: 'Oxirgi kirish', userSignIns: 'Kirishlar',
+      userFavorites: 'Sevimlilar', userNoFavorites: 'Hozircha sevimli pardalar yo‘q.',
+      userNeverSignedIn: 'Hali kirmagan', filterAll: 'Hammasi', filterGoogle: 'Google', filterPassword: 'Parol', filterBlocked: 'Bloklangan',
+      blockedLabel: 'bloklangan', blockUser: 'Bloklash', blockUserConfirm: 'Ushbu foydalanuvchini bloklaysizmi? U tizimga kira olmaydi.',
+      unblockUser: 'Blokdan chiqarish', unblockUserConfirm: 'Foydalanuvchini blokdan chiqarasizmi?',
+      statAllUsers: 'Barcha foydalanuvchilar', statRegisteredAccounts: 'ro‘yxatdan o‘tgan hisoblar',
+      statGoogleUsers: 'Google hisoblar', statGoogleLogins: 'Google kirishlari',
+      statPasswordUsers: 'Parol hisoblar', statPasswordLogins: 'parol kirishlari',
+      statBlockedUsers: 'Bloklangan', statBlockedHint: 'kira olmaydi',
+      viewAllUsers: 'Barcha foydalanuvchilar',
+      // Contact admin
+      contactBackToProduct: 'Mahsulotga qaytish', adminContactEyebrow: 'To‘g‘ridan-to‘g‘ri xabar', adminContactTitle: 'Administratorga yozish',
+      adminContactSubtitle: 'Savol bering, maxsus o‘lcham so‘rang yoki istagingizni yozing — xabar to‘g‘ridan-to‘g‘ri do‘kon administratoriga boradi.',
+      adminContactFormTitle: 'Sizning xabaringiz', adminContactPrivate: 'Faqat administrator ko‘radi',
+      msgFullName: 'Ismingiz', msgNamePlaceholder: 'To‘liq ismingiz', msgEmail: 'Email', msgEmailPlaceholder: 'siz@misol.uz',
+      msgPhone: 'Telefon', msgPhonePlaceholder: '+998 90 123 45 67', msgText: 'Xabar', msgTextPlaceholder: 'Administratorga xabaringizni yozing…',
+      msgSend: 'Xabar yuborish', adminContactNote: 'Odatda bir ish kuni ichida javob beramiz.',
+      pageContactAdmin: 'Administratorga xabar | SHTOR HOUSE',
+      writeToAdmin: 'Administratorga yozish',
+      // Notifications page
+      notificationsEyebrow: 'Faollik lenti', notificationsTitle: 'Bildirishnomalar', notificationsSubtitle: 'Mijozlarning har bir kirishi, sevimlilari va xabarlari bitta joyda.',
+      notificationsFootnote: 'Faqat administratorlar bu faollikni ko‘ra oladi.', notificationFilters: 'Bildirishnoma filtrlari',
+      viewUser: 'Foydalanuvchini ko‘rish',
+      // Product detail
+      contactAbout: 'Mahsulot haqida bog‘lanish', contactText: 'Biz bilan bog‘lanish usulini tanlang, buyurtmangizni rasmiylashtirishga yordam beramiz.',
     },
     ru: {
       registerEyebrow: 'Добро пожаловать', registerTitle: 'Создать аккаунт', alreadyAccount: 'Уже есть аккаунт?', logIn: 'Войти',
@@ -313,7 +391,46 @@ function initSitePage() {
       recentProductsTitle: 'Недавно добавленные товары', openCatalog: 'Открыть каталог',
       statusActive: 'Активен', statusInactive: 'Неактивен', statusFeatured: 'Рекомендуемый',
       dashboardFootnote: 'Эту страницу видят только администраторы.',
-      adminOnly: 'Статистику может открыть только администратор.'
+      adminOnly: 'Статистику может открыть только администратор.',
+      // Admin bell & notifications
+      notifications: 'Уведомления', unread: 'непрочитанных', allRead: 'Все прочитано', markAllRead: 'Отметить все как прочитанные',
+      noNotifications: 'Уведомлений пока нет.', viewAllNotifications: 'Посмотреть все уведомления',
+      notifToastTitle: 'Новые уведомления', notifToastText: 'новая активность от ваших клиентов', notifToastOpen: 'Открыть',
+      notifLoginGoogle: 'вошел через Google', notifLoginPassword: 'вошел по паролю',
+      notifRegistered: 'создал аккаунт', notifRegisteredLong: 'Создал новый аккаунт на сайте.',
+      notifFavorited: 'добавил в избранное', notifFavoritedLong: 'Добавил штору в избранное:',
+      notifMessage: 'отправил сообщение администратору', notifMessageLong: 'Отправил сообщение администратору.',
+      notifKindLogin: 'Входы', notifKindRegister: 'Регистрации', notifKindFavorite: 'Избранное', notifKindMessage: 'Сообщения',
+      filterUnread: 'Непрочитанные', viaGoogle: 'через Google', viaPassword: 'по паролю',
+      // Users page
+      users: 'Пользователи', pageUsers: 'Пользователи | SHTOR HOUSE', usersEyebrow: 'Аудитория', usersTitle: 'Пользователи',
+      usersSubtitle: 'Смотрите, как каждый клиент заходил, что добавил в избранное и блокируйте аккаунты при необходимости.',
+      usersLive: 'Живая аудитория', usersFootnote: 'Только администраторы могут видеть активность пользователей и блокировать их.',
+      userJoined: 'Зарегистрирован', userLastLogin: 'Последний вход', userSignIns: 'Входы',
+      userFavorites: 'Избранное', userNoFavorites: 'Пока нет избранных штор.',
+      userNeverSignedIn: 'Ещё не заходил', filterAll: 'Все', filterGoogle: 'Google', filterPassword: 'Пароль', filterBlocked: 'Заблокированные',
+      blockedLabel: 'заблокирован', blockUser: 'Заблокировать', blockUserConfirm: 'Заблокировать этого пользователя? Он не сможет зайти.',
+      unblockUser: 'Разблокировать', unblockUserConfirm: 'Разблокировать этого пользователя?',
+      statAllUsers: 'Все пользователи', statRegisteredAccounts: 'зарегистрированных аккаунтов',
+      statGoogleUsers: 'Google-аккаунты', statGoogleLogins: 'входов через Google',
+      statPasswordUsers: 'Аккаунты с паролем', statPasswordLogins: 'входов по паролю',
+      statBlockedUsers: 'Заблокированные', statBlockedHint: 'не могут зайти',
+      viewAllUsers: 'Все пользователи',
+      // Contact admin
+      contactBackToProduct: 'Назад к товару', adminContactEyebrow: 'Прямое сообщение', adminContactTitle: 'Написать администратору',
+      adminContactSubtitle: 'Задайте вопрос, запросите индивидуальный размер или поделитесь пожеланием — сообщение попадёт прямо администратору магазина.',
+      adminContactFormTitle: 'Ваше сообщение', adminContactPrivate: 'Видит только администратор',
+      msgFullName: 'Ваше имя', msgNamePlaceholder: 'Полное имя', msgEmail: 'Email', msgEmailPlaceholder: 'you@example.com',
+      msgPhone: 'Телефон', msgPhonePlaceholder: '+998 90 123 45 67', msgText: 'Сообщение', msgTextPlaceholder: 'Напишите сообщение администратору…',
+      msgSend: 'Отправить', adminContactNote: 'Обычно отвечаем в течение одного рабочего дня.',
+      pageContactAdmin: 'Сообщение администратору | SHTOR HOUSE',
+      writeToAdmin: 'Написать администратору',
+      // Notifications page
+      notificationsEyebrow: 'Лента активности', notificationsTitle: 'Уведомления', notificationsSubtitle: 'Каждый вход, избранное и сообщение от ваших клиентов — в одном месте.',
+      notificationsFootnote: 'Только администраторы видят эту активность.', notificationFilters: 'Фильтры уведомлений',
+      viewUser: 'Посмотреть пользователя',
+      // Product detail
+      contactAbout: 'Свяжитесь с нами о товаре', contactText: 'Выберите удобный способ связи, и мы поможем оформить заказ.',
     }
   };
   Object.keys(extraTranslations).forEach(function (language) {
@@ -685,6 +802,84 @@ function initSitePage() {
     document.addEventListener('click', function (event) {
       if (!profileToggle.contains(event.target) && !profileMenu.contains(event.target)) profileMenu.classList.remove('open');
     }, { signal: pageSignal });
+  }
+
+  // =========================================================
+  // ADMIN BELL NOTIFICATIONS — administrator bildirishnomalari
+  // =========================================================
+  const adminBell = document.querySelector('[data-admin-bell]');
+  if (adminBell) {
+    const trigger = adminBell.querySelector('[data-admin-bell-toggle]');
+    const menu = adminBell.querySelector('[data-admin-bell-menu]');
+    const badge = adminBell.querySelector('[data-admin-bell-badge]');
+
+    if (trigger && menu) {
+      trigger.addEventListener('click', function (event) {
+        event.stopPropagation();
+        const isOpen = adminBell.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', String(isOpen));
+        if (isOpen) {
+          // Bell ochilganda badjeni "o'qilgan" holatiga o'tkazish
+          adminBell.classList.add('has-open');
+          if (badge) badge.classList.remove('badge-pulse');
+        }
+      });
+      document.addEventListener('click', function (event) {
+        if (!adminBell.contains(event.target)) {
+          adminBell.classList.remove('open');
+        }
+      }, { signal: pageSignal });
+    }
+
+    // Badge puls animatsiyasi (yangi xabar keldigida)
+    function animateBellBadge() {
+      if (badge && !adminBell.classList.contains('open')) {
+        badge.classList.add('badge-pulse');
+        setTimeout(function () { badge.classList.remove('badge-pulse'); }, 600);
+      }
+    }
+
+    // Agar sahifa yuklanganda o'qilmagan bildirishnomalar bo'lsa, badjeni animatsiya qil
+    if (badge) {
+      setTimeout(animateBellBadge, 500);
+    }
+  }
+
+  // Toast bildirishnoma (yangi xabar keldigida animatsiya bilan ko'rsatish)
+  const toast = document.querySelector('[data-admin-toast]');
+  if (toast) {
+    const closeBtn = toast.querySelector('[data-admin-toast-close]');
+    const link = toast.querySelector('[data-admin-toast-link]');
+
+    // Avtomatik yashirish 8 sekunddan keyin
+    setTimeout(function () {
+      if (!toast.hidden && !toast.classList.contains('toast-hiding')) {
+        hideToast();
+      }
+    }, 8000);
+
+    function hideToast() {
+      toast.classList.add('toast-hiding');
+      toast.addEventListener('transitionend', function () {
+        toast.hidden = true;
+      }, { once: true });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function (event) {
+        event.stopPropagation();
+        hideToast();
+      });
+    }
+
+    // Toast ustiga bosilganda ham yashirish (linkdan tashqari)
+    toast.addEventListener('click', function (event) {
+      if (event.target === toast || event.target.closest('.admin-toast-copy')) {
+        window.location.href = link.href;
+      } else if (event.target !== link && !event.target.closest('[data-admin-toast-close]')) {
+        hideToast();
+      }
+    });
   }
 
   const quoteSection = document.getElementById('quote-form');
