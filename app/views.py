@@ -1,6 +1,8 @@
 import json
 import mimetypes
 import secrets
+from datetime import timedelta
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -14,16 +16,37 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
-from django.db.models import Q
+from django.db.models import Count, F, Q
+from django.db.models.functions import TruncDate
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.http import http_date
 from django.utils.text import slugify
 from django.views.decorators.http import require_GET, require_POST
 from .forms import EmailOrUsernameLoginForm, ProductForm, QuoteRequestForm, CustomUserCreationForm
-from .models import Favorite, Product
+from .models import Favorite, Product, QuoteRequest, SiteVisitCounter
 from .visit_counter import increment_visit_count
+
+# Katalogdagi saralash turlari. Birinchi variant — standart ko'rinish.
+DEFAULT_SORT = 'featured'
+SORT_OPTIONS = [
+    ('featured', 'Featured'),
+    ('newest', 'Newest'),
+    ('price_asc', 'Price: low to high'),
+    ('price_desc', 'Price: high to low'),
+    ('name_asc', 'Name: A–Z'),
+    ('name_desc', 'Name: Z–A'),
+]
+SORT_ORDERINGS = {
+    'featured': ('-is_featured', '-created_at'),
+    'newest': ('-created_at',),
+    'price_asc': ('price', '-created_at'),
+    'price_desc': ('-price', '-created_at'),
+    'name_asc': ('name', '-created_at'),
+    'name_desc': ('-name', '-created_at'),
+}
 
 CURTAIN_INSPIRATION_ITEMS = [
     {
@@ -81,10 +104,55 @@ def _product_image_url(product):
     return product.image_url
 
 
+def _parse_price(value):
+    """Narx filtrini xavfsiz songa aylantiradi.
+
+    Bo'sh, noto'g'ri yoki manfiy qiymat e'tiborsiz qoldiriladi.
+    """
+    if value is None:
+        return None
+    cleaned = str(value).replace(',', '.').strip()
+    if not cleaned:
+        return None
+    try:
+        amount = Decimal(cleaned)
+        if not amount.is_finite() or amount < 0:
+            return None
+        return amount.quantize(Decimal('0.01'))
+    except (InvalidOperation, ValueError):
+        return None
+
+
+def _format_price(value):
+    """Decimal narxni input uchun qulay ko'rinishda qaytaradi."""
+    if value is None:
+        return ''
+    text = format(value, 'f')
+    if '.' in text:
+        text = text.rstrip('0').rstrip('.')
+    return text or '0'
+
+
 def home(request):
-    category = request.GET.get('category')
+    category = (request.GET.get('category') or '').strip() or None
+    if category and category not in dict(Product.CATEGORY_CHOICES):
+        category = None
     query = (request.GET.get('q') or '').strip()
-    products = Product.objects.filter(is_active=True).order_by('-is_featured', '-created_at')
+
+    active_sort = (request.GET.get('sort') or DEFAULT_SORT).strip().lower()
+    if active_sort not in SORT_ORDERINGS:
+        active_sort = DEFAULT_SORT
+
+    min_price = _parse_price(request.GET.get('min_price'))
+    max_price = _parse_price(request.GET.get('max_price'))
+    # Foydalanuvchi "dan" va "gacha" ni almashtirib yuborsa ham filtr ishlaydi.
+    if min_price is not None and max_price is not None and min_price > max_price:
+        min_price, max_price = max_price, min_price
+
+    has_price_filter = min_price is not None or max_price is not None
+    has_filters = has_price_filter or active_sort != DEFAULT_SORT
+
+    products = Product.objects.filter(is_active=True).order_by(*SORT_ORDERINGS[active_sort])
     carousel_products = (
         Product.objects.filter(is_active=True)
         .filter(Q(image__gt='') | Q(image_url__gt='') | Q(image_data__isnull=False))
@@ -148,6 +216,11 @@ def home(request):
             | Q(description__icontains=query)
         )
 
+    if min_price is not None:
+        products = products.filter(price__gte=min_price)
+    if max_price is not None:
+        products = products.filter(price__lte=max_price)
+
     form = QuoteRequestForm()
     filtered_queryset = Product.objects.filter(is_active=True)
     if category:
@@ -188,6 +261,12 @@ def home(request):
         'active_category': category or 'all',
         'search_query': query,
         'favorite_ids': favorite_ids,
+        'sort_options': SORT_OPTIONS,
+        'active_sort': active_sort,
+        'min_price': _format_price(min_price),
+        'max_price': _format_price(max_price),
+        'has_price_filter': has_price_filter,
+        'has_filters': has_filters,
     })
 
 
@@ -228,6 +307,11 @@ def product_image(request, pk):
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
     form = QuoteRequestForm(initial={'product': product.id})
+
+    # Ko'rishlar soni — faqat oddiy foydalanuvchilar va sahifa ochilganda.
+    # Adminning o'z tekshiruvlari statistikani shishirib yubormaydi.
+    if request.method == 'GET' and not request.user.is_staff:
+        Product.objects.filter(pk=product.pk).update(view_count=F('view_count') + 1)
 
     if request.method == 'POST':
         form = QuoteRequestForm(request.POST)
@@ -450,6 +534,105 @@ def wishlist_page(request):
     return render(request, 'app/wishlist.html', {
         'products': products,
         'favorite_ids': favorite_ids,
+    })
+
+
+def admin_dashboard(request):
+    """Adminlar uchun sayt statistikasi.
+
+    Faqat `is_staff` foydalanuvchilarga ochiq. Tashrif hisoblagichi bu yerda
+    oshirilmaydi — dashboard ochish sayt tashrifi sifatida hisoblanmaydi.
+    """
+    if not request.user.is_authenticated:
+        return redirect(f'/login/?next={reverse("admin_dashboard")}')
+    if not request.user.is_staff:
+        messages.error(request, 'Only an administrator can open the dashboard.')
+        return redirect('home')
+
+    now = timezone.now()
+    week_ago = now - timedelta(days=7)
+    today = timezone.localdate()
+    chart_start = today - timedelta(days=6)
+
+    user_model = get_user_model()
+    total_products = Product.objects.count()
+    active_products = Product.objects.filter(is_active=True).count()
+    total_requests = QuoteRequest.objects.count()
+    requests_last_7 = QuoteRequest.objects.filter(created_at__gte=week_ago).count()
+    total_users = user_model.objects.count()
+    users_last_7 = user_model.objects.filter(date_joined__gte=week_ago).count()
+    total_favorites = Favorite.objects.count()
+    visits_count = max(
+        SiteVisitCounter.objects.filter(pk=1)
+        .values_list('count', flat=True)
+        .first()
+        or 0,
+        int(getattr(settings, 'VISIT_COUNTER_BASELINE', 0)),
+    )
+
+    top_viewed = list(
+        Product.objects.filter(is_active=True)
+        .order_by('-view_count', '-created_at')[:8]
+    )
+    top_requested = list(
+        Product.objects.annotate(request_total=Count('quote_requests'))
+        .filter(request_total__gt=0)
+        .order_by('-request_total', '-created_at')[:8]
+    )
+    recent_requests = (
+        QuoteRequest.objects.select_related('product')
+        .order_by('-created_at')[:12]
+    )
+    recent_products = list(Product.objects.order_by('-created_at')[:8])
+
+    for product in top_viewed + top_requested + recent_products:
+        product.preview_url = _product_image_url(product)
+
+    # Oxirgi 7 kundagi so'rovlar diagrammasi (kunma-kun).
+    daily_rows = (
+        QuoteRequest.objects.filter(created_at__date__gte=chart_start)
+        .annotate(day=TruncDate('created_at'))
+        .values('day')
+        .annotate(total=Count('id'))
+    )
+    daily_map = {row['day']: row['total'] for row in daily_rows}
+    request_series = []
+    for offset in range(7):
+        day = chart_start + timedelta(days=offset)
+        total = daily_map.get(day, 0)
+        request_series.append({'date': day, 'total': total})
+    max_daily = max((item['total'] for item in request_series), default=0) or 1
+    for item in request_series:
+        item['percent'] = (
+            max(8, round(item['total'] * 74 / max_daily)) if item['total'] else 0
+        )
+
+    category_labels = dict(Product.CATEGORY_CHOICES)
+    category_rows = list(
+        Product.objects.filter(is_active=True)
+        .values('category')
+        .annotate(total=Count('id'))
+        .order_by('-total', 'category')
+    )
+    for row in category_rows:
+        row['label'] = category_labels.get(row['category'], row['category'])
+        row['percent'] = round(row['total'] * 100 / max(active_products, 1))
+
+    return render(request, 'app/dashboard.html', {
+        'total_products': total_products,
+        'active_products': active_products,
+        'total_requests': total_requests,
+        'requests_last_7': requests_last_7,
+        'total_users': total_users,
+        'users_last_7': users_last_7,
+        'total_favorites': total_favorites,
+        'visits_count': visits_count,
+        'top_viewed': top_viewed,
+        'top_requested': top_requested,
+        'recent_requests': recent_requests,
+        'recent_products': recent_products,
+        'request_series': request_series,
+        'category_rows': category_rows,
     })
 
 @require_POST

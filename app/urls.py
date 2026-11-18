@@ -20,6 +20,7 @@ urlpatterns = [
     path('product/<slug:slug>/', views.product_detail, name='product_detail'),
     path('quote/', views.quote_request, name='quote_request'),
     path('wishlist/', views.wishlist_page, name='wishlist'),
+    path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('favorite/<slug:slug>/', views.toggle_favorite, name='toggle_favorite'),
     path('assistant/api/', views.assistant_api, name='assistant_api'),
 ]

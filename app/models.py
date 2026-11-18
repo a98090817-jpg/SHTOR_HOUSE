@@ -48,6 +48,7 @@ class Product(models.Model):
     image_stored_at = models.DateTimeField(null=True, blank=True, editable=False)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    view_count = models.PositiveBigIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -136,7 +136,28 @@ function initSitePage() {
       productDeleted: 'Product deleted successfully.',
       staffDeleteOnly: 'Only an administrator can delete products.',
       staffAddOnly: 'Only an administrator can add products.',
-      productAddedSuffix: 'was added successfully.'
+      productAddedSuffix: 'was added successfully.',
+      priceFilter: 'Price ($)', priceFrom: 'From', priceTo: 'To', applyFilter: 'Filter', resetFilters: 'Reset',
+      minPrice: 'Minimum price', maxPrice: 'Maximum price',
+      sort_featured: 'Featured first', sort_newest: 'Newest first', sort_price_asc: 'Price: low to high',
+      sort_price_desc: 'Price: high to low', sort_name_asc: 'Name: A–Z', sort_name_desc: 'Name: Z–A',
+      dashboard: 'Dashboard', pageDashboard: 'Statistics | SHTOR HOUSE', backToCatalog: 'Catalog',
+      dashboardEyebrow: 'Administrator panel', dashboardTitle: 'Site statistics',
+      dashboardSubtitle: 'A live overview of visits, products and customer requests.',
+      liveOverview: 'Live overview', keyMetrics: 'Key metrics',
+      statVisits: 'Site visits', statAllTime: 'all time', statProducts: 'Products', statActiveNow: 'active',
+      statRequests: 'Quote requests', statLastSevenDays: 'in the last 7 days', statUsers: 'Users', statNewUsers: 'joined this week',
+      statFavorites: 'Favorites', statSavedCurtains: 'saved curtains', statNewRequests: 'New requests', statLastSevenDaysOnly: 'last 7 days',
+      chartTitle: 'Requests in the last 7 days', chartSubtitle: 'Daily activity', chartAria: 'Requests per day',
+      chartEmpty: 'No requests in the last 7 days.', categoryTitle: 'Products by category', noProductsYet: 'No products yet.',
+      topViewedTitle: 'Most viewed curtains', topViewedSubtitle: 'by page views', noViewsYet: 'No views yet.', viewsLabel: 'views',
+      topRequestedTitle: 'Most requested curtains', topRequestedSubtitle: 'by quote requests', noRequestsYet: 'No requests yet.', requestsLabel: 'requests',
+      recentRequestsTitle: 'Recent quote requests', recentRequestsSubtitle: 'latest 12',
+      tableCustomer: 'Customer', tablePhone: 'Phone', tableProduct: 'Product', tableDate: 'Date', tablePrice: 'Price', tableStatus: 'Status', tableViews: 'Views',
+      recentProductsTitle: 'Recently added products', openCatalog: 'Open catalog',
+      statusActive: 'Active', statusInactive: 'Inactive', statusFeatured: 'Featured',
+      dashboardFootnote: 'Only administrators can see this page.',
+      adminOnly: 'Only an administrator can open the dashboard.'
     },
     uz: {
       registerEyebrow: 'Xush kelibsiz', registerTitle: 'Akkaunt yaratish', alreadyAccount: 'Akkauntingiz bormi?', logIn: 'Kirish',
@@ -193,7 +214,28 @@ function initSitePage() {
       productDeleted: 'Mahsulot muvaffaqiyatli o‘chirildi.',
       staffDeleteOnly: 'Mahsulotni faqat administrator o‘chira oladi.',
       staffAddOnly: 'Mahsulotni faqat administrator qo‘sha oladi.',
-      productAddedSuffix: 'muvaffaqiyatli qo‘shildi.'
+      productAddedSuffix: 'muvaffaqiyatli qo‘shildi.',
+      priceFilter: 'Narx ($)', priceFrom: 'dan', priceTo: 'gacha', applyFilter: 'Filtrlash', resetFilters: 'Tozalash',
+      minPrice: 'Eng kam narx', maxPrice: 'Eng yuqori narx',
+      sort_featured: 'Avval tavsiya etilganlar', sort_newest: 'Avval yangilari', sort_price_asc: 'Narx: arzon → qimmat',
+      sort_price_desc: 'Narx: qimmat → arzon', sort_name_asc: 'Nomi: A–Z', sort_name_desc: 'Nomi: Z–A',
+      dashboard: 'Statistika', pageDashboard: 'Statistika | SHTOR HOUSE', backToCatalog: 'Katalog',
+      dashboardEyebrow: 'Administrator paneli', dashboardTitle: 'Sayt statistikasi',
+      dashboardSubtitle: 'Tashriflar, mahsulotlar va mijoz so‘rovlarining jonli ko‘rinishi.',
+      liveOverview: 'Jonli ko‘rinish', keyMetrics: 'Asosiy ko‘rsatkichlar',
+      statVisits: 'Sayt tashriflari', statAllTime: 'jami', statProducts: 'Mahsulotlar', statActiveNow: 'faol',
+      statRequests: 'Xarid so‘rovlari', statLastSevenDays: 'oxirgi 7 kunda', statUsers: 'Foydalanuvchilar', statNewUsers: 'shu haftada qo‘shilgan',
+      statFavorites: 'Sevimlilar', statSavedCurtains: 'saqlangan pardalar', statNewRequests: 'Yangi so‘rovlar', statLastSevenDaysOnly: 'oxirgi 7 kun',
+      chartTitle: 'Oxirgi 7 kundagi so‘rovlar', chartSubtitle: 'Kunlik faollik', chartAria: 'Kuniga so‘rovlar',
+      chartEmpty: 'Oxirgi 7 kunda so‘rov yo‘q.', categoryTitle: 'Kategoriya bo‘yicha mahsulotlar', noProductsYet: 'Hozircha mahsulot yo‘q.',
+      topViewedTitle: 'Eng ko‘p ko‘rilgan pardalar', topViewedSubtitle: 'sahifa ko‘rishlari bo‘yicha', noViewsYet: 'Hozircha ko‘rishlar yo‘q.', viewsLabel: 'ko‘rish',
+      topRequestedTitle: 'Eng ko‘p so‘ralgan pardalar', topRequestedSubtitle: 'xarid so‘rovlari bo‘yicha', noRequestsYet: 'Hozircha so‘rovlar yo‘q.', requestsLabel: 'so‘rov',
+      recentRequestsTitle: 'So‘nggi xarid so‘rovlari', recentRequestsSubtitle: 'oxirgi 12 ta',
+      tableCustomer: 'Mijoz', tablePhone: 'Telefon', tableProduct: 'Mahsulot', tableDate: 'Sana', tablePrice: 'Narx', tableStatus: 'Holat', tableViews: 'Ko‘rishlar',
+      recentProductsTitle: 'Yaqinda qo‘shilgan mahsulotlar', openCatalog: 'Katalogni ochish',
+      statusActive: 'Faol', statusInactive: 'Nofaol', statusFeatured: 'Tavsiya etilgan',
+      dashboardFootnote: 'Bu sahifani faqat administratorlar ko‘ra oladi.',
+      adminOnly: 'Statistikani faqat administrator ocha oladi.'
     },
     ru: {
       registerEyebrow: 'Добро пожаловать', registerTitle: 'Создать аккаунт', alreadyAccount: 'Уже есть аккаунт?', logIn: 'Войти',
@@ -250,7 +292,28 @@ function initSitePage() {
       productDeleted: 'Товар успешно удален.',
       staffDeleteOnly: 'Удалять товары может только администратор.',
       staffAddOnly: 'Добавлять товары может только администратор.',
-      productAddedSuffix: 'успешно добавлен.'
+      productAddedSuffix: 'успешно добавлен.',
+      priceFilter: 'Цена ($)', priceFrom: 'от', priceTo: 'до', applyFilter: 'Фильтр', resetFilters: 'Сбросить',
+      minPrice: 'Минимальная цена', maxPrice: 'Максимальная цена',
+      sort_featured: 'Сначала рекомендуемые', sort_newest: 'Сначала новые', sort_price_asc: 'Цена: по возрастанию',
+      sort_price_desc: 'Цена: по убыванию', sort_name_asc: 'Название: А–Я', sort_name_desc: 'Название: Я–А',
+      dashboard: 'Статистика', pageDashboard: 'Статистика | SHTOR HOUSE', backToCatalog: 'Каталог',
+      dashboardEyebrow: 'Панель администратора', dashboardTitle: 'Статистика сайта',
+      dashboardSubtitle: 'Живая сводка посещений, товаров и запросов клиентов.',
+      liveOverview: 'Онлайн-обзор', keyMetrics: 'Ключевые показатели',
+      statVisits: 'Посещения сайта', statAllTime: 'за все время', statProducts: 'Товары', statActiveNow: 'активных',
+      statRequests: 'Запросы на покупку', statLastSevenDays: 'за последние 7 дней', statUsers: 'Пользователи', statNewUsers: 'за 7 дней',
+      statFavorites: 'Избранное', statSavedCurtains: 'сохраненных штор', statNewRequests: 'Новые запросы', statLastSevenDaysOnly: 'последние 7 дней',
+      chartTitle: 'Запросы за последние 7 дней', chartSubtitle: 'Активность по дням', chartAria: 'Запросы по дням',
+      chartEmpty: 'За последние 7 дней запросов нет.', categoryTitle: 'Товары по категориям', noProductsYet: 'Товаров пока нет.',
+      topViewedTitle: 'Самые просматриваемые шторы', topViewedSubtitle: 'по просмотрам страниц', noViewsYet: 'Просмотров пока нет.', viewsLabel: 'просмотров',
+      topRequestedTitle: 'Самые запрашиваемые шторы', topRequestedSubtitle: 'по запросам на покупку', noRequestsYet: 'Запросов пока нет.', requestsLabel: 'запросов',
+      recentRequestsTitle: 'Последние запросы на покупку', recentRequestsSubtitle: 'последние 12',
+      tableCustomer: 'Клиент', tablePhone: 'Телефон', tableProduct: 'Товар', tableDate: 'Дата', tablePrice: 'Цена', tableStatus: 'Статус', tableViews: 'Просмотры',
+      recentProductsTitle: 'Недавно добавленные товары', openCatalog: 'Открыть каталог',
+      statusActive: 'Активен', statusInactive: 'Неактивен', statusFeatured: 'Рекомендуемый',
+      dashboardFootnote: 'Эту страницу видят только администраторы.',
+      adminOnly: 'Статистику может открыть только администратор.'
     }
   };
   Object.keys(extraTranslations).forEach(function (language) {
@@ -350,7 +413,8 @@ function initSitePage() {
       'Your request has been sent successfully.': copy.requestSent,
       'Product deleted successfully.': copy.productDeleted,
       'Only an administrator can delete products.': copy.staffDeleteOnly,
-      'Only an administrator can add products.': copy.staffAddOnly
+      'Only an administrator can add products.': copy.staffAddOnly,
+      'Only an administrator can open the dashboard.': copy.adminOnly
     };
     document.querySelectorAll('.message').forEach(function (element) {
       const message = element.textContent.trim();
@@ -632,11 +696,30 @@ function initSitePage() {
       if (targets[action]) document.querySelector(targets[action])?.scrollIntoView({ behavior: 'smooth' });
       if (action === 'collapse') document.querySelector('.sidebar')?.classList.toggle('collapsed');
       if (action === 'close-preview') button.closest('.preview-tag').style.display = 'none';
-      if (action === 'sort' && gallery) Array.from(gallery.children).sort(function (a, b) { return a.textContent.localeCompare(b.textContent); }).forEach(function (item) { gallery.appendChild(item); });
       if (['send', 'request', 'design', 'albums', 'help'].includes(action)) openInfoModal(action);
     });
   });
   document.querySelectorAll('[data-view]').forEach(function (button) { button.addEventListener('click', function () { gallery?.classList.toggle('list-view', button.dataset.view === 'list'); document.querySelectorAll('[data-view]').forEach(function (item) { item.classList.toggle('active', item === button); }); }); });
+
+  // Saralash o'zgarganda filtr formasi avtomatik yuboriladi.
+  // Bo'sh narx maydonlari va standart saralash URL ga qo'shilmaydi.
+  function cleanCatalogForm(form) {
+    form.querySelectorAll('input[name="min_price"], input[name="max_price"]').forEach(function (input) {
+      if (!input.value.trim()) input.disabled = true;
+    });
+    const sortField = form.querySelector('select[name="sort"]');
+    if (sortField && sortField.value === 'featured') sortField.disabled = true;
+  }
+
+  document.querySelectorAll('.catalog-filters').forEach(function (form) {
+    form.addEventListener('submit', function () { cleanCatalogForm(form); });
+    form.querySelectorAll('[data-auto-submit]').forEach(function (field) {
+      field.addEventListener('change', function () {
+        cleanCatalogForm(form);
+        form.submit();
+      });
+    });
+  });
 
   const themeButtons = document.querySelectorAll('.theme-toggle');
   function setTheme(theme) { document.body.classList.toggle('light-mode', theme === 'light'); themeButtons.forEach(function (button) { button.textContent = theme === 'light' ? '☾' : '☼'; }); localStorage.setItem('parda-theme', theme); }

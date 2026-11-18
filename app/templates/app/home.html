@@ -1,4 +1,5 @@
 ﻿{% load static %}
+{% load query_tags %}
 
 <!DOCTYPE html>
 
@@ -22,7 +23,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=22" />
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=23" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
@@ -91,6 +92,8 @@
                 <div class="profile-dropdown" data-profile-menu>
 
                   <strong>{{ user.username }}</strong>
+
+                  {% if user.is_staff %}<a href="{% url 'admin_dashboard' %}" data-i18n="dashboard">Dashboard</a>{% endif %}
 
                   {% if user.is_staff %}<a href="{% url 'product_create' %}" data-i18n="addProduct">Add product</a>{% endif %}
 
@@ -168,6 +171,24 @@
 
             {% endif %}
 
+            {% if active_sort != 'featured' %}
+
+              <input type="hidden" name="sort" value="{{ active_sort }}" />
+
+            {% endif %}
+
+            {% if min_price %}
+
+              <input type="hidden" name="min_price" value="{{ min_price }}" />
+
+            {% endif %}
+
+            {% if max_price %}
+
+              <input type="hidden" name="max_price" value="{{ max_price }}" />
+
+            {% endif %}
+
             <i class="fas fa-search search-icon" aria-hidden="true"></i>
 
             <input
@@ -178,7 +199,7 @@
 
               value="{{ search_query }}"
 
-              placeholder="Pardani nomi, rangi, matosi bo'yicha qidiringвЂ¦"
+              placeholder="Pardani nomi, rangi, matosi bo'yicha qidiring…"
 
               aria-label="Search products"
 
@@ -194,7 +215,7 @@
 
             {% if search_query %}
 
-              <a class="search-clear" href="{% if active_category and active_category != 'all' %}{% url 'home' %}?category={{ active_category }}{% else %}{% url 'home' %}{% endif %}" aria-label="Clear search" title="Clear" data-i18n-aria-label="clearSearch" data-i18n-title="clearSearch">Г—</a>
+              <a class="search-clear" href="{% url 'home' %}{% query_url q=None %}" aria-label="Clear search" title="Clear" data-i18n-aria-label="clearSearch" data-i18n-title="clearSearch">×</a>
 
             {% endif %}
 
@@ -204,7 +225,7 @@
 
             {% if search_query %}
 
-              <span data-i18n="resultsFor">Natijalar</span> <strong>вЂњ{{ search_query }}вЂќ</strong> вЂ” <strong>{{ products|length }}</strong> <span data-i18n="products">mahsulot</span>
+              <span data-i18n="resultsFor">Natijalar</span> <strong>“{{ search_query }}”</strong> — <strong>{{ products|length }}</strong> <span data-i18n="products">mahsulot</span>
 
             {% else %}
 
@@ -266,7 +287,7 @@
 
           {% for key, label in categories %}
 
-            <a href="{% url 'home' %}?{% if key != 'all' %}category={{ key }}{% endif %}{% if search_query %}{% if key != 'all' %}&{% endif %}q={{ search_query|urlencode }}{% endif %}" class="category-pill {% if active_category == key %}active{% endif %}">
+            <a href="{% url 'home' %}{% if key == 'all' %}{% query_url category=None %}{% else %}{% query_url category=key %}{% endif %}" class="category-pill {% if active_category == key %}active{% endif %}">
 
               <span data-i18n="category_{{ key }}">{{ label }}</span>
 
@@ -278,19 +299,77 @@
 
         <section class="gallery-toolbar" aria-label="Gallery controls" data-reveal>
 
-          <div class="toolbar-right catalog-controls">
+          <form class="catalog-filters" method="get" action="{% url 'home' %}">
 
-            <button class="sort-btn" type="button" data-action="sort" aria-label="Sort products by name" data-i18n-aria-label="sortProducts"><i class="fas fa-sort sort-icon" aria-hidden="true"></i><span class="sort-label" data-i18n="sort">Nomi</span></button>
+            {% if active_category and active_category != 'all' %}
 
-            <div class="view-switcher" aria-label="Catalog view" data-i18n-aria-label="catalogView">
+              <input type="hidden" name="category" value="{{ active_category }}" />
 
-              <button class="grid-btn active" type="button" data-view="grid" aria-label="Grid view" title="Grid view" data-i18n-aria-label="gridView" data-i18n-title="gridView"><span class="dots"></span></button>
+            {% endif %}
 
-              <button class="grid-btn" type="button" data-view="list" aria-label="List view" title="List view" data-i18n-aria-label="listView" data-i18n-title="listView"><span class="lines"></span></button>
+            {% if search_query %}
+
+              <input type="hidden" name="q" value="{{ search_query }}" />
+
+            {% endif %}
+
+            <div class="price-filter">
+
+              <span class="price-filter-label"><i class="fas fa-tag" aria-hidden="true"></i><span data-i18n="priceFilter">Price ($)</span></span>
+
+              <label class="price-field">
+
+                <input type="number" name="min_price" min="0" step="0.01" inputmode="decimal" value="{{ min_price }}" placeholder="From" aria-label="Minimum price" data-i18n-placeholder="priceFrom" data-i18n-aria-label="minPrice" />
+
+              </label>
+
+              <span class="price-dash" aria-hidden="true">—</span>
+
+              <label class="price-field">
+
+                <input type="number" name="max_price" min="0" step="0.01" inputmode="decimal" value="{{ max_price }}" placeholder="To" aria-label="Maximum price" data-i18n-placeholder="priceTo" data-i18n-aria-label="maxPrice" />
+
+              </label>
+
+              <button type="submit" class="filter-submit"><i class="fas fa-sliders-h" aria-hidden="true"></i><span data-i18n="applyFilter">Filter</span></button>
+
+              {% if has_filters %}
+
+                <a class="filter-reset" href="{% url 'home' %}{% query_url min_price=None max_price=None sort=None %}" title="Reset filters" aria-label="Reset filters" data-i18n-title="resetFilters" data-i18n-aria-label="resetFilters"><i class="fas fa-xmark" aria-hidden="true"></i><span data-i18n="resetFilters">Reset</span></a>
+
+              {% endif %}
 
             </div>
 
-          </div>
+            <div class="catalog-controls">
+
+              <label class="sort-select-wrap">
+
+                <i class="fas fa-sort sort-icon" aria-hidden="true"></i>
+
+                <select class="sort-select" name="sort" data-auto-submit aria-label="Sort products" data-i18n-aria-label="sortProducts">
+
+                  {% for value, label in sort_options %}
+
+                    <option value="{{ value }}" {% if active_sort == value %}selected{% endif %} data-i18n="sort_{{ value }}">{{ label }}</option>
+
+                  {% endfor %}
+
+                </select>
+
+              </label>
+
+              <div class="view-switcher" aria-label="Catalog view" data-i18n-aria-label="catalogView">
+
+                <button class="grid-btn active" type="button" data-view="grid" aria-label="Grid view" title="Grid view" data-i18n-aria-label="gridView" data-i18n-title="gridView"><span class="dots"></span></button>
+
+                <button class="grid-btn" type="button" data-view="list" aria-label="List view" title="List view" data-i18n-aria-label="listView" data-i18n-title="listView"><span class="lines"></span></button>
+
+              </div>
+
+            </div>
+
+          </form>
 
         </section>
 
@@ -392,7 +471,7 @@
 
     </div>
 
-    <script src="{% static 'app/js/main.js' %}?v=14"></script>
+    <script src="{% static 'app/js/main.js' %}?v=15"></script>
 
   </body>
 

@@ -10,7 +10,7 @@ from .models import (
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'color', 'material', 'length_meters', 'origin', 'price', 'is_featured', 'is_active')
+    list_display = ('name', 'category', 'color', 'material', 'length_meters', 'origin', 'price', 'view_count', 'is_featured', 'is_active')
     list_filter = ('category', 'is_featured', 'is_active')
     search_fields = ('name', 'color', 'material')
     prepopulated_fields = {'slug': ('name',)}

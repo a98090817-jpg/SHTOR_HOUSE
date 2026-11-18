@@ -1,0 +1,607 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title data-page-title="pageDashboard">Statistics | SHTOR HOUSE</title>
+
+  <link rel="icon" type="image/png" href="{% static 'app/images/shtor-house-logo.png' %}" />
+
+  <meta name="csrf-token" content="{{ csrf_token }}" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=23" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <meta name="turbo-cache-control" content="no-cache" />
+  <script src="{% static 'app/js/turbo.es2017-umd.js' %}"></script>
+
+</head>
+
+<body>
+
+  <div class="page-shell">
+
+    <main class="content">
+
+      <header class="topbar">
+
+        <div class="top-meta">
+
+          <a class="site-brand" href="{% url 'home' %}" aria-label="SHTOR HOUSE">
+
+            <img class="site-logo-image" src="{% static 'app/images/shtor-house-logo.png' %}" alt="SHTOR HOUSE" />
+
+          </a>
+
+          <a class="top-link" href="{% url 'home' %}"><i class="fas fa-arrow-left" aria-hidden="true"></i> <span data-i18n="backToCatalog">Catalog</span></a>
+
+        </div>
+
+        <div class="top-actions">
+
+          <a class="add-product-plus" href="{% url 'product_create' %}" aria-label="Add product" title="Add product" data-i18n-aria-label="addProduct" data-i18n-title="addProduct">+</a>
+
+          {% include 'app/partials/language_picker.html' %}
+
+          <button class="theme-toggle btn btn-light" type="button" aria-label="Toggle light and dark mode" data-i18n-aria-label="toggleTheme"><i class="fas fa-moon" aria-hidden="true"></i></button>
+
+          <div class="profile-menu">
+
+            <button class="profile-trigger" type="button" aria-expanded="false" data-profile-toggle>
+
+              {% if request.session.google_profile_picture %}
+
+                <img class="profile-avatar profile-photo" src="{{ request.session.google_profile_picture }}" alt="{{ user.username }} profile photo">
+
+              {% else %}
+
+                <span class="profile-avatar">{{ user.username|first|upper }}</span>
+
+              {% endif %}
+
+              <span>{{ user.username }}</span>
+
+              <i class="fas fa-chevron-down" aria-hidden="true"></i>
+
+            </button>
+
+            <div class="profile-dropdown" data-profile-menu>
+
+              <strong>{{ user.username }}</strong>
+
+              <a href="{% url 'admin_dashboard' %}" data-i18n="dashboard">Dashboard</a>
+
+              <a href="{% url 'product_create' %}" data-i18n="addProduct">Add product</a>
+
+              <form method="post" action="{% url 'logout' %}">
+
+                {% csrf_token %}
+
+                <button type="submit" class="profile-logout" data-i18n="logout">Log out</button>
+
+              </form>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </header>
+
+      <div class="dashboard-main">
+
+        <section class="dashboard-hero">
+
+          <div>
+
+            <p class="eyebrow" data-i18n="dashboardEyebrow">Administrator panel</p>
+
+            <h1 data-i18n="dashboardTitle">Site statistics</h1>
+
+            <p class="dashboard-subtitle" data-i18n="dashboardSubtitle">A live overview of visits, products and customer requests.</p>
+
+          </div>
+
+          <div class="dashboard-hero-meta">
+
+            <span class="dashboard-hero-badge"><span class="dashboard-pulse" aria-hidden="true"></span><span data-i18n="liveOverview">Live overview</span></span>
+
+            <span class="dashboard-updated">{% now "d.m.Y H:i" %}</span>
+
+          </div>
+
+        </section>
+
+        {% if messages %}
+
+          <div class="messages">
+
+            {% for message in messages %}
+
+              <div class="message {{ message.tags }}">{{ message }}</div>
+
+            {% endfor %}
+
+          </div>
+
+        {% endif %}
+
+        <section class="dashboard-stats" aria-label="Key metrics" data-i18n-aria-label="keyMetrics">
+
+          <article class="dashboard-stat">
+
+            <span class="dashboard-stat-icon"><i class="fas fa-users" aria-hidden="true"></i></span>
+
+            <strong class="dashboard-stat-value">{{ visits_count }}</strong>
+
+            <span class="dashboard-stat-label" data-i18n="statVisits">Site visits</span>
+
+            <span class="dashboard-stat-sub" data-i18n="statAllTime">all time</span>
+
+          </article>
+
+          <article class="dashboard-stat">
+
+            <span class="dashboard-stat-icon"><i class="fas fa-layer-group" aria-hidden="true"></i></span>
+
+            <strong class="dashboard-stat-value">{{ total_products }}</strong>
+
+            <span class="dashboard-stat-label" data-i18n="statProducts">Products</span>
+
+            <span class="dashboard-stat-sub"><strong>{{ active_products }}</strong> <span data-i18n="statActiveNow">active</span></span>
+
+          </article>
+
+          <article class="dashboard-stat">
+
+            <span class="dashboard-stat-icon"><i class="fas fa-envelope-open-text" aria-hidden="true"></i></span>
+
+            <strong class="dashboard-stat-value">{{ total_requests }}</strong>
+
+            <span class="dashboard-stat-label" data-i18n="statRequests">Quote requests</span>
+
+            <span class="dashboard-stat-sub"><strong>{{ requests_last_7 }}</strong> <span data-i18n="statLastSevenDays">in the last 7 days</span></span>
+
+          </article>
+
+          <article class="dashboard-stat">
+
+            <span class="dashboard-stat-icon"><i class="fas fa-user-plus" aria-hidden="true"></i></span>
+
+            <strong class="dashboard-stat-value">{{ total_users }}</strong>
+
+            <span class="dashboard-stat-label" data-i18n="statUsers">Users</span>
+
+            <span class="dashboard-stat-sub"><strong>{{ users_last_7 }}</strong> <span data-i18n="statNewUsers">new users</span></span>
+
+          </article>
+
+          <article class="dashboard-stat">
+
+            <span class="dashboard-stat-icon"><i class="fas fa-heart" aria-hidden="true"></i></span>
+
+            <strong class="dashboard-stat-value">{{ total_favorites }}</strong>
+
+            <span class="dashboard-stat-label" data-i18n="statFavorites">Favorites</span>
+
+            <span class="dashboard-stat-sub" data-i18n="statSavedCurtains">saved curtains</span>
+
+          </article>
+
+          <article class="dashboard-stat">
+
+            <span class="dashboard-stat-icon"><i class="fas fa-chart-line" aria-hidden="true"></i></span>
+
+            <strong class="dashboard-stat-value">{{ requests_last_7 }}</strong>
+
+            <span class="dashboard-stat-label" data-i18n="statNewRequests">New requests</span>
+
+            <span class="dashboard-stat-sub" data-i18n="statLastSevenDaysOnly">last 7 days</span>
+
+          </article>
+
+        </section>
+
+        <div class="dashboard-grid">
+
+          <section class="dashboard-panel">
+
+            <div class="dashboard-panel-head">
+
+              <h2 data-i18n="chartTitle">Requests in the last 7 days</h2>
+
+              <span data-i18n="chartSubtitle">Daily activity</span>
+
+            </div>
+
+            {% if requests_last_7 %}
+
+              <div class="dashboard-chart" aria-label="Requests per day" data-i18n-aria-label="chartAria">
+
+                {% for item in request_series %}
+
+                  <div class="dashboard-chart-col {% if not item.total %}is-empty{% endif %}">
+
+                    <span class="dashboard-chart-value">{{ item.total }}</span>
+
+                    <span class="dashboard-chart-bar" style="height: {{ item.percent }}%;"></span>
+
+                    <span class="dashboard-chart-day">{{ item.date|date:"d.m" }}</span>
+
+                  </div>
+
+                {% endfor %}
+
+              </div>
+
+            {% else %}
+
+              <div class="dashboard-empty" data-i18n="chartEmpty">No requests in the last 7 days.</div>
+
+            {% endif %}
+
+          </section>
+
+          <section class="dashboard-panel">
+
+            <div class="dashboard-panel-head">
+
+              <h2 data-i18n="categoryTitle">Products by category</h2>
+
+              <span><strong>{{ active_products }}</strong> <span data-i18n="statActiveNow">active</span></span>
+
+            </div>
+
+            {% if category_rows %}
+
+              <div class="dashboard-category-list">
+
+                {% for row in category_rows %}
+
+                  <div class="dashboard-category-row">
+
+                    <div class="dashboard-category-top">
+
+                      <strong data-i18n="category_{{ row.category }}">{{ row.label }}</strong>
+
+                      <span>{{ row.total }}</span>
+
+                    </div>
+
+                    <div class="dashboard-category-track"><span class="dashboard-category-fill" style="width: {{ row.percent }}%;"></span></div>
+
+                  </div>
+
+                {% endfor %}
+
+              </div>
+
+            {% else %}
+
+              <div class="dashboard-empty" data-i18n="noProductsYet">No products yet.</div>
+
+            {% endif %}
+
+          </section>
+
+        </div>
+
+        <div class="dashboard-two-col">
+
+          <section class="dashboard-panel">
+
+            <div class="dashboard-panel-head">
+
+              <h2 data-i18n="topViewedTitle">Most viewed curtains</h2>
+
+              <span data-i18n="topViewedSubtitle">by page views</span>
+
+            </div>
+
+            {% if top_viewed %}
+
+              <div class="dashboard-list">
+
+                {% for product in top_viewed %}
+
+                  <a class="dashboard-list-item" href="{% url 'product_detail' product.slug %}">
+
+                    {% if product.preview_url %}
+
+                      <img class="dashboard-list-thumb" src="{{ product.preview_url }}" alt="{{ product.name }}" loading="lazy" />
+
+                    {% else %}
+
+                      <span class="dashboard-list-thumb-fallback"><i class="fas fa-image" aria-hidden="true"></i></span>
+
+                    {% endif %}
+
+                    <span class="dashboard-list-body">
+
+                      <strong>{{ product.name }}</strong>
+
+                      <span data-i18n="category_{{ product.category }}">{{ product.category|title }}</span>
+
+                    </span>
+
+                    <span class="dashboard-list-metric">{{ product.view_count }}<small data-i18n="viewsLabel">views</small></span>
+
+                  </a>
+
+                {% endfor %}
+
+              </div>
+
+            {% else %}
+
+              <div class="dashboard-empty" data-i18n="noViewsYet">No views yet.</div>
+
+            {% endif %}
+
+          </section>
+
+          <section class="dashboard-panel">
+
+            <div class="dashboard-panel-head">
+
+              <h2 data-i18n="topRequestedTitle">Most requested curtains</h2>
+
+              <span data-i18n="topRequestedSubtitle">by quote requests</span>
+
+            </div>
+
+            {% if top_requested %}
+
+              <div class="dashboard-list">
+
+                {% for product in top_requested %}
+
+                  <a class="dashboard-list-item" href="{% url 'product_detail' product.slug %}">
+
+                    {% if product.preview_url %}
+
+                      <img class="dashboard-list-thumb" src="{{ product.preview_url }}" alt="{{ product.name }}" loading="lazy" />
+
+                    {% else %}
+
+                      <span class="dashboard-list-thumb-fallback"><i class="fas fa-image" aria-hidden="true"></i></span>
+
+                    {% endif %}
+
+                    <span class="dashboard-list-body">
+
+                      <strong>{{ product.name }}</strong>
+
+                      <span data-i18n="category_{{ product.category }}">{{ product.category|title }}</span>
+
+                    </span>
+
+                    <span class="dashboard-list-metric">{{ product.request_total }}<small data-i18n="requestsLabel">requests</small></span>
+
+                  </a>
+
+                {% endfor %}
+
+              </div>
+
+            {% else %}
+
+              <div class="dashboard-empty" data-i18n="noRequestsYet">No requests yet.</div>
+
+            {% endif %}
+
+          </section>
+
+        </div>
+
+        <section class="dashboard-panel dashboard-panel-wide">
+
+          <div class="dashboard-panel-head">
+
+            <h2 data-i18n="recentRequestsTitle">Recent quote requests</h2>
+
+            <span data-i18n="recentRequestsSubtitle">latest 12</span>
+
+          </div>
+
+          {% if recent_requests %}
+
+            <div class="dashboard-table-wrap">
+
+              <table class="dashboard-table">
+
+                <thead>
+
+                  <tr>
+
+                    <th data-i18n="tableCustomer">Customer</th>
+
+                    <th data-i18n="tablePhone">Phone</th>
+
+                    <th data-i18n="tableProduct">Product</th>
+
+                    <th data-i18n="tableDate">Date</th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  {% for item in recent_requests %}
+
+                    <tr>
+
+                      <td>
+                        <span class="dashboard-mobile-label" data-i18n="tableCustomer">Customer</span>
+                        <span class="dashboard-cell-value"><strong>{{ item.full_name }}</strong>{% if item.email %}<br /><span class="dashboard-muted">{{ item.email }}</span>{% endif %}</span>
+                      </td>
+
+                      <td>
+                        <span class="dashboard-mobile-label" data-i18n="tablePhone">Phone</span>
+                        <span class="dashboard-cell-value"><a class="dashboard-phone" href="tel:{{ item.phone }}">{{ item.phone }}</a></span>
+                      </td>
+
+                      <td>
+                        <span class="dashboard-mobile-label" data-i18n="tableProduct">Product</span>
+                        <span class="dashboard-cell-value">{% if item.product %}<a class="dashboard-table-product" href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a>{% else %}<span class="dashboard-muted">—</span>{% endif %}</span>
+                      </td>
+
+                      <td>
+                        <span class="dashboard-mobile-label" data-i18n="tableDate">Date</span>
+                        <span class="dashboard-cell-value dashboard-muted">{{ item.created_at|date:"d.m.Y H:i" }}</span>
+                      </td>
+
+                    </tr>
+
+                  {% endfor %}
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          {% else %}
+
+            <div class="dashboard-empty" data-i18n="noRequestsYet">No requests yet.</div>
+
+          {% endif %}
+
+        </section>
+
+        <section class="dashboard-panel dashboard-panel-wide">
+
+          <div class="dashboard-panel-head">
+
+            <h2 data-i18n="recentProductsTitle">Recently added products</h2>
+
+            <a class="dashboard-link-btn" href="{% url 'home' %}#catalog"><span data-i18n="openCatalog">Open catalog</span><i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+
+          </div>
+
+          {% if recent_products %}
+
+            <div class="dashboard-table-wrap">
+
+              <table class="dashboard-table">
+
+                <thead>
+
+                  <tr>
+
+                    <th data-i18n="tableProduct">Product</th>
+
+                    <th data-i18n="tablePrice">Price</th>
+
+                    <th data-i18n="tableStatus">Status</th>
+
+                    <th data-i18n="tableViews">Views</th>
+
+                    <th data-i18n="tableDate">Date</th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  {% for product in recent_products %}
+
+                    <tr>
+
+                      <td>
+
+                        <span class="dashboard-mobile-label" data-i18n="tableProduct">Product</span>
+
+                        <a class="dashboard-table-product" href="{% url 'product_detail' product.slug %}">
+
+                          {% if product.preview_url %}
+
+                            <img class="dashboard-product-thumb" src="{{ product.preview_url }}" alt="{{ product.name }}" loading="lazy" />
+
+                          {% else %}
+
+                            <span class="dashboard-product-thumb-fallback"><i class="fas fa-image" aria-hidden="true"></i></span>
+
+                          {% endif %}
+
+                          <span>{{ product.name }}</span>
+
+                        </a>
+
+                      </td>
+
+                      <td>
+                        <span class="dashboard-mobile-label" data-i18n="tablePrice">Price</span>
+                        <span class="dashboard-cell-value">${{ product.price }}</span>
+                      </td>
+
+                      <td>
+                        <span class="dashboard-mobile-label" data-i18n="tableStatus">Status</span>
+                        <span class="dashboard-cell-value">
+                          {% if product.is_active %}
+                            <span class="dashboard-status" data-i18n="statusActive">Active</span>
+                          {% else %}
+                            <span class="dashboard-status inactive" data-i18n="statusInactive">Inactive</span>
+                          {% endif %}
+                          {% if product.is_featured %}<span class="dashboard-status featured" data-i18n="statusFeatured">Featured</span>{% endif %}
+                        </span>
+                      </td>
+
+                      <td>
+                        <span class="dashboard-mobile-label" data-i18n="tableViews">Views</span>
+                        <span class="dashboard-cell-value">{{ product.view_count }}</span>
+                      </td>
+
+                      <td>
+                        <span class="dashboard-mobile-label" data-i18n="tableDate">Date</span>
+                        <span class="dashboard-cell-value dashboard-muted">{{ product.created_at|date:"d.m.Y" }}</span>
+                      </td>
+
+                    </tr>
+
+                  {% endfor %}
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          {% else %}
+
+            <div class="dashboard-empty" data-i18n="noProductsYet">No products yet.</div>
+
+          {% endif %}
+
+        </section>
+
+        <p class="dashboard-footnote"><i class="fas fa-shield-halved" aria-hidden="true"></i> <span data-i18n="dashboardFootnote">Only administrators can see this page.</span></p>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="{% static 'app/js/main.js' %}?v=15"></script>
+
+</body>
+
+</html>
