@@ -1,4 +1,5 @@
 import json
+import mimetypes
 import secrets
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -14,10 +15,12 @@ from django.contrib.auth import login
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils.http import http_date
 from django.utils.text import slugify
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from .forms import EmailOrUsernameLoginForm, ProductForm, QuoteRequestForm, CustomUserCreationForm
 from .models import Favorite, Product
 from .visit_counter import increment_visit_count
@@ -66,18 +69,30 @@ CURTAIN_INSPIRATION_ITEMS = [
 ]
 
 
+def _product_image_url(product):
+    """Mahsulot rasmining ishonchli manzili.
+
+    Avval bazadagi nusxa, keyin diskdagi fayl, oxirida tashqi URL ishlatiladi.
+    """
+    if product.image_data:
+        return reverse('product_image', args=[product.pk])
+    if product.image:
+        return product.image.url
+    return product.image_url
+
+
 def home(request):
     category = request.GET.get('category')
     query = (request.GET.get('q') or '').strip()
     products = Product.objects.filter(is_active=True).order_by('-is_featured', '-created_at')
     carousel_products = (
         Product.objects.filter(is_active=True)
-        .filter(Q(image__gt='') | Q(image_url__gt=''))
+        .filter(Q(image__gt='') | Q(image_url__gt='') | Q(image_data__isnull=False))
         .order_by('-is_featured', '-created_at')[:24]
     )
     showcase_items = [
         {
-            'image_url': product.image.url if product.image else product.image_url,
+            'image_url': _product_image_url(product),
             'name': product.name,
             'category': product.category,
         }
@@ -174,6 +189,40 @@ def home(request):
         'search_query': query,
         'favorite_ids': favorite_ids,
     })
+
+
+@require_GET
+def product_image(request, pk):
+    """Mahsulot rasmini bazadan (yoki diskdan) uzatadi.
+
+    Rasm bazada saqlangani uchun har qanday qurilma va har qanday server
+    holatida ham ko'rinadi.
+    """
+    product = get_object_or_404(Product, pk=pk)
+
+    if product.image_data is not None:
+        data = bytes(product.image_data)
+        content_type = product.image_content_type or 'image/webp'
+    elif product.image:
+        try:
+            product.image.open('rb')
+            data = product.image.read()
+        except (FileNotFoundError, OSError, ValueError):
+            raise Http404('Image file is missing')
+        content_type = mimetypes.guess_type(product.image.name)[0] or 'image/webp'
+    else:
+        raise Http404('Product has no image')
+
+    if not data:
+        raise Http404('Product image is empty')
+
+    response = HttpResponse(data, content_type=content_type)
+    response['Content-Length'] = str(len(data))
+    # Brauzer rasmni uzoq saqlaydi; ?v=... parametri yangi rasmda URL ni o'zgartiradi.
+    response['Cache-Control'] = 'public, max-age=604800'
+    if product.image_stored_at:
+        response['Last-Modified'] = http_date(product.image_stored_at.timestamp())
+    return response
 
 
 def product_detail(request, slug):

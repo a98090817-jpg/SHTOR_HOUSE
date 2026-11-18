@@ -1,6 +1,10 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.text import slugify
+import mimetypes
 import uuid
+
+from .image_processing import BROWSER_SAFE_IMAGE_TYPES, normalize_product_image
 
 
 def generate_unique_slug(model_class, name, slug_field='slug'):
@@ -37,6 +41,11 @@ class Product(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='products/', blank=True, null=True)
     image_url = models.URLField(blank=True, null=True)
+    # Rasmning baza nusxasi: Render kabi hostinglarda disk vaqtinchalik bo'ladi,
+    # shu sababli fayl yo'qolsa ham rasm bazadan ko'rsatiladi.
+    image_data = models.BinaryField(null=True, blank=True, editable=False)
+    image_content_type = models.CharField(max_length=50, blank=True, default='')
+    image_stored_at = models.DateTimeField(null=True, blank=True, editable=False)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -45,7 +54,51 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = generate_unique_slug(Product, self.name)
+        self._store_image_in_database()
         super().save(*args, **kwargs)
+
+    def _store_image_in_database(self):
+        """Rasm faylini bazaga nusxalaydi.
+
+        Shu tufayli sayt qaysi qurilmadan ochilmasin va server qayta
+        ishga tushsa ham mahsulot rasmi ko'rinib turadi.
+        """
+        if not self.image:
+            return
+        name = getattr(self.image, 'name', '') or ''
+        if not name:
+            return
+
+        try:
+            self.image.open('rb')
+            self.image.seek(0)
+            raw = self.image.read()
+        except (FileNotFoundError, OSError, ValueError):
+            # Diskdagi fayl yo'q (masalan, Render deploydan keyin) —
+            # bazadagi avvalgi nusxani o'chirmaymiz.
+            return
+        finally:
+            try:
+                self.image.seek(0)
+            except (OSError, ValueError):
+                pass
+
+        if not raw:
+            return
+
+        content_type = mimetypes.guess_type(name)[0] or ''
+        if content_type not in BROWSER_SAFE_IMAGE_TYPES:
+            try:
+                normalized = normalize_product_image(self.image)
+                raw = normalized.read()
+                content_type = 'image/webp'
+            except Exception:
+                # O'girib bo'lmasa ham mahsulot saqlanishi kerak.
+                content_type = content_type or 'application/octet-stream'
+
+        self.image_data = raw
+        self.image_content_type = content_type
+        self.image_stored_at = timezone.now()
 
     def __str__(self):
         return self.name

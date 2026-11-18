@@ -14,6 +14,32 @@ else:
 
 PRODUCT_IMAGE_SIZE = (1200, 1500)
 
+# Brauzerlar bevosita ko'rsata oladigan rasm formatlari.
+# Boshqa formatlar (HEIC/HEIF va h.k.) bazaga saqlashdan oldin WEBP ga o'giriladi.
+BROWSER_SAFE_IMAGE_TYPES = {
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+}
+
+
+def convert_to_webp(uploaded_image):
+    """Har qanday rasmni brauzer ko'rsata oladigan WEBP ga o'giradi."""
+    with Image.open(uploaded_image) as opened_image:
+        image = ImageOps.exif_transpose(opened_image)
+        if image.mode not in ('RGB', 'RGBA'):
+            image = image.convert('RGBA')
+        if image.mode == 'RGBA':
+            matte = Image.new('RGB', image.size, '#eee8df')
+            matte.paste(image, mask=image.getchannel('A'))
+            image = matte
+        output = BytesIO()
+        image.save(output, format='WEBP', quality=90, method=6)
+    converted = ContentFile(output.getvalue())
+    converted.name = f'{Path(uploaded_image.name).stem}.webp'
+    return converted
+
 
 def normalize_product_image(uploaded_image):
     with Image.open(uploaded_image) as opened_image:
