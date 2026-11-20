@@ -1,1 +1,315 @@
-﻿
+﻿{% load static %}
+
+<!-- AI Assistant Toggle Button -->
+<button class="ai-assistant-toggle" id="aiAssistantToggle" aria-label="Open AI assistant" aria-expanded="false" type="button">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 3.01 8.17 7.11 9.45.52.1.71-.28.71-.53v-2.1c-2.9.6-3.5-1.4-3.5-1.4-.47-1.2-1.15-1.52-1.15-1.52-.94-.65.07-.63.07-.63 1.04.08 1.59 1.07 1.59 1.07.92 1.58 2.41 1.12 3 .86.09-.67.35-1.12.63-1.38-2.2-.25-4.5-1.1-4.5-4.9 0-1.1.38-2 1.02-2.7-.1-.25-.45-1.26.1-2.6 0 0 .83-.27 2.7 1 .78-.22 1.6-.33 2.42-.33.82 0 1.64.11 2.42.33 1.87-1.27 2.7-1 2.7-1 .55 1.34.2 2.35.1 2.6.64.7 1.02 1.6 1.02 2.7 0 3.82-2.3 4.65-4.5 4.9.35.3.65.9.65 1.8v2.6c0 .27.19.66.72.53C18.99 20.17 22 16.42 22 12c0-5.52-4.48-10-10-10z" fill="currentColor"/>
+  </svg>
+</button>
+
+<!-- AI Assistant Panel -->
+<div class="ai-assistant-panel" id="aiAssistantPanel" role="dialog" aria-label="AI Assistant" aria-hidden="true">
+  <header class="ai-assistant-header">
+    <div class="ai-assistant-avatar">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 3.01 8.17 7.11 9.45.52.1.71-.28.71-.53v-2.1c-2.9.6-3.5-1.4-3.5-1.4-.47-1.2-1.15-1.52-1.15-1.52-.94-.65.07-.63.07-.63 1.04.08 1.59 1.07 1.59 1.07.92 1.58 2.41 1.12 3 .86.09-.67.35-1.12.63-1.38-2.2-.25-4.5-1.1-4.5-4.9 0-1.1.38-2 1.02-2.7-.1-.25-.45-1.26.1-2.6 0 0 .83-.27 2.7 1 .78-.22 1.6-.33 2.42-.33.82 0 1.64.11 2.42.33 1.87-1.27 2.7-1 2.7-1 .55 1.34.2 2.35.1 2.6.64.7 1.02 1.6 1.02 2.7 0 3.82-2.3 4.65-4.5 4.9.35.3.65.9.65 1.8v2.6c0 .27.19.66.72.53C18.99 20.17 22 16.42 22 12c0-5.52-4.48-10-10-10z" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="ai-assistant-title">
+      <div class="ai-assistant-name" data-i18n="aiAssistantName">SHTOR HOUSE Assistant</div>
+      <div class="ai-assistant-status" data-i18n="aiOnline">Online</div>
+    </div>
+    <button class="ai-assistant-close" id="aiAssistantClose" aria-label="Close chat" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </header>
+
+  <div class="ai-assistant-messages" id="aiMessages" role="log" aria-live="polite" aria-label="Chat messages">
+    <!-- Welcome state -->
+    <div class="ai-welcome" id="aiWelcome">
+      <div class="ai-welcome-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 3.01 8.17 7.11 9.45.52.1.71-.28.71-.53v-2.1c-2.9.6-3.5-1.4-3.5-1.4-.47-1.2-1.15-1.52-1.15-1.52-.94-.65.07-.63.07-.63 1.04.08 1.59 1.07 1.59 1.07.92 1.58 2.41 1.12 3 .86.09-.67.35-1.12.63-1.38-2.2-.25-4.5-1.1-4.5-4.9 0-1.1.38-2 1.02-2.7-.1-.25-.45-1.26.1-2.6 0 0 .83-.27 2.7 1 .78-.22 1.6-.33 2.42-.33.82 0 1.64.11 2.42.33 1.87-1.27 2.7-1 2.7-1 .55 1.34.2 2.35.1 2.6.64.7 1.02 1.6 1.02 2.7 0 3.82-2.3 4.65-4.5 4.9.35.3.65.9.65 1.8v2.6c0 .27.19.66.72.53C18.99 20.17 22 16.42 22 12c0-5.52-4.48-10-10-10z"/>
+        </svg>
+      </div>
+      <h3 data-i18n="aiWelcomeTitle">Salom! Qanday yordam bera olaman?</h3>
+      <p data-i18n="aiWelcomeText">Parda, jalyuzi, mato tanlash, o'lchash yoki buyurtma haqida savol bering.</p>
+    </div>
+  </div>
+
+  <!-- Quick Replies -->
+  <div class="ai-quick-replies" id="aiQuickReplies" aria-label="Quick suggestions">
+    <button class="ai-quick-reply" type="button" data-i18n="aiQuick1">Yotoqxona uchun qanday parda?</button>
+    <button class="ai-quick-reply" type="button" data-i18n="aiQuick2">Blackout va dimout farqi</button>
+    <button class="ai-quick-reply" type="button" data-i18n="aiQuick3">O'lchovni qanday olish kerak?</button>
+    <button class="ai-quick-reply" type="button" data-i18n="aiQuick4">Narxlar va buyurtma</button>
+  </div>
+
+  <!-- Input Area -->
+  <div class="ai-assistant-input">
+    <div class="ai-input-wrapper">
+      <textarea
+        id="aiInput"
+        placeholder="Xabar yozing..."
+        aria-label="Type your message"
+        rows="1"
+        data-i18n-placeholder="aiInputPlaceholder"
+      ></textarea>
+    </div>
+    <button class="ai-send-btn" id="aiSendBtn" aria-label="Send message" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // --- Elements ---
+  const toggleBtn = document.getElementById('aiAssistantToggle');
+  const panel = document.getElementById('aiAssistantPanel');
+  const closeBtn = document.getElementById('aiAssistantClose');
+  const messagesEl = document.getElementById('aiMessages');
+  const welcomeEl = document.getElementById('aiWelcome');
+  const quickRepliesEl = document.getElementById('aiQuickReplies');
+  const inputEl = document.getElementById('aiInput');
+  const sendBtn = document.getElementById('aiSendBtn');
+
+  // --- State ---
+  let history = [];
+  let isOpen = false;
+  let isTyping = false;
+  const API_URL = '/assistant/api/';
+
+  // --- Helpers ---
+  function $(sel, ctx = document) { return ctx.querySelector(sel); }
+  function $all(sel, ctx = document) { return Array.from(ctx.querySelectorAll(sel)); }
+
+  function setLang() {
+    const lang = document.documentElement.lang || 'uz';
+    return lang;
+  }
+
+  function t(key) {
+    // Translations are handled via data-i18n in main.js
+    // This is fallback
+    const dict = {
+      uz: { aiWelcomeTitle: "Salom! Qanday yordam bera olaman?", aiWelcomeText: "Parda, jalyuzi, mato tanlash, o'lchash yoki buyurtma haqida savol bering." },
+      en: { aiWelcomeTitle: "Hello! How can I help?", aiWelcomeText: "Ask about curtains, blinds, fabrics, measuring or ordering." },
+      ru: { aiWelcomeTitle: "Привет! Чем могу помочь?", aiWelcomeText: "Спросите про шторы, жалюзи, ткани, замеры или заказ." }
+    };
+    const lang = setLang();
+    return dict[lang]?.[key] || dict.uz[key];
+  }
+
+  function formatTime(date) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function scrollToBottom() {
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function showTyping() {
+    if (isTyping) return;
+    isTyping = true;
+    const typing = document.createElement('div');
+    typing.className = 'ai-typing';
+    typing.id = 'aiTyping';
+    typing.innerHTML = `
+      <div class="ai-message-avatar">AI</div>
+      <div class="ai-typing-bubble">
+        <span class="ai-typing-dot"></span>
+        <span class="ai-typing-dot"></span>
+        <span class="ai-typing-dot"></span>
+      </div>
+    `;
+    messagesEl.appendChild(typing);
+    scrollToBottom();
+  }
+
+  function hideTyping() {
+    const typing = $('#aiTyping');
+    if (typing) typing.remove();
+    isTyping = false;
+  }
+
+  function addMessage(role, content, time = new Date()) {
+    if (welcomeEl) welcomeEl.remove();
+    if (role === 'assistant') quickRepliesEl.style.display = 'none';
+
+    const msg = document.createElement('div');
+    msg.className = `ai-message ${role === 'user' ? 'user' : 'assistant'}`;
+    const avatarText = role === 'user' ? 'S' : 'AI';
+    msg.innerHTML = `
+      <div class="ai-message-avatar">${avatarText}</div>
+      <div class="ai-message-bubble">${escapeHtml(content)}<div class="ai-message-time">${formatTime(time)}</div></div>
+    `;
+    messagesEl.appendChild(msg);
+    scrollToBottom();
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function setInputState(disabled) {
+    inputEl.disabled = disabled;
+    sendBtn.disabled = disabled;
+  }
+
+  async function sendMessage(text) {
+    if (!text.trim() || isTyping) return;
+    const lang = setLang();
+
+    addMessage('user', text);
+    history.push({ role: 'user', content: text });
+    if (history.length > 8) history.shift();
+
+    setInputState(true);
+    showTyping();
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+        },
+        body: JSON.stringify({ message: text, language: lang, history: history.slice(0, -1) })
+      });
+
+      hideTyping();
+
+      if (!res.ok) throw new Error('Network error');
+
+      const data = await res.json();
+
+      if (data.ok && data.reply) {
+        addMessage('assistant', data.reply);
+        history.push({ role: 'assistant', content: data.reply });
+        if (history.length > 8) history.shift();
+      } else {
+        // Offline fallback
+        addMessage('assistant', getOfflineReply(text, lang));
+      }
+    } catch (e) {
+      hideTyping();
+      addMessage('assistant', getOfflineReply(text, lang));
+    } finally {
+      setInputState(false);
+      inputEl.focus();
+    }
+  }
+
+  function getOfflineReply(message, lang) {
+    const lower = message.toLowerCase();
+    const replies = {
+      uz: {
+        default: "Kechiraylik, serverga ulanib bo'lmadi. Telefon: +998 97 424 42 42",
+        parda: "Yotoqxona uchun blackout (to'liq yorug'likni o'tkazmaydigan) parda ideal. Mehmonxonaga — tyul + zhir parda.",
+        o'lch: "O'lchov: deraza kengligi + 20-30 sm (chegaralar uchun), balandlik — tavan dan tomgacha. Telefon: +998 97 424 42 42",
+        narx: "Narx o'lcham va matoga bog'liq. Aniq narx uchun: +998 97 424 42 42",
+        salom: "Salom! Parda, jalyuzi, mato tanlashda yordam kerakmi? Telefon: +998 97 424 42 42"
+      },
+      en: {
+        default: "Sorry, couldn't reach server. Phone: +998 97 424 42 42",
+        curtain: "Bedroom: blackout curtains. Living room: sheer + heavy drapes.",
+        measure: "Width: window + 20-30cm. Height: ceiling to floor. Phone: +998 97 424 42 42",
+        price: "Price depends on size & fabric. Call: +998 97 424 42 42",
+        hello: "Hello! Need help with curtains? Phone: +998 97 424 42 42"
+      },
+      ru: {
+        default: "Не удалось связаться с сервером. Телефон: +998 97 424 42 42",
+        curtain: "Спальня: блэкаут. Гостиная: тюль + плотные шторы.",
+        measure: "Ширина: окно + 20-30см. Высота: потолок до пола. Тел: +998 97 424 42 42",
+        price: "Цена зависит от размера и ткани. Звонок: +998 97 424 42 42",
+        hello: "Привет! Нужна помощь со шторами? Тел: +998 97 424 42 42"
+      }
+    };
+    const r = replies[lang] || replies.uz;
+    if (lower.includes('salom') || lower.includes('hello') || lower.includes('привет')) return r.hello;
+    if (lower.includes('parda') || lower.includes('curtain') || lower.includes('штор')) return r.curtain;
+    if (lower.includes('o\'lch') || lower.includes('measure') || lower.includes('замер') || lower.includes('o‘lch')) return r.measure;
+    if (lower.includes('narx') || lower.includes('price') || lower.includes('цен') || lower.includes('qimmat') || lower.includes('arzon')) return r.price;
+    return r.default;
+  }
+
+  // --- Event Listeners ---
+  function openPanel() {
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden', 'false');
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    isOpen = true;
+    inputEl.focus();
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePanel() {
+    panel.classList.remove('open');
+    panel.setAttribute('aria-hidden', 'true');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    isOpen = false;
+    document.body.style.overflow = '';
+  }
+
+  toggleBtn.addEventListener('click', () => isOpen ? closePanel() : openPanel());
+  closeBtn.addEventListener('click', closePanel);
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen) closePanel();
+  });
+
+  // Click outside to close
+  panel.addEventListener('click', (e) => {
+    if (e.target === panel) closePanel();
+  });
+
+  // Send message
+  function handleSend() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+    inputEl.value = '';
+    inputEl.style.height = 'auto';
+    sendMessage(text);
+  }
+
+  sendBtn.addEventListener('click', handleSend);
+
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  });
+
+  // Auto-resize textarea
+  inputEl.addEventListener('input', () => {
+    inputEl.style.height = 'auto';
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+  });
+
+  // Quick replies
+  quickRepliesEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.ai-quick-reply');
+    if (btn) sendMessage(btn.textContent.trim());
+  });
+
+  // Initialize: check if we should auto-open (e.g., from notification)
+  // Could add URL param ?chat=open
+  if (new URLSearchParams(window.location.search).get('chat') === 'open') {
+    openPanel();
+  }
+
+})();
+</script>

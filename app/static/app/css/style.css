@@ -5224,7 +5224,7 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
     border: 1px solid var(--line);
     border-radius: 18px;
     background: rgba(255, 255, 255, 0.035);
-    backdrop-filter: blur(12px).
+    backdrop-filter: blur(12px);
 }
 .contact-product-label { display: block; color: var(--muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
 .contact-product-image {
@@ -5232,7 +5232,7 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
     aspect-ratio: 3/4;
     object-fit: cover;
     border-radius: 12px;
-    margin-bottom: 14px.
+    margin-bottom: 14px;
 }
 .contact-product-card h2 { margin: 0 0 6px; font-size: 1.1rem; }
 .contact-product-meta { margin: 0 0 10px; color: var(--muted); font-size: 0.8rem; }
@@ -5240,38 +5240,38 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
 .contact-product-link {
     display: inline-flex;
     align-items: center;
-    gap: 6px.
-    color: var(--blue).
-    font-size: 0.82rem.
-    font-weight: 600.
-    text-decoration: none.
+    gap: 6px;
+    color: var(--blue);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
 }
 .contact-product-link:hover { opacity: 0.85; }
 
 .contact-form-card {
     padding: 24px;
-    border: 1px solid var(--line).
-    border-radius: 18px.
-    background: rgba(255, 255, 255, 0.035).
-    backdrop-filter: blur(12px).
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.035);
+    backdrop-filter: blur(12px);
 }
 .contact-form-head {
-    display: flex.
-    align-items: center.
-    justify-content: space-between.
-    margin-bottom: 20px.
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 .contact-form-head h2 { margin: 0; font-size: 1.05rem; }
 .contact-form-badge {
-    display: inline-flex.
-    align-items: center.
-    gap: 6px.
-    padding: 6px 12px.
-    border-radius: 999px.
-    background: rgba(76, 175, 80, 0.14).
-    color: #7ed985.
-    font-size: 0.7rem.
-    font-weight: 600.
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(76, 175, 80, 0.14);
+    color: #7ed985;
+    font-size: 0.7rem;
+    font-weight: 600;
 }
 .contact-form-badge i { font-size: 0.75rem; }
 
@@ -5284,20 +5284,20 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
     width: 100%;
     padding: 12px 14px;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 12px.
-    background: rgba(0, 0, 0, 0.22).
-    color: var(--text).
-    font: inherit.
-    font-size: 0.9rem.
-    outline: none.
-    transition: border-color 0.2s ease, box-shadow 0.2s ease.
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.22);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .contact-field input::placeholder,
 .contact-field textarea::placeholder { color: rgba(255, 255, 255, 0.42); }
 .contact-field input:focus,
 .contact-field textarea:focus {
-    border-color: rgba(215, 185, 142, 0.55).
-    box-shadow: 0 0 0 3px rgba(215, 185, 142, 0.12).
+    border-color: rgba(215, 185, 142, 0.55);
+    box-shadow: 0 0 0 3px rgba(215, 185, 142, 0.12);
 }
 .field-error { color: #e79595; font-size: 0.72rem; margin-top: 4px; }
 .form-errors { color: #e79595; font-size: 0.8rem; margin-bottom: 8px; }
@@ -5305,34 +5305,34 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
 .contact-form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
 .contact-submit { min-width: 180px; }
 .contact-cancel {
-    display: inline-flex.
-    align-items: center.
-    justify-content: center.
-    height: 46px.
-    padding: 0 22px.
-    border: 1px solid rgba(255, 255, 255, 0.12).
-    border-radius: 999px.
-    background: rgba(255, 255, 255, 0.04).
-    color: var(--text).
-    font: inherit.
-    font-size: 0.88rem.
-    font-weight: 500.
-    text-decoration: none.
-    transition: border-color 0.2s ease, background 0.2s ease.
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 46px;
+    padding: 0 22px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 .contact-cancel:hover { border-color: rgba(215, 185, 142, 0.35); background: rgba(215, 185, 142, 0.08); }
 
 .contact-form-note {
-    display: flex.
-    align-items: center.
-    gap: 8px.
-    margin-top: 16px.
-    padding: 10px 14px.
-    border: 1px solid rgba(215, 185, 142, 0.2).
-    border-radius: 10px.
-    background: rgba(215, 185, 142, 0.06).
-    color: var(--muted).
-    font-size: 0.78rem.
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 14px;
+    border: 1px solid rgba(215, 185, 142, 0.2);
+    border-radius: 10px;
+    background: rgba(215, 185, 142, 0.06);
+    color: var(--muted);
+    font-size: 0.78rem;
 }
 .contact-form-note i { color: var(--blue); flex: 0 0 auto; }
 
@@ -5452,8 +5452,8 @@ body.light-mode .user-block-btn.is-unblock:hover { background: rgba(48, 122, 69,
 body.light-mode .contact-field input,
 body.light-mode .contact-field textarea {
     background: rgba(255, 255, 255, 0.85);
-    border-color: rgba(62, 48, 35, 0.16).
-    color: #2b2520.
+    border-color: rgba(62, 48, 35, 0.16);
+    color: #2b2520;
 }
 body.light-mode .contact-field input::placeholder,
 body.light-mode .contact-field textarea::placeholder { color: rgba(43, 37, 32, 0.42); }
