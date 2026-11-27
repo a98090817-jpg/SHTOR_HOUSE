@@ -820,21 +820,31 @@ function initSitePage() {
     function positionBellMenu() {
       if (!menu || !trigger) return;
       const rect = trigger.getBoundingClientRect();
-      const anchor = adminBell.getBoundingClientRect();
-      const vw = window.innerWidth || document.documentElement.clientWidth;
+      const vw = document.documentElement.clientWidth || window.innerWidth;
       const vh = window.innerHeight || document.documentElement.clientHeight;
       const margin = 8;
       const width = Math.min(380, vw - margin * 2);
       let left = rect.right - width;
       left = Math.max(margin, Math.min(left, vw - width - margin));
-      const top = rect.bottom + 8;
-      menu.style.width = width + 'px';
-      menu.style.left = (left - anchor.left) + 'px';
-      menu.style.right = 'auto';
-      menu.style.top = (rect.bottom - anchor.top + 8) + 'px';
-      menu.style.maxHeight = Math.max(220, vh - top - margin) + 'px';
+
+      // Panel fixed joylashadi: hech qanday ota-konteyner uni kesmaydi.
+      // Pastda joy yetmasa — belgi ustiga ochiladi.
+      const below = vh - rect.bottom - margin - 8;
+      const above = rect.top - margin - 8;
+      const openUp = below < 260 && above > below;
+      const maxSpace = Math.max(200, openUp ? above : below);
+
+      menu.style.setProperty('width', width + 'px', 'important');
+      menu.style.setProperty('left', left + 'px', 'important');
+      menu.style.setProperty('right', 'auto', 'important');
+      menu.style.setProperty('max-height', maxSpace + 'px', 'important');
+
+      const height = Math.min(menu.scrollHeight || 420, maxSpace);
+      const top = openUp ? Math.max(margin, rect.top - 8 - height) : rect.bottom + 8;
+      menu.style.setProperty('top', top + 'px', 'important');
+
       const list = menu.querySelector('.admin-bell-list');
-      if (list) list.style.maxHeight = Math.max(120, vh - top - margin - 118) + 'px';
+      if (list) list.style.setProperty('max-height', Math.max(120, maxSpace - 118) + 'px', 'important');
     }
 
     if (trigger) {
@@ -868,6 +878,17 @@ function initSitePage() {
       window.addEventListener('resize', function () {
         if (adminBell.classList.contains('open')) positionBellMenu();
       }, { signal: pageSignal });
+
+      // Sahifa scroll bo'lsa ham panel belgi yonida qoladi (iOS/Android).
+      document.addEventListener('scroll', function () {
+        if (adminBell.classList.contains('open')) positionBellMenu();
+      }, { signal: pageSignal, capture: true, passive: true });
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', function () {
+          if (adminBell.classList.contains('open')) positionBellMenu();
+        }, { signal: pageSignal });
+      }
     }
 
     // Badge puls animatsiyasi (yangi xabar keldigida)
@@ -1020,7 +1041,10 @@ function initSitePage() {
     const link = card.querySelector('a.card-link');
     if (!link) return;
     card.addEventListener('click', function (event) {
+      if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey) return;
       if (event.target.closest('a, button, [data-favorite-slug], [data-download-image]')) return;
+      const selection = window.getSelection && window.getSelection();
+      if (selection && String(selection).length) return;
       const href = link.getAttribute('href');
       if (href) window.location.href = href;
     });

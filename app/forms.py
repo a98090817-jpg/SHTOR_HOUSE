@@ -112,6 +112,8 @@ class AdminMessageForm(forms.ModelForm):
             'inputmode': 'numeric',
             'autocomplete': 'tel',
             'pattern': r'\+998\s?[0-9]{2}\s?[0-9]{3}\s?[0-9]{2}\s?[0-9]{2}',
+            'maxlength': '17',
+            'enterkeyhint': 'done',
             'placeholder': '+998 90 123 45 67',
             'data-phone-input': '1',
             'data-i18n-placeholder': 'msgPhonePlaceholder',

@@ -3664,9 +3664,19 @@ textarea:focus-visible {
     opacity: 1 !important;
     visibility: visible !important;
     width: 100% !important;
-    height: auto !important;
-    object-fit: cover !important;
+    height: 100% !important;
     z-index: 1 !important;
+}
+
+/* Mahsulot rasmi to'liq ko'rinadi: kesilmaydi, nisbati saqlanadi. */
+.gallery-card img {
+    object-fit: cover !important;
+}
+
+.gallery-card img.product-photo,
+.product-photo {
+    object-fit: contain !important;
+    background: #eee8df;
 }
 
 .card-overlay {
@@ -4601,13 +4611,15 @@ body.light-mode .dashboard-stat-icon {
 }
 
 .admin-bell-menu {
-    position: absolute !important;
-    top: calc(100% + 8px) !important;
-    right: 0 !important;
-    left: auto !important;
+    position: fixed !important;
+    top: 64px;
+    right: 8px;
+    left: auto;
     z-index: 100000 !important;
-    min-width: 360px;
-    max-width: 420px;
+    width: min(380px, calc(100vw - 16px));
+    min-width: 0;
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 80px);
     padding: 0;
     border: 1px solid var(--line);
     border-radius: 16px;
@@ -5071,7 +5083,7 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
     background: rgba(215, 185, 142, 0.14);
     color: var(--blue);
     font-size: 1.1rem;
-    font-weight: 700.
+    font-weight: 700;
 }
 .dashboard-user-body { flex: 1; min-width: 0; }
 .dashboard-user-body strong { display: block; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -5115,7 +5127,7 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
     width: 40px;
     height: 40px;
     border-radius: 10px;
-    font-size: 1.05rem.
+    font-size: 1.05rem;
 }
 .notification-body { flex: 1; min-width: 0; }
 .notification-head {
@@ -5123,7 +5135,7 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 8px.
+    margin-bottom: 8px;
 }
 .notification-who { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .notification-who strong { font-size: 0.9rem; }
@@ -5135,7 +5147,7 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
     font-size: 0.64rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.06em.
+    letter-spacing: 0.06em;
 }
 .notification-unread-dot {
     width: 8px;
@@ -5171,8 +5183,8 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
     background: rgba(255, 255, 255, 0.03);
     color: var(--text);
     font-size: 0.74rem;
-    text-decoration: none.
-    transition: border-color 0.2s ease, background 0.2s ease.
+    text-decoration: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 .notification-contacts a:hover { border-color: var(--blue); background: rgba(215, 185, 142, 0.08); color: var(--blue); }
 .notification-footer {
@@ -5182,20 +5194,20 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
     gap: 10px;
     margin-top: 12px;
     padding-top: 12px;
-    border-top: 1px solid var(--line).
+    border-top: 1px solid var(--line);
 }
 .notification-user-link {
     display: inline-flex;
     align-items: center;
-    gap: 6px.
-    padding: 7px 12px.
-    border: 1px solid rgba(255, 255, 255, 0.1).
-    border-radius: 999px.
-    background: rgba(255, 255, 255, 0.03).
-    color: var(--text).
-    font-size: 0.76rem.
-    text-decoration: none.
-    transition: border-color 0.2s ease, background 0.2s ease.
+    gap: 6px;
+    padding: 7px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    font-size: 0.76rem;
+    text-decoration: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 .notification-user-link:hover { border-color: var(--blue); background: rgba(215, 185, 142, 0.08); color: var(--blue); }
 .notification-user-link i { font-size: 0.8rem; }
@@ -5338,57 +5350,65 @@ body.light-mode .admin-toast-close:hover { background: rgba(62, 48, 35, 0.08); c
 
 /* Product detail admin message link */
 .admin-message-link {
-    display: inline-flex.
-    align-items: center.
-    gap: 8px.
-    margin-top: 12px.
-    padding: 10px 14px.
-    border: 1px solid rgba(215, 185, 142, 0.25).
-    border-radius: 12px.
-    background: rgba(215, 185, 142, 0.08).
-    color: var(--blue).
-    font-size: 0.86rem.
-    font-weight: 600.
-    text-decoration: none.
-    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease.
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    margin-top: 14px;
+    padding: 10px 18px;
+    border: 1px solid rgba(215, 185, 142, 0.35);
+    border-radius: 12px;
+    background: rgba(215, 185, 142, 0.1);
+    color: var(--blue);
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 .admin-message-link:hover {
-    background: rgba(215, 185, 142, 0.14).
-    border-color: var(--blue).
-    color: var(--blue-strong).
+    background: rgba(215, 185, 142, 0.16);
+    border-color: var(--blue);
+    color: var(--blue-strong);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
 }
+.admin-message-link:active { transform: translateY(1px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16); }
+.admin-message-link:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 .admin-message-link i { font-size: 0.95rem; }
 
 /* Dashboard hero links */
 .dashboard-hero-link {
-    display: inline-flex.
-    align-items: center.
-    gap: 7px.
-    padding: 8px 14px.
-    border: 1px solid var(--line).
-    border-radius: 999px.
-    background: rgba(255, 255, 255, 0.04).
-    color: var(--text).
-    font-size: 0.8rem.
-    font-weight: 500.
-    text-decoration: none.
-    transition: border-color 0.2s ease, background 0.2s ease.
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 .dashboard-hero-link:hover { border-color: rgba(215, 185, 142, 0.35); background: rgba(215, 185, 142, 0.08); }
 .dashboard-hero-link i { font-size: 0.9rem; }
 .dashboard-hero-count {
-    min-width: 20px.
-    height: 20px.
-    display: inline-flex.
-    align-items: center.
-    justify-content: center.
-    padding: 0 6px.
-    border-radius: 999px.
-    background: linear-gradient(180deg, #e54a4a, #b82a2a).
-    color: #fff.
-    font-size: 0.65rem.
-    font-weight: 700.
-    font-variant-numeric: tabular-nums.
+    min-width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #e54a4a, #b82a2a);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Light mode users, notifications, contact admin */
@@ -5398,7 +5418,7 @@ body.light-mode .contact-product-card,
 body.light-mode .notification-card,
 body.light-mode .dashboard-user-row {
     background: rgba(255, 255, 255, 0.6);
-    border-color: rgba(62, 48, 35, 0.14).
+    border-color: rgba(62, 48, 35, 0.14);
 }
 body.light-mode .user-card:hover,
 body.light-mode .notification-card:hover,
@@ -5436,7 +5456,7 @@ body.light-mode .notification-who strong,
 body.light-mode .notification-product-line a,
 body.light-mode .notification-user-link,
 body.light-mode .dashboard-user-body strong {
-    color: #2b2520.
+    color: #2b2520;
 }
 body.light-mode .user-badge.google { background: rgba(33, 150, 243, 0.18); color: #2196f3; border-color: rgba(33, 150, 243, 0.25); }
 body.light-mode .user-badge.password { background: rgba(184, 143, 99, 0.18); color: #8a6136; border-color: rgba(184, 143, 99, 0.25); }
@@ -5585,4 +5605,16 @@ body.light-mode .notifications-read-all { color: #2b2520; }
 .contact-field input.is-invalid {
     border-color: #e79595;
     box-shadow: 0 0 0 3px rgba(231, 149, 149, 0.12);
+}
+
+/* =========================================================
+   FINAL POLISH — clickable cards, admin button, small screens
+   ========================================================= */
+.gallery-card { cursor: pointer; }
+.gallery-card > a.card-link { z-index: 2; }
+.admin-message-link { max-width: 100%; }
+
+@media (max-width: 640px) {
+    .admin-bell-menu { width: calc(100vw - 16px); max-width: calc(100vw - 16px); }
+    .admin-message-link { width: 100%; min-height: 48px; font-size: 0.92rem; }
 }

@@ -24,7 +24,7 @@
 
     rel="stylesheet" />
 
-  <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=24" />
+  <link rel="stylesheet" href="{% static 'app/css/style.css' %}?v=25" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
 </head>
@@ -151,21 +151,21 @@
 
             {% if product.image_data %}
 
-            <img class="product-photo" src="{% url 'product_image' product.pk %}?v={{ product.image_stored_at|date:'U' }}" alt="{{ product.name }}" />
+            <img class="product-photo" src="{% url 'product_image' product.pk %}?v={{ product.image_stored_at|date:'U' }}" alt="{{ product.name }}" loading="lazy" decoding="async" />
 
             {% elif product.image %}
 
-            <img class="product-photo" src="{{ product.image.url }}" alt="{{ product.name }}" />
+            <img class="product-photo" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy" decoding="async" />
 
             {% elif product.image_url %}
 
-            <img src="{{ product.image_url }}" alt="{{ product.name }}" />
+            <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" decoding="async" />
 
             {% else %}
 
             <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80"
 
-              alt="{{ product.name }}" />
+              alt="{{ product.name }}" loading="lazy" decoding="async" />
 
             {% endif %}
 
@@ -217,7 +217,7 @@
 
   </div>
 
-  <script src="{% static 'app/js/main.js' %}?v=16"></script>
+  <script src="{% static 'app/js/main.js' %}?v=17"></script>
 
 </body>
 
