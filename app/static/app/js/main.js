@@ -843,21 +843,22 @@ function initSitePage() {
         const isOpen = adminBell.classList.toggle('open');
         trigger.setAttribute('aria-expanded', String(isOpen));
         if (isOpen) {
+          // Bell ochilganda badjeni "o'qilgan" holatiga o'tkazish
           positionBellMenu();
           adminBell.classList.add('has-open');
           if (badge) badge.classList.remove('badge-pulse');
         }
       });
 
-      document.addEventListener('click', function (e) {
-        if (!adminBell.contains(e.target)) {
+      document.addEventListener('click', function (event) {
+        if (!adminBell.contains(event.target)) {
           adminBell.classList.remove('open');
           trigger.setAttribute('aria-expanded', 'false');
         }
       }, { signal: pageSignal });
 
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && adminBell.classList.contains('open')) {
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && adminBell.classList.contains('open')) {
           adminBell.classList.remove('open');
           trigger.setAttribute('aria-expanded', 'false');
           trigger.focus();
@@ -868,6 +869,56 @@ function initSitePage() {
         if (adminBell.classList.contains('open')) positionBellMenu();
       }, { signal: pageSignal });
     }
+
+    // Badge puls animatsiyasi (yangi xabar keldigida)
+    function animateBellBadge() {
+      if (badge && !adminBell.classList.contains('open')) {
+        badge.classList.add('badge-pulse');
+        setTimeout(function () { badge.classList.remove('badge-pulse'); }, 600);
+      }
+    }
+
+    // Agar sahifa yuklanganda o'qilmagan bildirishnomalar bo'lsa, badjeni animatsiya qil
+    if (badge) {
+      setTimeout(animateBellBadge, 500);
+    }
+  }
+
+  // Toast bildirishnoma (yangi xabar keldigida animatsiya bilan ko'rsatish)
+  const toast = document.querySelector('[data-admin-toast]');
+  if (toast) {
+    const closeBtn = toast.querySelector('[data-admin-toast-close]');
+    const link = toast.querySelector('[data-admin-toast-link]');
+
+    // Avtomatik yashirish 8 sekunddan keyin
+    setTimeout(function () {
+      if (!toast.hidden && !toast.classList.contains('toast-hiding')) {
+        hideToast();
+      }
+    }, 8000);
+
+    function hideToast() {
+      toast.classList.add('toast-hiding');
+      toast.addEventListener('transitionend', function () {
+        toast.hidden = true;
+      }, { once: true });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function (event) {
+        event.stopPropagation();
+        hideToast();
+      });
+    }
+
+    // Toast ustiga bosilganda ham yashirish (linkdan tashqari)
+    toast.addEventListener('click', function (event) {
+      if (event.target === toast || event.target.closest('.admin-toast-copy')) {
+        window.location.href = link.href;
+      } else if (event.target !== link && !event.target.closest('[data-admin-toast-close]')) {
+        hideToast();
+      }
+    });
   }
 
   // =========================================================
@@ -975,6 +1026,186 @@ function initSitePage() {
     });
   });
 
+  const quoteSection = document.getElementById('quote-form');
+  document.querySelectorAll('[data-scroll="quote-form"]').forEach(function (button) { button.addEventListener('click', function () { quoteSection?.scrollIntoView({ behavior: 'smooth' }); }); });
+  document.querySelectorAll('[data-action]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      const action = button.dataset.action;
+      const targets = { send: '#quote-form', request: '#quote-form', showcase: '.gallery-grid', design: '#features', albums: '.featured-section', help: '#resources' };
+      if (targets[action]) document.querySelector(targets[action])?.scrollIntoView({ behavior: 'smooth' });
+      if (action === 'collapse') document.querySelector('.sidebar')?.classList.toggle('collapsed');
+      if (action === 'close-preview') button.closest('.preview-tag').style.display = 'none';
+      if (['send', 'request', 'design', 'albums', 'help'].includes(action)) openInfoModal(action);
+    });
+  });
+  document.querySelectorAll('[data-view]').forEach(function (button) { button.addEventListener('click', function () { gallery?.classList.toggle('list-view', button.dataset.view === 'list'); document.querySelectorAll('[data-view]').forEach(function (item) { item.classList.toggle('active', item === button); }); }); });
+
+  // Saralash o'zgarganda filtr formasi avtomatik yuboriladi.
+  // Bo'sh narx maydonlari va standart saralash URL ga qo'shilmaydi.
+  function cleanCatalogForm(form) {
+    form.querySelectorAll('input[name="min_price"], input[name="max_price"]').forEach(function (input) {
+      if (!input.value.trim()) input.disabled = true;
+    });
+    const sortField = form.querySelector('select[name="sort"]');
+    if (sortField && sortField.value === 'featured') sortField.disabled = true;
+  }
+
+  document.querySelectorAll('.catalog-filters').forEach(function (form) {
+    form.addEventListener('submit', function () { cleanCatalogForm(form); });
+    form.querySelectorAll('[data-auto-submit]').forEach(function (field) {
+      field.addEventListener('change', function () {
+        cleanCatalogForm(form);
+        form.submit();
+      });
+    });
+  });
+
+  const themeButtons = document.querySelectorAll('.theme-toggle');
+  function setTheme(theme) { document.body.classList.toggle('light-mode', theme === 'light'); themeButtons.forEach(function (button) { button.textContent = theme === 'light' ? '☾' : '☼'; }); localStorage.setItem('parda-theme', theme); }
+  setTheme(localStorage.getItem('parda-theme') || 'dark');
+  themeButtons.forEach(function (button) { button.addEventListener('click', function () { setTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light'); }); });
+
+  // =========================================================
+  // FAVORITES (Sevimlilar) — serverga AJAX orqali saqlanadi
+  // =========================================================
+  function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^|;\\s*)' + name + '\\s*=\\s*([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
+  }
+  const csrfToken = (document.querySelector('meta[name="csrf-token"]') || {}).content || getCookie('csrftoken');
+
+  function updateFavoriteCount(count) {
+    document.querySelectorAll('[data-favorites-count]').forEach(function (el) { el.textContent = count; });
+  }
+
+  document.querySelectorAll('[data-favorite-slug]').forEach(function (button) {
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+      const slug = button.dataset.favoriteSlug;
+      button.disabled = true;
+      fetch('/favorite/' + slug + '/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrfToken,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      })
+        .then(function (response) {
+          if (response.status === 401) {
+            window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname + window.location.search);
+            return null;
+          }
+          return response.json();
+        })
+        .then(function (data) {
+          if (!data) return;
+          if (data.ok) {
+            button.classList.toggle('selected', data.is_favorite);
+            button.textContent = data.is_favorite ? '★' : '☆';
+            updateFavoriteCount(data.count);
+            if (window.location.pathname === '/wishlist/' && !data.is_favorite) {
+              const card = button.closest('.gallery-card');
+              if (card) card.remove();
+            }
+          }
+        })
+        .catch(function () { /* tarmoq xatosi — jim o'tish */ })
+        .finally(function () { button.disabled = false; });
+    });
+  });
+  document.querySelectorAll('[data-download-image]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      const link = document.createElement('a');
+      link.href = button.dataset.downloadImage;
+      link.download = (button.dataset.downloadName || 'parda-image') + '.jpg';
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.click();
+    });
+  });
+  const modal = document.querySelector('[data-modal]');
+  document.querySelectorAll('[data-buy]').forEach(function (button) { button.addEventListener('click', function () { if (modal) modal.hidden = false; }); });
+  document.querySelectorAll('[data-modal-close]').forEach(function (button) { button.addEventListener('click', function () { if (modal) modal.hidden = true; }); });
+  if (modal) modal.addEventListener('click', function (event) { if (event.target === modal) modal.hidden = true; });
+  const maintenanceModal = document.querySelector('[data-maintenance-modal]');
+  let maintenanceTrigger = null;
+  document.querySelectorAll('[data-maintenance-trigger]').forEach(function (trigger) {
+    trigger.addEventListener('click', function (event) {
+      event.preventDefault();
+      maintenanceTrigger = trigger;
+      if (!maintenanceModal) return;
+      maintenanceModal.hidden = false;
+      maintenanceModal.querySelector('[data-maintenance-close]').focus();
+    });
+  });
+  function closeMaintenanceModal() {
+    if (!maintenanceModal || maintenanceModal.hidden) return;
+    maintenanceModal.hidden = true;
+    if (maintenanceTrigger) maintenanceTrigger.focus();
+  }
+  document.querySelectorAll('[data-maintenance-close]').forEach(function (button) {
+    button.addEventListener('click', closeMaintenanceModal);
+  });
+  if (maintenanceModal) {
+    maintenanceModal.addEventListener('click', function (event) {
+      if (event.target === maintenanceModal) closeMaintenanceModal();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeMaintenanceModal();
+    }, { signal: pageSignal });
+  }
+  document.querySelectorAll('[data-share]').forEach(function (button) { button.addEventListener('click', function () { if (navigator.share) navigator.share({ title: document.title, url: window.location.href }); else navigator.clipboard.writeText(window.location.href); }); });
+
+  function openInfoModal(action) {
+    const copy = translations[localStorage.getItem('parda-language') || 'en'] || translations.en;
+    const messages = { send: copy.modalSend, request: copy.modalRequest, design: copy.modalDesign, albums: copy.modalAlbums, help: copy.modalHelpTitle };
+    const modalBox = document.createElement('div');
+    modalBox.className = 'modal-backdrop';
+    modalBox.innerHTML = '<div class="contact-modal" role="dialog"><button class="modal-close" type="button" aria-label="' + copy.selectLanguage + '">×</button><p class="eyebrow">SHTOR HOUSE</p><h2>' + messages[action] + '</h2><p>' + copy.modalHelp + '</p><a class="btn btn-primary" href="tel:+998974244242">' + copy.continue + '</a></div>';
+    document.body.appendChild(modalBox);
+    modalBox.querySelector('.modal-close').addEventListener('click', function () { modalBox.remove(); });
+  }
+
+  /* =========================================================
+     CONTENT PROTECTION — matn belgilash va nusxalashni bloklash
+     Forma maydonlari (input, textarea, select) va tahrirlanadigan
+     joylar chetlab o'tiladi, aks holda formalar ishlamay qoladi.
+     ========================================================= */
+  function isEditable(target) {
+    if (!target) return false;
+    const tag = target.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
+  }
+
+  // 1) Matn belgilashni (selection) bloklash
+  document.addEventListener('selectstart', function (event) {
+    if (!isEditable(event.target)) event.preventDefault();
+  }, { signal: pageSignal });
+
+  // 2) Nusxalash, kesish va qo'yishni bloklash
+  ['copy', 'cut'].forEach(function (type) {
+    document.addEventListener(type, function (event) {
+      if (!isEditable(event.target)) event.preventDefault();
+    }, { signal: pageSignal });
+  });
+
+  // 3) O'ng tugma menyusini bloklash
+  document.addEventListener('contextmenu', function (event) {
+    if (!isEditable(event.target)) event.preventDefault();
+  }, { signal: pageSignal });
+
+  // 4) Ctrl/Cmd + C, X, A, S, U, P klavishalarini bloklash
+  document.addEventListener('keydown', function (event) {
+    if (!(event.ctrlKey || event.metaKey)) return;
+    if (isEditable(event.target)) return;
+    const blocked = ['c', 'C', 'x', 'X', 'a', 'A', 's', 'S', 'u', 'U', 'p', 'P'];
+    if (blocked.includes(event.key)) event.preventDefault();
+  }, { signal: pageSignal });
+
+  // 5) Rasmni sudrab (drag) olishni bloklash
+  document.addEventListener('dragstart', function (event) {
+    if (event.target && event.target.tagName === 'IMG') event.preventDefault();
+  }, { signal: pageSignal });
 }
 
 function bootSiteInteractions() {
