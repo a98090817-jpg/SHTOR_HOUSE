@@ -1,15 +1,75 @@
 <div class="admin-bell" data-admin-bell role="button" aria-label="Notifications" tabindex="0">
   <button class="admin-bell-trigger" type="button" aria-expanded="false" aria-label="Notifications" data-i18n-aria-label="notifications" data-admin-bell-toggle>
-    <span class="bell-icon">
-      <i class="fas fa-bell" aria-hidden="true"></i>
-    </span>
-    {% if admin_unread_count %}
-      <span class="admin-bell-badge" data-admin-bell-badge>{{ admin_unread_count }}</span>
-    {% endif %}
+    <i class="fas fa-bell" aria-hidden="true"></i>
   </button>
-</div>
 
-{% if admin_unread_count %}
+  {% if admin_unread_count %}
+    <span class="admin-bell-badge" data-admin-bell-badge>{{ admin_unread_count }}</span>
+  {% endif %}
+
+  <div class="admin-bell-menu" data-admin-bell-menu>
+    <div class="admin-bell-head">
+      <div class="admin-bell-head-copy">
+        <strong data-i18n="notifications">Notifications</strong>
+        <span class="admin-bell-count">
+          {% if admin_unread_count %}
+            <span data-admin-bell-count>{{ admin_unread_count }}</span> <span data-i18n="unread">unread</span>
+          {% else %}
+            <span data-i18n="allRead">All read</span>
+          {% endif %}
+        </span>
+      </div>
+      {% if admin_unread_count %}
+        <form method="post" action="{% url 'admin_notifications_mark_read' %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="notifications" />
+          <button type="submit" class="admin-bell-read" data-i18n="markAllRead">Mark all read</button>
+        </form>
+      {% endif %}
+    </div>
+
+    <div class="admin-bell-list">
+      {% for n in admin_latest_notifications %}
+        <a class="admin-bell-item{% if not n.is_read %} is-unread{% endif %}" href="{% url 'admin_notifications' %}#notification-{{ n.id }}">
+          <span class="admin-bell-icon kind-{{ n.kind }}">
+            <i class="fas {% if n.kind == 'login' %}fa-right-to-bracket{% elif n.kind == 'register' %}fa-user-plus{% elif n.kind == 'favorite' %}fa-heart{% else %}fa-envelope{% endif %}" aria-hidden="true"></i>
+          </span>
+          <span class="admin-bell-body">
+            <span class="admin-bell-name">{{ n.sender_name|default:n.user.username|default:"—" }}</span>
+            <span class="admin-bell-action">
+              {% if n.kind == 'login' %}
+                {% if n.login_method == 'google' %}
+                  <span data-i18n="notifLoginGoogle">signed in with Google</span>
+                {% else %}
+                  <span data-i18n="notifLoginPassword">signed in with password</span>
+                {% endif %}
+              {% elif n.kind == 'register' %}
+                <span data-i18n="notifRegistered">created an account</span>
+                {% if n.login_method == 'google' %}<span class="admin-bell-via">· <span data-i18n="viaGoogle">via Google</span></span>{% endif %}
+              {% elif n.kind == 'favorite' %}
+                <span data-i18n="notifFavorited">added to favorites</span>
+              {% else %}
+                <span data-i18n="notifMessage">sent a message to the administrator</span>
+              {% endif %}
+            </span>
+            {% if n.product %}
+              <span class="admin-bell-product">{{ n.product.name }}</span>
+            {% elif n.kind == 'message' and n.admin_message %}
+              <span class="admin-bell-product">{{ n.admin_message.message|truncatechars:64 }}</span>
+            {% endif %}
+          </span>
+          <span class="admin-bell-time">{{ n.created_at|date:"d.m H:i" }}</span>
+        </a>
+      {% empty %}
+        <div class="admin-bell-empty" data-i18n="noNotifications">No notifications yet.</div>
+      {% endfor %}
+    </div>
+
+    <a class="admin-bell-all" href="{% url 'admin_notifications' %}">
+      <span data-i18n="viewAllNotifications">View all notifications</span>
+      <i class="fas fa-arrow-right" aria-hidden="true"></i>
+    </a>
+{% if admin_unread_count %
   <div class="admin-toast" data-admin-toast role="status" aria-live="polite">
     <span class="admin-toast-icon"><i class="fas fa-bell" aria-hidden="true"></i></span>
     <div class="admin-toast-copy">
