@@ -188,6 +188,7 @@ function initSitePage() {
       adminContactFormTitle: 'Your message', adminContactPrivate: 'Only the administrator sees this',
       msgFullName: 'Your name', msgNamePlaceholder: 'Your full name', msgEmail: 'Email', msgEmailPlaceholder: 'you@example.com',
       msgPhone: 'Phone', msgPhonePlaceholder: '+998 90 123 45 67', msgText: 'Message', msgTextPlaceholder: 'Write your message to the administrator…',
+      phoneInvalid: 'Enter exactly 9 digits after +998.',
       msgSend: 'Send message', adminContactNote: 'We usually reply within one working day.',
       pageContactAdmin: 'Message to administrator | SHTOR HOUSE',
       writeToAdmin: 'Write to administrator',
@@ -305,6 +306,7 @@ function initSitePage() {
       adminContactFormTitle: 'Sizning xabaringiz', adminContactPrivate: 'Faqat administrator ko‘radi',
       msgFullName: 'Ismingiz', msgNamePlaceholder: 'To‘liq ismingiz', msgEmail: 'Email', msgEmailPlaceholder: 'siz@misol.uz',
       msgPhone: 'Telefon', msgPhonePlaceholder: '+998 90 123 45 67', msgText: 'Xabar', msgTextPlaceholder: 'Administratorga xabaringizni yozing…',
+      phoneInvalid: '+998 dan keyin 9 ta raqam kiriting.',
       msgSend: 'Xabar yuborish', adminContactNote: 'Odatda bir ish kuni ichida javob beramiz.',
       pageContactAdmin: 'Administratorga xabar | SHTOR HOUSE',
       writeToAdmin: 'Administratorga yozish',
@@ -422,6 +424,7 @@ function initSitePage() {
       adminContactFormTitle: 'Ваше сообщение', adminContactPrivate: 'Видит только администратор',
       msgFullName: 'Ваше имя', msgNamePlaceholder: 'Полное имя', msgEmail: 'Email', msgEmailPlaceholder: 'you@example.com',
       msgPhone: 'Телефон', msgPhonePlaceholder: '+998 90 123 45 67', msgText: 'Сообщение', msgTextPlaceholder: 'Напишите сообщение администратору…',
+      phoneInvalid: 'Введите ровно 9 цифр после +998.',
       msgSend: 'Отправить', adminContactNote: 'Обычно отвечаем в течение одного рабочего дня.',
       pageContactAdmin: 'Сообщение администратору | SHTOR HOUSE',
       writeToAdmin: 'Написать администратору',
@@ -805,38 +808,196 @@ function initSitePage() {
   }
 
   // =========================================================
-// ADMIN BELL NOTIFICATIONS — administrator bildirishnomalari
-// =========================================================
-const adminBell = document.querySelector('[data-admin-bell]');
-if (adminBell) {
-  const trigger = adminBell.querySelector('[data-admin-bell-toggle]');
-  const badge = adminBell.querySelector('[data-admin-bell-badge]');
+  // ADMIN BELL NOTIFICATIONS — administrator bildirishnomalari
+  // =========================================================
+  const adminBell = document.querySelector('[data-admin-bell]');
+  if (adminBell) {
+    const trigger = adminBell.querySelector('[data-admin-bell-toggle]');
+    const menu = adminBell.querySelector('[data-admin-bell-menu]');
+    const badge = adminBell.querySelector('[data-admin-bell-badge]');
 
-  if (trigger) {
-    trigger.addEventListener('click', function (event) {
-      event.stopPropagation();
-      const isOpen = adminBell.classList.toggle('open');
-      trigger.setAttribute('aria-expanded', String(isOpen));
-      // Bell ochilganda badjeni "o'qilgan" holatiga o'tkazish
-      adminBell.classList.add('has-open');
-      if (badge) badge.classList.remove('badge-pulse');
+    // Panelni ekran chetidan chiqmaydigan qilib joylashtirish
+    function positionBellMenu() {
+      if (!menu || !trigger) return;
+      const rect = trigger.getBoundingClientRect();
+      const anchor = adminBell.getBoundingClientRect();
+      const vw = window.innerWidth || document.documentElement.clientWidth;
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const margin = 8;
+      const width = Math.min(380, vw - margin * 2);
+      let left = rect.right - width;
+      left = Math.max(margin, Math.min(left, vw - width - margin));
+      const top = rect.bottom + 8;
+      menu.style.width = width + 'px';
+      menu.style.left = (left - anchor.left) + 'px';
+      menu.style.right = 'auto';
+      menu.style.top = (rect.bottom - anchor.top + 8) + 'px';
+      menu.style.maxHeight = Math.max(220, vh - top - margin) + 'px';
+      const list = menu.querySelector('.admin-bell-list');
+      if (list) list.style.maxHeight = Math.max(120, vh - top - margin - 118) + 'px';
+    }
+
+    if (trigger) {
+      trigger.addEventListener('click', function (event) {
+        event.stopPropagation();
+        const isOpen = adminBell.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', String(isOpen));
+        if (isOpen) {
+          positionBellMenu();
+          adminBell.classList.add('has-open');
+          if (badge) badge.classList.remove('badge-pulse');
+        }
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!adminBell.contains(e.target)) {
+          adminBell.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      }, { signal: pageSignal });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && adminBell.classList.contains('open')) {
+          adminBell.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+          trigger.focus();
+        }
+      }, { signal: pageSignal });
+
+      window.addEventListener('resize', function () {
+        if (adminBell.classList.contains('open')) positionBellMenu();
+      }, { signal: pageSignal });
+    }
+  }
+
+  // =========================================================
+  // ADMIN CONTACT — telefon raqami: +998 prefiksi, faqat raqamlar
+  // =========================================================
+  document.querySelectorAll('[data-phone-input]').forEach(function (input) {
+    const form = input.closest('form');
+    const error = form ? form.querySelector('[data-phone-error]') : null;
+    const PREFIX = '+998';
+
+    function digitsFrom(value) {
+      let digits = String(value || '').replace(/\D/g, '');
+      while (digits.indexOf('998') === 0) digits = digits.slice(3);
+      return digits.slice(0, 9);
+    }
+
+    function formatPhone(digits) {
+      let out = PREFIX;
+      if (digits.length) out += ' ' + digits.slice(0, 2);
+      if (digits.length > 2) out += ' ' + digits.slice(2, 5);
+      if (digits.length > 5) out += ' ' + digits.slice(5, 7);
+      if (digits.length > 7) out += ' ' + digits.slice(7, 9);
+      return out;
+    }
+
+    function showPhoneError(show) {
+      if (error) {
+        error.hidden = !show;
+        if (show) {
+          const copy = translations[currentLanguage] || translations.en;
+          error.textContent = copy.phoneInvalid || translations.en.phoneInvalid;
+        }
+      }
+      input.classList.toggle('is-invalid', show);
+      input.setAttribute('aria-invalid', show ? 'true' : 'false');
+    }
+
+    input.value = digitsFrom(input.value) ? formatPhone(digitsFrom(input.value)) : '';
+
+    input.addEventListener('focus', function () {
+      if (!digitsFrom(input.value)) input.value = PREFIX + ' ';
+      input.setSelectionRange(input.value.length, input.value.length);
     });
 
-    // Close on outside click
-    document.addEventListener('click', function (e) {
-      if (!adminBell.contains(e.target)) {
-        adminBell.classList.remove('open');
-        trigger.setAttribute('aria-expanded', 'false');
+    input.addEventListener('keydown', function (event) {
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.key.length === 1 && !/[0-9]/.test(event.key)) {
+        event.preventDefault();
+        return;
+      }
+      if ((event.key === 'Backspace' || event.key === 'Delete')
+        && input.selectionStart <= PREFIX.length && input.selectionEnd <= PREFIX.length) {
+        event.preventDefault();
       }
     });
 
-    // Close on Escape
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && adminBell.classList.contains('open')) {
-        adminBell.classList.remove('open');
-        trigger.setAttribute('aria-expanded', 'false');
-        trigger.focus();
-      }
+    input.addEventListener('input', function () {
+      const digits = digitsFrom(input.value);
+      input.value = formatPhone(digits);
+      input.setSelectionRange(input.value.length, input.value.length);
+      if (digits.length === 9) showPhoneError(false);
     });
+
+    input.addEventListener('blur', function () {
+      const digits = digitsFrom(input.value);
+      if (!digits.length) {
+        input.value = '';
+        showPhoneError(false);
+        return;
+      }
+      input.value = formatPhone(digits);
+      showPhoneError(digits.length !== 9);
+    });
+
+    if (form) {
+      form.addEventListener('submit', function (event) {
+        const digits = digitsFrom(input.value);
+        if (!digits.length) {
+          input.value = '';
+          showPhoneError(false);
+          return;
+        }
+        if (digits.length !== 9) {
+          event.preventDefault();
+          showPhoneError(true);
+          input.focus();
+          return;
+        }
+        input.value = PREFIX + digits;
+        showPhoneError(false);
+      });
+    }
+  });
+
+  // =========================================================
+  // MAHSULOT KARTASI — butun karta bosilganda mahsulot ochiladi
+  // =========================================================
+  document.querySelectorAll('.gallery-card').forEach(function (card) {
+    const link = card.querySelector('a.card-link');
+    if (!link) return;
+    card.addEventListener('click', function (event) {
+      if (event.target.closest('a, button, [data-favorite-slug], [data-download-image]')) return;
+      const href = link.getAttribute('href');
+      if (href) window.location.href = href;
+    });
+  });
+
+}
+
+function bootSiteInteractions() {
+  // Asosiy: turbo:load — Turbo rendering tugagach ishlaydi (birinchi yuklash va navigatsiya).
+  // Bu sahifa to'liq tayyor bo'lgandan keyin listener'lar bog'lanishini kafolatlaydi.
+  document.addEventListener('turbo:load', initSitePage);
+
+  // Zaxira: Turbo ishlamasa (masalan, yuklanish xatosi) — DOMContentLoaded orqali.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(function () {
+        if (!pageAbortController) {
+          initSitePage();
+        }
+      }, 100);
+    });
+  } else {
+    setTimeout(function () {
+      if (!pageAbortController) {
+        initSitePage();
+      }
+    }, 100);
   }
 }
+
+bootSiteInteractions();

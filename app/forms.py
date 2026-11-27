@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -101,17 +103,17 @@ class QuoteRequestForm(forms.ModelForm):
 class AdminMessageForm(forms.ModelForm):
     """Mahsulot sahifasidan administratorga yoziladigan xabar formasi."""
 
+    PHONE_PREFIX = '+998'
+
     phone = forms.CharField(
         required=False,
-        validators=[RegexValidator(
-            regex=r'^[0-9+()\-\s]+$',
-            message='Please enter a valid phone number using digits only.',
-        )],
         widget=forms.TextInput(attrs={
             'type': 'tel',
             'inputmode': 'numeric',
             'autocomplete': 'tel',
+            'pattern': r'\+998\s?[0-9]{2}\s?[0-9]{3}\s?[0-9]{2}\s?[0-9]{2}',
             'placeholder': '+998 90 123 45 67',
+            'data-phone-input': '1',
             'data-i18n-placeholder': 'msgPhonePlaceholder',
         }),
     )
@@ -136,6 +138,21 @@ class AdminMessageForm(forms.ModelForm):
                 'data-i18n-placeholder': 'msgTextPlaceholder',
             }),
         }
+
+    def clean_phone(self):
+        """Telefon raqamni +998XXXXXXXXX ko'rinishiga keltiradi va tekshiradi."""
+        raw = (self.cleaned_data.get('phone') or '').strip()
+        if not raw:
+            return ''
+        digits = re.sub(r'\D', '', raw)
+        if digits.startswith('998'):
+            digits = digits[3:]
+        if len(digits) != 9:
+            raise ValidationError(
+                'Enter exactly 9 digits after +998.',
+                code='invalid_phone',
+            )
+        return self.PHONE_PREFIX + digits
 
 
 class CustomUserCreationForm(DjangoUserCreationForm):
